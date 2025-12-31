@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Futures ↔ Prop Delta</title>
+  <style>
+    body{font-family:Arial, sans-serif; margin:24px; max-width:520px;}
+    h1{font-size:18px; margin:0 0 14px;}
+    label{display:block; font-size:12px; opacity:.8; margin:10px 0 6px;}
+    input,select{width:100%; padding:10px; font-size:16px;}
+    .out{margin-top:14px; border:1px solid #ddd; border-radius:10px; padding:12px;}
+    .row{display:flex; justify-content:space-between; gap:12px; margin:6px 0;}
+    .k{opacity:.75;}
+    .v{font-weight:700; font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;}
+  </style>
+</head>
+<body>
+  <h1>YM / NQ / ES / RTY – Delta-Rechner</h1>
+
+  <label for="sym">Instrument</label>
+  <select id="sym">
+    <option value="YM">YM</option>
+    <option value="NQ">NQ</option>
+    <option value="ES">ES</option>
+    <option value="RTY">RTY</option>
+  </select>
+
+  <label for="futureNow">Future Preis (aktuell)</label>
+  <input id="futureNow" inputmode="decimal" placeholder="z.B. 17125.50" />
+
+  <label for="propNow">Propfirm/CFD Preis (aktuell)</label>
+  <input id="propNow" inputmode="decimal" placeholder="z.B. 17123.80" />
+
+  <label for="futureEntry">Future Entry (geplant)</label>
+  <input id="futureEntry" inputmode="decimal" placeholder="z.B. 17140.00" />
+
+  <label for="futureSL">Future SL (geplant)</label>
+  <input id="futureSL" inputmode="decimal" placeholder="z.B. 17110.00" />
+
+  <label for="futureTP">Future TP (optional)</label>
+  <input id="futureTP" inputmode="decimal" placeholder="z.B. 17210.00" />
+
+  <div class="out">
+    <div class="row"><div class="k">Delta (Prop − Future)</div><div class="v" id="deltaOut">—</div></div>
+    <div class="row"><div class="k">Prop Entry</div><div class="v" id="propEntryOut">—</div></div>
+    <div class="row"><div class="k">Prop SL</div><div class="v" id="propSLOut">—</div></div>
+    <div class="row"><div class="k">Prop TP</div><div class="v" id="propTPOut">—</div></div>
+  </div>
+
+<script>
+  const SPECS = { YM:{tickSize:1.0}, NQ:{tickSize:0.25}, ES:{tickSize:0.25}, RTY:{tickSize:0.10} };
+  const el = (id) => document.getElementById(id);
+
+  function parseNum(v){
+    v = String(v ?? "").trim().replace(/\s+/g,"").replace(",",".");
+    if(!v) return NaN;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : NaN;
+  }
+  function roundToTick(price, tickSize){
+    if(!Number.isFinite(price)) return NaN;
+    return Math.round(price / tickSize) * tickSize;
+  }
+  function fmt(price, tickSize){
+    if(!Number.isFinite(price)) return "—";
+    const digits = (tickSize === 1) ? 0 : (tickSize === 0.1 ? 1 : 2);
+    return price.toFixed(digits);
+  }
+
+  function calc(){
+    const tickSize = SPECS[el("sym").value].tickSize;
+
+    const futureNow   = parseNum(el("futureNow").value);
+    const propNow     = parseNum(el("propNow").value);
+    const futureEntry = parseNum(el("futureEntry").value);
+    const futureSL    = parseNum(el("futureSL").value);
+    const futureTP    = parseNum(el("futureTP").value);
+
+    const delta = (Number.isFinite(futureNow) && Number.isFinite(propNow)) ? (propNow - futureNow) : NaN;
+    el("deltaOut").textContent = Number.isFinite(delta) ? delta.toFixed(4) : "—";
+
+    const propEntry = (Number.isFinite(delta) && Number.isFinite(futureEntry)) ? roundToTick(futureEntry + delta, tickSize) : NaN;
+    const propSL    = (Number.isFinite(delta) && Number.isFinite(futureSL))    ? roundToTick(futureSL + delta, tickSize) : NaN;
+    const propTP    = (Number.isFinite(delta) && Number.isFinite(futureTP))    ? roundToTick(futureTP + delta, tickSize) : NaN;
+
+    el("propEntryOut").textContent = fmt(propEntry, tickSize);
+    el("propSLOut").textContent    = fmt(propSL, tickSize);
+    el("propTPOut").textContent    = Number.isFinite(futureTP) ? fmt(propTP, tickSize) : "—";
+  }
+
+  ["sym","futureNow","propNow","futureEntry","futureSL","futureTP"].forEach(id=>{
+    el(id).addEventListener("input", calc);
+    el(id).addEventListener("change", calc);
+  });
+
+  calc();
+</script>
+</body>
+</html>
