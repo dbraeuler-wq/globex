@@ -89,10 +89,30 @@
     .k{color:var(--muted); font-size:13px;}
     .v{font-family:var(--mono); font-weight:800;}
     .big{font-size:18px;}
+
+    /* === NUR NEU: LOGO === */
+    .logo{
+      display:flex;
+      justify-content:center;
+      margin:0 0 14px;
+    }
+    .logo img{
+      max-width:240px;
+      width:100%;
+      height:auto;
+      border-radius:14px;
+      border:1px solid var(--border);
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
+
+    <!-- NUR NEU: LOGO -->
+    <div class="logo">
+      <img src="56307-art-file-color-nav_650x650.webp" alt="Globex Corporation">
+    </div>
+
     <h1>YM / NQ / ES / RTY – Delta Rechner</h1>
     <p class="sub">Future + Prop eingeben → Delta wird gerechnet. Entry/SL/TP werden per Delta übertragen (auf Tick gerundet).</p>
 
@@ -179,5 +199,3 @@
 </script>
 </body>
 </html>
-
-
