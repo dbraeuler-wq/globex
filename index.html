@@ -3,98 +3,102 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Futures ↔ Prop Delta</title>
+  <title>Delta – Futures ↔ Prop</title>
+  <meta name="color-scheme" content="light dark" />
   <style>
-    body{font-family:Arial, sans-serif; margin:24px; max-width:520px;}
-    h1{font-size:18px; margin:0 0 14px;}
-    label{display:block; font-size:12px; opacity:.8; margin:10px 0 6px;}
-    input,select{width:100%; padding:10px; font-size:16px;}
-    .out{margin-top:14px; border:1px solid #ddd; border-radius:10px; padding:12px;}
-    .row{display:flex; justify-content:space-between; gap:12px; margin:6px 0;}
-    .k{opacity:.75;}
-    .v{font-weight:700; font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;}
-  </style>
-</head>
-<body>
-  <h1>YM / NQ / ES / RTY – Delta-Rechner</h1>
+    :root{
+      --bg1:#f5f5f7;
+      --bg2:#ffffff;
+      --text:#111114;
+      --muted:rgba(60,60,67,.72);
+      --border:rgba(60,60,67,.18);
+      --card:rgba(255,255,255,.72);
+      --shadow:0 18px 45px rgba(0,0,0,.12);
+      --radius:20px;
+      --pad:16px;
+      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      --sf:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg1:#0b0b0f;
+        --bg2:#111118;
+        --text:#f5f5f7;
+        --muted:rgba(235,235,245,.68);
+        --border:rgba(235,235,245,.16);
+        --card:rgba(20,20,28,.65);
+        --shadow:0 18px 45px rgba(0,0,0,.45);
+      }
+    }
 
-  <label for="sym">Instrument</label>
-  <select id="sym">
-    <option value="YM">YM</option>
-    <option value="NQ">NQ</option>
-    <option value="ES">ES</option>
-    <option value="RTY">RTY</option>
-  </select>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sf);
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% -10%, rgba(0,122,255,.18), transparent 55%),
+        radial-gradient(1200px 700px at 110% 20%, rgba(175,82,222,.18), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
 
-  <label for="futureNow">Future Preis (aktuell)</label>
-  <input id="futureNow" inputmode="decimal" placeholder="z.B. 17125.50" />
+    .wrap{width:100%; max-width:760px;}
+    .top{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:14px;
+    }
+    .title{
+      display:flex; flex-direction:column; gap:6px;
+    }
+    h1{margin:0; font-size:22px; letter-spacing:-.02em;}
+    .sub{color:var(--muted); font-size:13px; line-height:1.35; max-width:520px;}
 
-  <label for="propNow">Propfirm/CFD Preis (aktuell)</label>
-  <input id="propNow" inputmode="decimal" placeholder="z.B. 17123.80" />
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      overflow:hidden;
+    }
+    .section{padding:18px;}
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+    @media (max-width: 640px){
+      .grid{grid-template-columns:1fr;}
+      .top{flex-direction:column; align-items:flex-start;}
+    }
 
-  <label for="futureEntry">Future Entry (geplant)</label>
-  <input id="futureEntry" inputmode="decimal" placeholder="z.B. 17140.00" />
+    label{display:block; font-size:12px; color:var(--muted); margin:0 0 8px;}
+    .field{
+      position:relative;
+      border:1px solid var(--border);
+      border-radius:14px;
+      overflow:hidden;
+      background:rgba(255,255,255,.35);
+    }
+    @media (prefers-color-scheme: dark){
+      .field{background:rgba(255,255,255,.06);}
+    }
+    input, select{
+      width:100%;
+      border:0;
+      outline:none;
+      padding:12px 12px;
+      font-size:16px;
+      color:var(--text);
+      background:transparent;
+      font-family:var(--sf);
 
-  <label for="futureSL">Future SL (geplant)</label>
-  <input id="futureSL" inputmode="decimal" placeholder="z.B. 17110.00" />
-
-  <label for="futureTP">Future TP (optional)</label>
-  <input id="futureTP" inputmode="decimal" placeholder="z.B. 17210.00" />
-
-  <div class="out">
-    <div class="row"><div class="k">Delta (Prop − Future)</div><div class="v" id="deltaOut">—</div></div>
-    <div class="row"><div class="k">Prop Entry</div><div class="v" id="propEntryOut">—</div></div>
-    <div class="row"><div class="k">Prop SL</div><div class="v" id="propSLOut">—</div></div>
-    <div class="row"><div class="k">Prop TP</div><div class="v" id="propTPOut">—</div></div>
-  </div>
-
-<script>
-  const SPECS = { YM:{tickSize:1.0}, NQ:{tickSize:0.25}, ES:{tickSize:0.25}, RTY:{tickSize:0.10} };
-  const el = (id) => document.getElementById(id);
-
-  function parseNum(v){
-    v = String(v ?? "").trim().replace(/\s+/g,"").replace(",",".");
-    if(!v) return NaN;
-    const n = Number(v);
-    return Number.isFinite(n) ? n : NaN;
-  }
-  function roundToTick(price, tickSize){
-    if(!Number.isFinite(price)) return NaN;
-    return Math.round(price / tickSize) * tickSize;
-  }
-  function fmt(price, tickSize){
-    if(!Number.isFinite(price)) return "—";
-    const digits = (tickSize === 1) ? 0 : (tickSize === 0.1 ? 1 : 2);
-    return price.toFixed(digits);
-  }
-
-  function calc(){
-    const tickSize = SPECS[el("sym").value].tickSize;
-
-    const futureNow   = parseNum(el("futureNow").value);
-    const propNow     = parseNum(el("propNow").value);
-    const futureEntry = parseNum(el("futureEntry").value);
-    const futureSL    = parseNum(el("futureSL").value);
-    const futureTP    = parseNum(el("futureTP").value);
-
-    const delta = (Number.isFinite(futureNow) && Number.isFinite(propNow)) ? (propNow - futureNow) : NaN;
-    el("deltaOut").textContent = Number.isFinite(delta) ? delta.toFixed(4) : "—";
-
-    const propEntry = (Number.isFinite(delta) && Number.isFinite(futureEntry)) ? roundToTick(futureEntry + delta, tickSize) : NaN;
-    const propSL    = (Number.isFinite(delta) && Number.isFinite(futureSL))    ? roundToTick(futureSL + delta, tickSize) : NaN;
-    const propTP    = (Number.isFinite(delta) && Number.isFinite(futureTP))    ? roundToTick(futureTP + delta, tickSize) : NaN;
-
-    el("propEntryOut").textContent = fmt(propEntry, tickSize);
-    el("propSLOut").textContent    = fmt(propSL, tickSize);
-    el("propTPOut").textContent    = Number.isFinite(futureTP) ? fmt(propTP, tickSize) : "—";
-  }
-
-  ["sym","futureNow","propNow","futureEntry","futureSL","futureTP"].forEach(id=>{
-    el(id).addEventListener("input", calc);
-    el(id).addEventListener("change", calc);
-  });
-
-  calc();
-</script>
-</body>
-</html>
