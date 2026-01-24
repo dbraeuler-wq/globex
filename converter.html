@@ -270,6 +270,51 @@
       padding:8px 10px;border-radius:12px;border:1px solid var(--stroke2);
       background:rgba(255,255,255,.06);color:var(--text);font-weight:900;cursor:pointer;font-size:12px
     }
+
+    /* Correlation hint box (FX only) */
+    .corrBox{
+      margin-top:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.22);
+      border-radius:14px;
+      padding:12px;
+    }
+    .corrTitle{
+      font-weight:950;
+      font-size:12px;
+      color:rgba(234,240,255,.85);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .corrText{
+      margin-top:6px;
+      font-size:12px;
+      color:rgba(234,240,255,.65);
+      line-height:1.45;
+    }
+    .corrBtns{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .corrBtn{
+      padding:9px 11px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.22);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      font-weight:900;
+      cursor:pointer;
+      font-size:12px;
+    }
+    .corrBtn:hover{background:rgba(255,255,255,.10)}
+    .corrTiny{
+      margin-top:8px;
+      font-size:11px;
+      color:rgba(234,240,255,.50);
+    }
   </style>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -365,6 +410,19 @@
           </div>
 
           <div class="note" id="chartNote"></div>
+
+          <!-- FX Correlation hint (FX only) -->
+          <div class="corrBox" id="corrBox" style="display:none">
+            <div class="corrTitle">⚠️ Correlation Check</div>
+            <div class="corrText" id="corrText">
+              Check correlations before you execute.
+            </div>
+            <div class="corrBtns">
+              <button class="corrBtn" type="button" id="btnCorrOpen">Open Myfxbook Correlation</button>
+              <button class="corrBtn" type="button" id="btnCorrCopy">Copy reminder</button>
+            </div>
+            <div class="corrTiny" id="corrTiny"></div>
+          </div>
         </div>
       </div>
 
@@ -540,14 +598,16 @@
   const sym = normalizeSymbol(cleaned);
   document.getElementById("title").textContent = sym + " — CONTRACTX Converter";
 
+  // FX inversion warning list
   const FX_INVERTED = ["6C","6J","6S"];
   const isInverted = FX_INVERTED.includes(sym);
   if (isInverted) document.getElementById("invertHint").style.display = "block";
 
-  // TradingView Proxy symbols (embed works publicly)
+  // TradingView Proxy symbols (embed-friendly)
+  // NG REMOVED. Copper added as HG -> TVC:COPPER
   const TV_MAP = {
     ES:"OANDA:SPX500USD", NQ:"OANDA:NAS100USD", YM:"OANDA:US30USD", RTY:"OANDA:US2000USD",
-    GC:"TVC:GOLD", SI:"TVC:SILVER", CL:"TVC:USOIL", NG:"TVC:NATGAS",
+    GC:"TVC:GOLD", SI:"TVC:SILVER", CL:"TVC:USOIL", HG:"TVC:COPPER",
     "6E":"FX:EURUSD","6B":"FX:GBPUSD","6A":"FX:AUDUSD","6N":"FX:NZDUSD",
     "6C":"FX:USDCAD","6J":"FX:USDJPY","6S":"FX:USDCHF"
   };
@@ -576,7 +636,7 @@
   tabChart.addEventListener("click", ()=>setTab("chart"));
   tabNotes.addEventListener("click", ()=>setTab("notes"));
 
-  // tradingview
+  // TradingView embed
   let tvInterval = "5";
   function renderTV(){
     const script = document.createElement("script");
@@ -603,6 +663,52 @@
   document.querySelectorAll("#tfRow .pill")
     .forEach(p=>p.addEventListener("click", ()=>setTF(p.getAttribute("data-tf"))));
   renderTV();
+
+  // Correlation box: ONLY for FX pairs (tvSymbol starts with FX:)
+  function isFxPair(){
+    return tvSymbol.startsWith("FX:");
+  }
+  function fxPairFromTvSymbol(){
+    if(!isFxPair()) return null;
+    return tvSymbol.split(":")[1] || null; // EURUSD
+  }
+  function myfxbookCorrUrl(){
+    const pair = fxPairFromTvSymbol();
+    if(!pair) return "https://www.myfxbook.com/forex-market/correlation";
+    return `https://www.myfxbook.com/forex-market/correlation/${pair}`;
+  }
+  function typicalCorrHint(pair){
+    if(!pair) return "";
+    const p = pair.toUpperCase();
+    if(p === "EURUSD") return "Typical: + GBPUSD, AUDUSD • − USDCHF, USDCAD";
+    if(p === "GBPUSD") return "Typical: + EURUSD, AUDUSD • − USDCHF, USDCAD";
+    if(p === "AUDUSD") return "Typical: + NZDUSD, EURUSD • − USDJPY (regime-dependent)";
+    if(p === "NZDUSD") return "Typical: + AUDUSD • − USDJPY (regime-dependent)";
+    if(p === "USDCAD") return "Typical: + USDCHF • − EURUSD, GBPUSD (watch Oil)";
+    if(p === "USDCHF") return "Typical: + USDCAD • − EURUSD, GBPUSD";
+    if(p === "USDJPY") return "Typical: + USDCHF • − AUDUSD/NZDUSD (risk regime dependent)";
+    return "Typical correlations change by regime — always verify.";
+  }
+  function setupCorrelationBox(){
+    const box = document.getElementById("corrBox");
+    if(!box) return;
+    if(!isFxPair()){
+      box.style.display = "none";
+      return;
+    }
+    const pair = fxPairFromTvSymbol();
+    const url = myfxbookCorrUrl();
+    box.style.display = "block";
+    document.getElementById("corrText").textContent =
+      `Before executing, check correlations for ${pair || "this FX pair"}.`;
+    document.getElementById("corrTiny").textContent = typicalCorrHint(pair);
+
+    document.getElementById("btnCorrOpen").onclick = () => window.open(url, "_blank");
+    document.getElementById("btnCorrCopy").onclick = async () => {
+      const msg = `Correlation check: ${pair || "FX"} — open: ${url}`;
+      try{ await navigator.clipboard.writeText(msg); }catch{}
+    };
+  }
 
   // converter
   let offset = NaN;
@@ -650,7 +756,6 @@
     const e = n(document.getElementById("entryF").value);
     const s = n(document.getElementById("slF").value);
     if(!isNum(e) || !isNum(s) || e === s) return null;
-    // long typical: SL below entry
     return (s < e) ? "long" : "short";
   }
   function getDirection(){
@@ -667,7 +772,7 @@
 
     const dir = getDirection();
 
-    // risk points (always positive, if possible)
+    // risk points (positive)
     let riskPts = NaN;
     if(isNum(e) && isNum(s) && e !== s) riskPts = Math.abs(e - s);
 
@@ -677,7 +782,7 @@
     if(isNum(e) && isNum(tp)){
       if(dir === "long") rewardPtsSigned = tp - e;
       else if(dir === "short") rewardPtsSigned = e - tp;
-      else rewardPtsSigned = NaN; // auto not sure
+      else rewardPtsSigned = NaN;
     }
 
     // signed R multiple
@@ -686,9 +791,9 @@
       rmult = rewardPtsSigned / riskPts; // can be negative
     }
 
-    // cash
+    // cash (risk positive, reward signed)
     const riskCashInput = n(document.getElementById("jRiskUsd").value);
-    const riskCash = isNum(riskCashInput) ? Math.abs(riskCashInput) : NaN; // risk should be positive
+    const riskCash = isNum(riskCashInput) ? Math.abs(riskCashInput) : NaN;
     const rewardCash = (isNum(riskCash) && isNum(rmult)) ? (riskCash * rmult) : NaN;
 
     document.getElementById("kRiskCash").textContent = isNum(riskCash) ? money(riskCash) : "—";
@@ -896,7 +1001,7 @@
 
   // storage
   const editor = document.getElementById("editor");
-  function storageKey(){ return `contractx.journal.v5.${brokerVal()}.${sym}`; }
+  function storageKey(){ return `contractx.journal.v6.${brokerVal()}.${sym}`; }
 
   function computeSummary(){
     const e=n(document.getElementById("entryF").value);
@@ -973,6 +1078,7 @@
 
   function load(){
     setMeta();
+    setupCorrelationBox();
     updateKPIs();
 
     const raw=localStorage.getItem(storageKey());
@@ -1250,11 +1356,15 @@ ${pbLines}
   editor.addEventListener("input", ()=>autoSave(true));
 
   document.getElementById("broker").addEventListener("change", ()=>{
-    setMeta(); load(); autoSave(true);
+    setMeta();
+    setupCorrelationBox();
+    load();
+    autoSave(true);
   });
 
   // init
   setMeta();
+  setupCorrelationBox();
   load();
   updateKPIs();
   calcProp();
