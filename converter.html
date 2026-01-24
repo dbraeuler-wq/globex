@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CONTRACTX — Converter</title>
 
-  <!-- ===== STYLE ===== -->
   <style>
     :root{
       --bg:#070A0F;
@@ -16,167 +15,1619 @@
       --shadow:0 18px 50px rgba(0,0,0,.55);
       --warn:#FFD66E;
       --bad:#FF7C7C;
+      --ok:#7CFFB2;
     }
     *{box-sizing:border-box}
     body{
       margin:0;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
       color:var(--text);
-      background:var(--bg);
+      background:
+        radial-gradient(1200px 800px at 15% 10%, rgba(40,110,255,.22), transparent 60%),
+        radial-gradient(900px 700px at 85% 20%, rgba(255,215,80,.12), transparent 60%),
+        var(--bg);
     }
-    .wrap{max-width:1100px;margin:0 auto;padding:24px}
-    h1{margin:0 0 8px}
+    a{color:inherit;text-decoration:none}
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
     .panel{
+      background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));
       border:1px solid var(--stroke);
       border-radius:18px;
+      box-shadow:var(--shadow);
       padding:22px;
+    }
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .brand{display:flex;gap:10px;align-items:center}
+    .logo{
+      width:36px;height:36px;border-radius:12px;
+      background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.06));
+      border:1px solid var(--stroke2);
+      box-shadow:0 12px 30px rgba(0,0,0,.35);
+    }
+    .brandTxt{display:flex;flex-direction:column;line-height:1.1}
+    .brandTxt b{letter-spacing:.6px}
+    .brandTxt span{font-size:12px;color:var(--muted);margin-top:3px}
+    .nav{display:flex;gap:14px;align-items:center}
+    .nav a{font-size:13px;color:var(--muted);font-weight:800}
+    .nav a:hover{color:var(--text)}
+
+    h1{margin:0;font-size:28px;letter-spacing:.2px}
+    .sub{margin-top:6px;font-size:13px;color:var(--muted);line-height:1.45}
+
+    .hidden{display:none !important}
+
+    /* ===== Landing ===== */
+    .hero{
+      margin-top:14px;
+      border:1px solid var(--stroke);
+      border-radius:18px;
+      padding:18px;
+      background:radial-gradient(900px 420px at 10% 0%, rgba(55,120,255,.18), transparent 55%),
+                 radial-gradient(700px 360px at 90% 0%, rgba(255,215,80,.10), transparent 55%),
+                 rgba(0,0,0,.20);
+    }
+    .heroRow{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .heroBtns{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{
+      padding:11px 14px;border-radius:14px;border:1px solid var(--stroke2);
+      background:rgba(255,255,255,.06);color:var(--text);font-weight:900;cursor:pointer;
+      transition:.15s ease; font-size:13px;
+    }
+    .btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.09)}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .chip{
+      font-size:12px;color:rgba(234,240,255,.70);
+      border:1px solid rgba(255,255,255,.14);
       background:rgba(255,255,255,.05);
+      padding:7px 10px;border-radius:999px;font-weight:900;
+    }
+
+    .sectionTitle{
+      margin-top:18px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      color:rgba(234,240,255,.85);
+      font-weight:950;
+      font-size:14px;
+      letter-spacing:.2px;
+    }
+    .sectionHint{font-size:12px;color:var(--muted);font-weight:800}
+
+    .grid{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns:repeat(4, 1fr);
+      gap:12px;
+    }
+    @media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:520px){.grid{grid-template-columns:1fr}}
+
+    .asset{
+      border:1px solid var(--stroke);
+      border-radius:16px;
+      background:rgba(0,0,0,.22);
+      padding:14px;
+      cursor:pointer;
+      transition:.15s ease;
+      min-height:88px;
+      position:relative;
+      overflow:hidden;
+    }
+    .asset:hover{transform:translateY(-1px);background:rgba(0,0,0,.28);border-color:rgba(255,255,255,.18)}
+    .asset:before{
+      content:"";
+      position:absolute;inset:-60px -60px auto auto;
+      width:200px;height:200px;border-radius:50%;
+      background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.10), transparent 60%);
+      pointer-events:none;
+    }
+    .aCode{font-weight:950;font-size:15px}
+    .aName{margin-top:4px;color:var(--muted);font-size:12px;font-weight:800}
+    .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .tag{
+      font-size:11px;color:rgba(234,240,255,.58);
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.04);
+      padding:5px 8px;border-radius:999px;font-weight:900;
+    }
+
+    /* ===== Converter ===== */
+    .row{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:14px;
+    }
+    @media(max-width:900px){.row{grid-template-columns:1fr}}
+    .card{
+      border:1px solid var(--stroke);
+      border-radius:16px;
+      background:rgba(0,0,0,.25);
+      padding:16px;
     }
     label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
-    input{
+    input,select{
       width:100%;
-      padding:12px;
-      border-radius:12px;
+      padding:13px 14px;
+      border-radius:14px;
       border:1px solid var(--stroke2);
-      background:#000;
+      background:rgba(0,0,0,.35);
       color:var(--text);
       font-size:15px;
+      outline:none;
     }
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    @media(max-width:800px){.row{grid-template-columns:1fr}}
-    .btn{
-      margin-top:10px;
-      padding:12px 14px;
-      border-radius:12px;
-      border:1px solid var(--stroke2);
-      background:rgba(255,255,255,.08);
-      color:var(--text);
-      font-weight:800;
-      cursor:pointer;
-    }
-    .out{
-      margin-top:14px;
-      padding:14px;
-      border-radius:14px;
-      background:#000;
+    input::placeholder{color:rgba(234,240,255,.35)}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(max-width:520px){.two{grid-template-columns:1fr}}
+
+    .big{
       border:1px solid var(--stroke);
+      border-radius:16px;
+      padding:16px;
+      background:rgba(0,0,0,.35);
     }
-    .big{font-size:26px;font-weight:900}
-    .note{font-size:12px;color:var(--muted);margin-top:6px}
+    .big .t{font-size:12px;color:var(--muted)}
+    .big .v{font-size:28px;font-weight:950;margin-top:6px}
+    .kv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    @media(max-width:520px){.kv{grid-template-columns:1fr}}
+
+    .note{margin-top:12px;font-size:12px;color:var(--muted);line-height:1.45}
     .warn{
-      margin-top:10px;
+      margin-top:12px;
+      border:1px solid rgba(255,214,110,.35);
+      background:rgba(255,214,110,.08);
+      border-radius:12px;
       padding:10px;
-      border-radius:10px;
-      border:1px solid rgba(255,214,110,.4);
-      background:rgba(255,214,110,.1);
+      font-size:12px;
       color:var(--warn);
+    }
+    .warnBad{
+      margin-top:10px;
+      border:1px solid rgba(255,124,124,.40);
+      background:rgba(255,124,124,.10);
+      border-radius:12px;
+      padding:10px;
+      font-size:12px;
+      color:var(--bad);
+    }
+
+    .tabs{
+      display:flex; gap:8px;
+      padding:6px;
+      border:1px solid var(--stroke);
+      border-radius:14px;
+      background:rgba(0,0,0,.30);
+      width:max-content;
+    }
+    .tab{
+      padding:8px 12px;
+      border-radius:12px;
+      border:1px solid transparent;
+      background:transparent;
+      color:var(--muted);
+      font-weight:900;
+      cursor:pointer;
+      font-size:13px;
+    }
+    .tab.active{
+      background:rgba(255,255,255,.10);
+      border-color:var(--stroke2);
+      color:var(--text);
+    }
+
+    .tvTop{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .tfRow{display:flex;gap:8px;flex-wrap:wrap}
+    .pill{
+      padding:8px 10px;border-radius:999px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.07);
+      color:var(--text);
+      font-size:12px;font-weight:900;cursor:pointer;user-select:none;
+    }
+    .pill:hover{background:rgba(255,255,255,.10)}
+    .pill.active{background:rgba(255,255,255,.14);border-color:var(--stroke2)}
+    .tvbox{height:560px;border-radius:16px;overflow:hidden}
+
+    .divider{height:1px;background:rgba(255,255,255,.10);margin:14px 0;border-radius:999px}
+
+    .kpiRow{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    @media(max-width:900px){.kpiRow{grid-template-columns:1fr 1fr}}
+    @media(max-width:520px){.kpiRow{grid-template-columns:1fr}}
+    .kpi{
+      border:1px solid var(--stroke);
+      border-radius:14px;
+      padding:10px 12px;
+      background:rgba(0,0,0,.22);
+    }
+    .kpi .k{font-size:12px;color:var(--muted);font-weight:950}
+    .kpi .v{margin-top:6px;font-size:18px;font-weight:950}
+
+    .stars{display:flex;gap:6px;align-items:center}
+    .star{
+      width:22px;height:22px;
+      display:inline-flex;align-items:center;justify-content:center;
+      border:1px solid var(--stroke);
+      border-radius:8px;
+      background:rgba(255,255,255,.06);
+      cursor:pointer;user-select:none;
+      font-weight:900;
+      color:rgba(234,240,255,.55);
+    }
+    .star.active{color:var(--text);background:rgba(255,255,255,.12);border-color:var(--stroke2)}
+
+    .pbGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    @media(max-width:900px){.pbGrid{grid-template-columns:1fr}}
+    .pbCard{
+      border:1px solid var(--stroke);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(0,0,0,.22);
+    }
+    .pbTitle{font-weight:950;font-size:13px;margin-bottom:8px}
+    .pbOpts{display:flex;flex-wrap:wrap;gap:8px}
+    .opt{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.05);
+      cursor:pointer;
+      user-select:none;
       font-size:12px;
     }
+    .opt input{width:14px;height:14px;margin:0}
+
+    .imgGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    @media(max-width:720px){.imgGrid{grid-template-columns:1fr}}
+    .imgSlot{
+      border:1px dashed rgba(255,255,255,.25);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(0,0,0,.20);
+      min-height:160px;
+      overflow:hidden;
+    }
+    .imgSlot.drag{border-color:rgba(124,255,178,.60);background:rgba(124,255,178,.06)}
+    .imgSlot .cap{font-size:12px;color:var(--muted);font-weight:950}
+    .imgSlot .help{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.35}
+    .imgSlot img{width:100%;border-radius:12px;margin-top:10px;display:block}
+    .imgActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .mini{
+      padding:8px 10px;border-radius:12px;border:1px solid var(--stroke2);
+      background:rgba(255,255,255,.06);color:var(--text);font-weight:900;cursor:pointer;font-size:12px
+    }
+
+    .toolsRow{display:flex;gap:8px;flex-wrap:wrap}
+    .tool{
+      padding:8px 10px;border-radius:12px;border:1px solid var(--stroke2);
+      background:rgba(255,255,255,.06);color:var(--text);font-weight:950;cursor:pointer;font-size:12px
+    }
+
+    .editor{
+      margin-top:10px;
+      border:1px solid var(--stroke2);
+      border-radius:16px;
+      background:rgba(0,0,0,.35);
+      padding:14px;
+      min-height:180px;
+      outline:none;
+      line-height:1.45;
+      overflow:auto;
+      white-space:pre-wrap;
+    }
+    .editor:empty:before{
+      content:attr(data-placeholder);
+      color:rgba(234,240,255,.35);
+    }
+
+    /* FX-only correlation box */
+    .corrBox{
+      margin-top:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.22);
+      border-radius:14px;
+      padding:12px;
+    }
+    .corrTitle{
+      font-weight:950;
+      font-size:12px;
+      color:rgba(234,240,255,.85);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .corrText{
+      margin-top:6px;
+      font-size:12px;
+      color:rgba(234,240,255,.65);
+      line-height:1.45;
+    }
+    .corrBtns{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .corrBtn{
+      padding:9px 11px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.22);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      font-weight:950;
+      cursor:pointer;
+      font-size:12px;
+    }
+    .corrBtn:hover{background:rgba(255,255,255,.10)}
+    .corrTiny{
+      margin-top:8px;
+      font-size:11px;
+      color:rgba(234,240,255,.50);
+    }
+
+    footer{
+      margin-top:16px;
+      color:rgba(234,240,255,.45);
+      font-size:12px;
+      display:flex;gap:10px;flex-wrap:wrap;
+    }
   </style>
+
+  <!-- PDF Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
 <body>
-<div class="wrap">
-  <section class="panel">
-    <h1>CONTRACTX Converter</h1>
-    <div class="note">Future → Prop Offset-Mapping (statisch, GitHub-Pages-ready)</div>
+  <div class="wrap">
+    <section class="panel">
 
-    <div class="row" style="margin-top:16px">
-      <div>
-        <label>Future Preis (TradingView)</label>
-        <input id="future" placeholder="z. B. 49308.25">
+      <div class="topbar">
+        <div class="brand" onclick="location.href='converter.html'" style="cursor:pointer">
+          <div class="logo"></div>
+          <div class="brandTxt">
+            <b>CONTRACTX</b>
+            <span>Futures Converter</span>
+          </div>
+        </div>
+        <div class="nav">
+          <a href="converter.html">Converter</a>
+          <a href="#how" id="navHow">How it works</a>
+          <a href="#about" id="navAbout">About</a>
+        </div>
       </div>
-      <div>
-        <label>Prop Preis (Mid)</label>
-        <input id="prop" placeholder="z. B. 49310.50">
+
+      <!-- LANDING -->
+      <div id="landing">
+        <div class="hero">
+          <div class="heroRow">
+            <div>
+              <h1>Convert futures to prop pricing.</h1>
+              <div class="sub">
+                Wähle dein Instrument. Dann gibst du <b>Future aktuell</b> + <b>Prop Mid</b> ein → CONTRACTX rechnet Entry/SL/TP sofort für die Propfirm.
+              </div>
+            </div>
+            <div class="heroBtns">
+              <button class="btn" type="button" onclick="goSymbol('ES')">Open Converter →</button>
+              <button class="btn" type="button" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">How it works</button>
+            </div>
+          </div>
+          <div class="chips">
+            <span class="chip">NY session ready</span>
+            <span class="chip">Offset-mapping</span>
+            <span class="chip">FX auto-invert (6C/6J/6S)</span>
+            <span class="chip">Journal + PDF</span>
+          </div>
+        </div>
+
+        <div class="sectionTitle">
+          <div>Indices</div>
+          <div class="sectionHint">Click to convert</div>
+        </div>
+        <div class="grid" id="gridIndices"></div>
+
+        <div class="sectionTitle" style="margin-top:18px">
+          <div>Metals & Energy</div>
+          <div class="sectionHint">Gold / Silver / Crude / Copper</div>
+        </div>
+        <div class="grid" id="gridMetals"></div>
+
+        <div class="sectionTitle" style="margin-top:18px">
+          <div>FX Majors (CME 6X)</div>
+          <div class="sectionHint">Auto-invert where needed (6C/6J/6S)</div>
+        </div>
+        <div class="grid" id="gridFx"></div>
+
+        <div id="how" style="margin-top:18px" class="card">
+          <b>How it works</b>
+          <div class="sub" style="margin-top:8px">
+            1) Du nimmst den aktuellen Preis aus TradingView (Future) und den Mid-Preis aus deiner Propfirm.<br>
+            2) CONTRACTX berechnet den Offset: <b>Prop − Future</b>.<br>
+            3) Entry/SL/TP auf Future-Basis werden automatisch auf Prop-Preise gemappt.<br>
+            4) Für FX-Paare (6X) bekommst du zusätzlich einen Hinweis zur Korrelation (Myfxbook-Link).
+          </div>
+        </div>
+
+        <div id="about" style="margin-top:12px" class="card">
+          <b>About</b>
+          <div class="sub" style="margin-top:8px">
+            CONTRACTX ist für schnelles Level-Mapping gedacht (Entry/SL/TP), nicht für Tick→Pip “Blind-Scaling”.
+          </div>
+        </div>
       </div>
-    </div>
 
-    <button class="btn" onclick="setOffset()">Offset setzen</button>
-    <div class="note">Offset (Prop − Future): <b id="offset">—</b></div>
+      <!-- CONVERTER -->
+      <div id="converter" class="hidden">
+        <div class="hero" style="margin-top:0">
+          <div class="heroRow">
+            <div>
+              <h1 id="convTitle">—</h1>
+              <div class="sub" id="convSub">—</div>
+            </div>
+            <div class="heroBtns">
+              <button class="btn" type="button" onclick="location.href='converter.html'">Back</button>
+              <button class="btn" type="button" onclick="document.getElementById('panelNotes').scrollIntoView({behavior:'smooth'})">Jump to journal</button>
+            </div>
+          </div>
+        </div>
 
-    <div class="row" style="margin-top:16px">
-      <div>
-        <label>Entry (Future)</label>
-        <input id="entry">
+        <div class="row">
+          <div class="card">
+            <div class="two">
+              <div>
+                <label>Broker</label>
+                <select id="broker">
+                  <option>CampusFund</option>
+                  <option>FTMO</option>
+                  <option>FundingPips</option>
+                </select>
+              </div>
+              <div>
+                <label>Mode</label>
+                <select id="mode">
+                  <option value="auto">Auto</option>
+                  <option value="fx">FX</option>
+                  <option value="offset">Offset</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="two" style="margin-top:10px">
+              <div>
+                <label>Future aktuell (TradingView)</label>
+                <input id="futureNow" inputmode="decimal" placeholder="z. B. 49308.45">
+              </div>
+              <div>
+                <label>Prop aktuell (Mid)</label>
+                <input id="propNow" inputmode="decimal" placeholder="z. B. 49310.65">
+              </div>
+            </div>
+
+            <button class="btn" id="setOffset" type="button">Set Offset</button>
+
+            <div class="note">
+              Offset (Prop − Future): <strong id="offsetVal">—</strong>
+            </div>
+
+            <div style="margin-top:14px">
+              <label>Trade-Plan (Future)</label>
+              <div class="two">
+                <div>
+                  <label style="margin-top:0">Entry</label>
+                  <input id="entryF" inputmode="decimal" placeholder="Entry (Future)">
+                </div>
+                <div>
+                  <label style="margin-top:0">SL</label>
+                  <input id="slF" inputmode="decimal" placeholder="SL (Future)">
+                </div>
+              </div>
+              <div style="margin-top:10px">
+                <label>TP</label>
+                <input id="tpF" inputmode="decimal" placeholder="TP (Future)">
+              </div>
+            </div>
+
+            <div class="note">Tipp: Prop Mid = (Bid + Ask) / 2.</div>
+          </div>
+
+          <div class="card">
+            <div class="big">
+              <div class="t">Prop Entry</div>
+              <div class="v" id="entryP">—</div>
+              <button class="btn" type="button" id="copyEntry">Copy Entry</button>
+            </div>
+
+            <div class="kv">
+              <div class="big">
+                <div class="t">Prop SL</div>
+                <div class="v" id="slP">—</div>
+                <button class="btn" type="button" id="copySL">Copy SL</button>
+              </div>
+              <div class="big">
+                <div class="t">Prop TP</div>
+                <div class="v" id="tpP">—</div>
+                <button class="btn" type="button" id="copyTP">Copy TP</button>
+              </div>
+            </div>
+
+            <div class="warn" id="invertHint" style="display:none">
+              ⚠️ Invertiertes FX-Pair: <strong>Future SHORT = FX LONG</strong> (und umgekehrt).
+            </div>
+
+            <div class="note" id="chartNote"></div>
+
+            <!-- FX Correlation hint (FX only) -->
+            <div class="corrBox" id="corrBox" style="display:none">
+              <div class="corrTitle">⚠️ Correlation Check</div>
+              <div class="corrText" id="corrText">Check correlations before you execute.</div>
+              <div class="corrBtns">
+                <button class="corrBtn" type="button" id="btnCorrOpen">Open Myfxbook Correlation</button>
+                <button class="corrBtn" type="button" id="btnCorrCopy">Copy reminder</button>
+              </div>
+              <div class="corrTiny" id="corrTiny"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+            <div class="tabs">
+              <button class="tab active" id="tabChart" type="button">Chart</button>
+              <button class="tab" id="tabNotes" type="button">Notes</button>
+            </div>
+            <div class="note" id="metaTop" style="margin:0"></div>
+          </div>
+
+          <div id="panelChart" style="margin-top:12px">
+            <div class="tvTop">
+              <div class="note" style="margin:0">Live Chart (TradingView)</div>
+              <div class="tfRow" id="tfRow">
+                <div class="pill active" data-tf="5">5m</div>
+                <div class="pill" data-tf="15">15m</div>
+                <div class="pill" data-tf="60">1h</div>
+                <div class="pill" data-tf="240">4h</div>
+                <div class="pill" data-tf="D">D</div>
+                <div class="pill" data-tf="W">W</div>
+                <div class="pill" data-tf="M">M</div>
+              </div>
+            </div>
+
+            <div class="tvbox" style="margin-top:10px">
+              <div class="tradingview-widget-container" style="height:100%;width:100%">
+                <div id="tv_chart" style="height:100%;width:100%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="panelNotes" class="hidden" style="margin-top:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+              <div>
+                <div style="font-weight:950">Journal</div>
+                <div class="note" style="margin-top:4px">Datum automatisch = heute (wenn leer).</div>
+              </div>
+              <div class="toolsRow">
+                <button class="tool" id="btnInsertBlock" type="button">Insert summary</button>
+                <button class="tool" id="btnSave" type="button">Save</button>
+                <button class="tool" id="btnClear" type="button">Clear</button>
+                <button class="tool" id="btnPdf" type="button">PDF</button>
+                <button class="tool" id="btnPrint" type="button">Print</button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="two">
+              <div>
+                <label>Datum</label>
+                <input id="jDate" placeholder="YYYY-MM-DD">
+              </div>
+              <div>
+                <label>Geplante Dauer</label>
+                <select id="jDuration">
+                  <option value="">—</option>
+                  <option value="swing">Swing</option>
+                  <option value="daytrading">Daytrading</option>
+                  <option value="globex">Globex</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="two" style="margin-top:10px">
+              <div>
+                <label>Bias / Plan</label>
+                <input id="jBias" placeholder="z. B. Short unter Vortages-High, Ziel EQ">
+              </div>
+              <div>
+                <label>Instrument / Broker</label>
+                <input id="jMeta" readonly>
+              </div>
+            </div>
+
+            <div class="two" style="margin-top:10px">
+              <div>
+                <label>Direction</label>
+                <select id="jDir">
+                  <option value="auto">Auto</option>
+                  <option value="long">Long</option>
+                  <option value="short">Short</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Risk $ (Geldbetrag)</label>
+                <input id="jRiskUsd" inputmode="decimal" placeholder="z. B. 450">
+              </div>
+            </div>
+
+            <div class="two" style="margin-top:10px">
+              <div>
+                <label>Rating</label>
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;
+                            padding:10px 12px;border:1px solid var(--stroke2);border-radius:14px;background:rgba(0,0,0,.35)">
+                  <div class="stars" id="stars"></div>
+                  <div class="pill" id="ratingText" style="color:var(--muted);font-weight:900">—</div>
+                </div>
+              </div>
+
+              <div>
+                <label>CRV (manuell / Playbook)</label>
+                <select id="jCrv">
+                  <option value="">—</option>
+                  <option>2:1</option>
+                  <option>3:1</option>
+                  <option>4:1</option>
+                  <option>4:1+</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="kpiRow">
+              <div class="kpi"><div class="k">Risk (R)</div><div class="v" id="kRiskCash">—</div></div>
+              <div class="kpi"><div class="k">Reward</div><div class="v" id="kRewardCash">—</div></div>
+              <div class="kpi"><div class="k">R-Multiple</div><div class="v" id="kRmult">—</div></div>
+              <div class="kpi"><div class="k">Offset</div><div class="v" id="kOffset">—</div></div>
+            </div>
+
+            <div class="warnBad" id="rewardWarn" style="display:none">
+              ❌ TP liegt „falschrum“ zum Setup → Reward ist negativ. Check Entry/SL/TP oder Direction.
+            </div>
+
+            <div class="warn" id="dirWarn" style="display:none">
+              ⚠️ Invertiertes FX-Pair: <strong>Future SHORT = FX LONG</strong> und umgekehrt.
+            </div>
+
+            <div class="divider"></div>
+
+            <div style="font-weight:950">Playbook (klickbar)</div>
+            <div class="pbGrid" id="pbGrid"></div>
+
+            <div class="divider"></div>
+
+            <div style="font-weight:950">Screenshots / Images (manuell)</div>
+            <div class="imgGrid" id="imgGrid"></div>
+
+            <div class="divider"></div>
+
+            <div style="font-weight:950">Free Notes (optional)</div>
+            <div id="editor" class="editor" contenteditable="true" spellcheck="false"
+                 data-placeholder="Optional. Wenn’s wichtig ist, schreib’s."></div>
+
+            <div class="note" id="jStatus"></div>
+          </div>
+        </div>
       </div>
-      <div>
-        <label>SL (Future)</label>
-        <input id="sl">
-      </div>
-    </div>
 
-    <div style="margin-top:10px">
-      <label>TP (Future)</label>
-      <input id="tp">
-    </div>
+      <footer>
+        <span>© 2026 CONTRACTX</span>
+        <span>•</span>
+        <span>Imprint</span>
+        <span>•</span>
+        <span>Privacy</span>
+      </footer>
 
-    <div class="out">
-      <div>Prop Entry</div>
-      <div class="big" id="pEntry">—</div>
-    </div>
-
-    <div class="row">
-      <div class="out">
-        <div>Prop SL</div>
-        <div class="big" id="pSL">—</div>
-      </div>
-      <div class="out">
-        <div>Prop TP</div>
-        <div class="big" id="pTP">—</div>
-      </div>
-    </div>
-
-    <div class="warn" id="warn" style="display:none">
-      ⚠️ Offset nicht gesetzt oder Eingaben unvollständig
-    </div>
-
-  </section>
-</div>
+    </section>
+  </div>
 
 <script>
-let OFFSET = null;
+/* ===================== DATA (NO NG ANYWHERE) ===================== */
+const ASSETS = {
+  indices: [
+    { sym:"ES", name:"S&P 500 E-mini", ex:"CME", tag:"Index" },
+    { sym:"NQ", name:"Nasdaq 100 E-mini", ex:"CME", tag:"Index" },
+    { sym:"YM", name:"Dow Jones Mini", ex:"CBOT", tag:"Index" },
+    { sym:"RTY", name:"Russell 2000 E-mini", ex:"CME", tag:"Index" },
+  ],
+  metalsEnergy: [
+    { sym:"GC", name:"Gold", ex:"COMEX", tag:"Metal" },
+    { sym:"SI", name:"Silver", ex:"COMEX", tag:"Metal" },
+    { sym:"CL", name:"Crude Oil", ex:"NYMEX", tag:"Energy" },
+    { sym:"HG", name:"Copper", ex:"COMEX", tag:"Metal" }, // ✅ COPPER
+  ],
+  fx: [
+    { sym:"6E", name:"Euro", ex:"CME", tag:"EUR/USD" },
+    { sym:"6B", name:"British Pound", ex:"CME", tag:"GBP/USD" },
+    { sym:"6A", name:"Australian Dollar", ex:"CME", tag:"AUD/USD" },
+    { sym:"6N", name:"New Zealand Dollar", ex:"CME", tag:"NZD/USD" },
+    { sym:"6C", name:"Canadian Dollar", ex:"CME", tag:"CAD/USD • Invert → USD/CAD" },
+    { sym:"6J", name:"Japanese Yen", ex:"CME", tag:"JPY/USD • Invert → USD/JPY" },
+    { sym:"6S", name:"Swiss Franc", ex:"CME", tag:"CHF/USD • Invert → USD/CHF" },
+  ]
+};
 
-function n(v){
-  if(!v) return NaN;
-  return Number(String(v).replace(",", "."));
+// TradingView Proxy symbols (embed-friendly)
+const TV_MAP = {
+  // Indices (proxy)
+  ES:"OANDA:SPX500USD",
+  NQ:"OANDA:NAS100USD",
+  YM:"OANDA:US30USD",
+  RTY:"OANDA:US2000USD",
+
+  // Metals / Energy (proxy)
+  GC:"TVC:GOLD",
+  SI:"TVC:SILVER",
+  CL:"TVC:USOIL",
+  HG:"TVC:COPPER", // ✅ COPPER
+
+  // FX (spot)
+  "6E":"FX:EURUSD",
+  "6B":"FX:GBPUSD",
+  "6A":"FX:AUDUSD",
+  "6N":"FX:NZDUSD",
+  "6C":"FX:USDCAD",
+  "6J":"FX:USDJPY",
+  "6S":"FX:USDCHF"
+};
+
+const FX_INVERTED = ["6C","6J","6S"];
+
+/* ===================== HELPERS ===================== */
+function goSymbol(sym){
+  const url = new URL(location.href);
+  url.searchParams.set("symbol", sym);
+  location.href = url.toString();
+}
+function qSym(){
+  const p = new URLSearchParams(location.search);
+  const raw = (p.get("symbol")||"").toUpperCase().trim();
+  return raw.replace(/[^A-Z0-9!]/g,"");
+}
+function normalizeSymbol(s){
+  if(!s) return "";
+  if(s.startsWith("6")) return s.slice(0,2);
+  if(s.length>=3 && ["RTY"].includes(s.slice(0,3))) return s.slice(0,3);
+  return s.slice(0,2);
+}
+function n(v){ if(v===undefined||v===null) return NaN; const s=String(v).replace(",", ".").trim(); if(!s) return NaN; return Number(s); }
+function isNum(x){ return Number.isFinite(x); }
+function fmt2(x){ return isNum(x) ? Number(x).toFixed(2) : "—"; }
+function money(x){
+  if(!isNum(x)) return "—";
+  const v = Number(x);
+  return (v < 0 ? "-$" : "$") + Math.abs(v).toFixed(2);
 }
 
-function setOffset(){
-  const f = n(document.getElementById("future").value);
-  const p = n(document.getElementById("prop").value);
-  if(!isFinite(f) || !isFinite(p)){
-    OFFSET = null;
-    document.getElementById("offset").textContent = "—";
+/* ===================== LANDING RENDER ===================== */
+function renderGrid(el, arr){
+  el.innerHTML = "";
+  arr.forEach(a=>{
+    const d = document.createElement("div");
+    d.className = "asset";
+    d.onclick = ()=>goSymbol(a.sym);
+    d.innerHTML = `
+      <div class="aCode">${a.sym}</div>
+      <div class="aName">${a.name}</div>
+      <div class="tags">
+        <span class="tag">${a.ex}</span>
+        <span class="tag">${a.tag}</span>
+      </div>
+    `;
+    el.appendChild(d);
+  });
+}
+
+/* ===================== CONVERTER + JOURNAL ===================== */
+let sym = "";
+let tvSymbol = "";
+let isInverted = false;
+let tvInterval = "5";
+let offset = NaN;
+
+function brokerVal(){ return document.getElementById("broker")?.value || "Broker"; }
+
+function setMeta(){
+  const meta = `${sym} • ${brokerVal()} • Chart: ${tvSymbol}`;
+  document.getElementById("jMeta").value = meta;
+  document.getElementById("metaTop").textContent = meta;
+}
+
+function setTab(which){
+  const chart = which === "chart";
+  document.getElementById("tabChart").classList.toggle("active", chart);
+  document.getElementById("tabNotes").classList.toggle("active", !chart);
+  document.getElementById("panelChart").classList.toggle("hidden", !chart);
+  document.getElementById("panelNotes").classList.toggle("hidden", chart);
+}
+
+/* TradingView embed */
+function renderTV(){
+  const container = document.getElementById("tv_chart");
+  container.innerHTML = "";
+  const script = document.createElement("script");
+  script.type = "text/javascript";
+  script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+  script.async = true;
+  script.textContent = JSON.stringify({
+    autosize:true,
+    symbol:tvSymbol,
+    interval:tvInterval,
+    timezone:"Europe/Berlin",
+    theme:"dark",
+    style:"1",
+    locale:"en",
+    allow_symbol_change:false,
+    calendar:false,
+    hide_top_toolbar:false,
+    hide_legend:false,
+    support_host:"https://www.tradingview.com"
+  });
+  container.appendChild(script);
+}
+function setTF(tf){
+  tvInterval = tf;
+  document.querySelectorAll("#tfRow .pill").forEach(p=>{
+    p.classList.toggle("active", p.getAttribute("data-tf") === tf);
+  });
+  renderTV();
+}
+
+/* FX-only correlation box */
+function isFxPair(){ return tvSymbol.startsWith("FX:"); }
+function fxPairFromTvSymbol(){
+  if(!isFxPair()) return null;
+  return tvSymbol.split(":")[1] || null;
+}
+function myfxbookCorrUrl(){
+  const pair = fxPairFromTvSymbol();
+  if(!pair) return "https://www.myfxbook.com/forex-market/correlation";
+  return `https://www.myfxbook.com/forex-market/correlation/${pair}`;
+}
+function typicalCorrHint(pair){
+  if(!pair) return "";
+  const p = pair.toUpperCase();
+  if(p === "EURUSD") return "Typical: + GBPUSD, AUDUSD • − USDCHF, USDCAD";
+  if(p === "GBPUSD") return "Typical: + EURUSD, AUDUSD • − USDCHF, USDCAD";
+  if(p === "AUDUSD") return "Typical: + NZDUSD, EURUSD • − USDJPY (regime-dependent)";
+  if(p === "NZDUSD") return "Typical: + AUDUSD • − USDJPY (regime-dependent)";
+  if(p === "USDCAD") return "Typical: + USDCHF • − EURUSD, GBPUSD (watch Oil)";
+  if(p === "USDCHF") return "Typical: + USDCAD • − EURUSD, GBPUSD";
+  if(p === "USDJPY") return "Typical: + USDCHF • − AUDUSD/NZDUSD (risk regime dependent)";
+  return "Typical correlations change by regime — always verify.";
+}
+function setupCorrelationBox(){
+  const box = document.getElementById("corrBox");
+  if(!box) return;
+  if(!isFxPair()){
+    box.style.display = "none";
     return;
   }
-  OFFSET = p - f;
-  document.getElementById("offset").textContent = OFFSET.toFixed(2);
-  calc();
+  const pair = fxPairFromTvSymbol();
+  const url = myfxbookCorrUrl();
+  box.style.display = "block";
+  document.getElementById("corrText").textContent =
+    `Before executing, check correlations for ${pair || "this FX pair"}.`;
+  document.getElementById("corrTiny").textContent = typicalCorrHint(pair);
+  document.getElementById("btnCorrOpen").onclick = ()=>window.open(url, "_blank");
+  document.getElementById("btnCorrCopy").onclick = async ()=>{
+    const msg = `Correlation check: ${pair || "FX"} — open: ${url}`;
+    try{ await navigator.clipboard.writeText(msg); }catch{}
+  };
 }
 
-function calc(){
-  if(OFFSET === null){
-    document.getElementById("warn").style.display="block";
+/* Converter math */
+function calcProp(){
+  const e = n(document.getElementById("entryF").value);
+  const s = n(document.getElementById("slF").value);
+  const tp = n(document.getElementById("tpF").value);
+
+  if(!isNum(offset)){
+    document.getElementById("entryP").textContent = "—";
+    document.getElementById("slP").textContent = "—";
+    document.getElementById("tpP").textContent = "—";
+    updateKPIs();
     return;
   }
-  document.getElementById("warn").style.display="none";
-
-  const e = n(entry.value);
-  const s = n(sl.value);
-  const t = n(tp.value);
-
-  document.getElementById("pEntry").textContent =
-    isFinite(e) ? (e + OFFSET).toFixed(2) : "—";
-  document.getElementById("pSL").textContent =
-    isFinite(s) ? (s + OFFSET).toFixed(2) : "—";
-  document.getElementById("pTP").textContent =
-    isFinite(t) ? (t + OFFSET).toFixed(2) : "—";
+  document.getElementById("entryP").textContent = isNum(e) ? fmt2(e + offset) : "—";
+  document.getElementById("slP").textContent    = isNum(s) ? fmt2(s + offset) : "—";
+  document.getElementById("tpP").textContent    = isNum(tp)? fmt2(tp+ offset) : "—";
+  updateKPIs();
 }
 
-["entry","sl","tp"].forEach(id=>{
-  document.getElementById(id).addEventListener("input", calc);
-});
+async function copyVal(v){ if(!v || v === "—") return; try{ await navigator.clipboard.writeText(v);}catch{} }
+
+/* Journal / KPIs */
+function detectDirectionFromEntrySL(){
+  const e = n(document.getElementById("entryF").value);
+  const s = n(document.getElementById("slF").value);
+  if(!isNum(e) || !isNum(s) || e === s) return null;
+  return (s < e) ? "long" : "short";
+}
+function getDirection(){
+  const sel = document.getElementById("jDir").value;
+  if(sel !== "auto") return sel;
+  return detectDirectionFromEntrySL() || "auto";
+}
+function updateKPIs(){
+  const e = n(document.getElementById("entryF").value);
+  const s = n(document.getElementById("slF").value);
+  const tp = n(document.getElementById("tpF").value);
+  const dir = getDirection();
+
+  let riskPts = NaN;
+  if(isNum(e) && isNum(s) && e !== s) riskPts = Math.abs(e - s);
+
+  let rewardPtsSigned = NaN;
+  if(isNum(e) && isNum(tp)){
+    if(dir === "long") rewardPtsSigned = tp - e;
+    else if(dir === "short") rewardPtsSigned = e - tp;
+  }
+
+  let rmult = NaN;
+  if(isNum(riskPts) && riskPts > 0 && isNum(rewardPtsSigned)){
+    rmult = rewardPtsSigned / riskPts;
+  }
+
+  const riskCashInput = n(document.getElementById("jRiskUsd").value);
+  const riskCash = isNum(riskCashInput) ? Math.abs(riskCashInput) : NaN;
+  const rewardCash = (isNum(riskCash) && isNum(rmult)) ? (riskCash * rmult) : NaN;
+
+  document.getElementById("kRiskCash").textContent = isNum(riskCash) ? money(riskCash) : "—";
+  document.getElementById("kRewardCash").textContent = isNum(rewardCash) ? money(rewardCash) : "—";
+  document.getElementById("kRmult").textContent = isNum(rmult) ? (rmult.toFixed(2) + "R") : "—";
+  document.getElementById("kOffset").textContent = fmt2(isNum(offset) ? offset : NaN);
+
+  document.getElementById("rewardWarn").style.display = (isNum(rmult) && rmult < 0) ? "block" : "none";
+  document.getElementById("dirWarn").style.display = isInverted ? "block" : "none";
+}
+
+/* Playbook */
+const PLAYBOOK = [
+  { id:"pb_pos_htf", title:"1) Position im HTF", opts:["sehr teuer","teuer","Gleichgewicht","günstig","sehr günstig"] },
+  { id:"pb_trend_htf", title:"2) HTF Trend", opts:["long","short","seitwärts"] },
+  { id:"pb_ltf_entry", title:"3) Einstieg auf dem LTF gefunden?", opts:["ja","nein"] },
+  { id:"pb_leave_htf", title:"4a) Zone im HTF verlassen", opts:["explosiv","entschlossen","unentschlossen"] },
+  { id:"pb_leave_ltf", title:"4b) Zone im LTF verlassen", opts:["explosiv","entschlossen","unentschlossen"] },
+  { id:"pb_base", title:"5) Kerzen in der Basis", opts:["0-3","3-5","6+"] },
+  { id:"pb_original", title:"6) Originalität", opts:["ja","nein"] },
+  { id:"pb_flip", title:"7) Flipzone", opts:["ja","nein"] },
+  { id:"pb_crv", title:"8) CRV", opts:["2:1","3:1","4:1","4:1+"] },
+  { id:"pb_tested_ext", title:"9) Erweiterte Version getestet?", opts:["ja","nein","ja, aber weniger als 25%"] },
+  { id:"pb_into_zone", title:"10) Markt kommt in die Zone", opts:["explosiv","steil","stufenartig"] },
+  { id:"pb_twin", title:"11) Zwillingszone", opts:["ja","nein"] },
+  { id:"pb_form", title:"12) Formation", opts:["ABA","ABF","FBF","FBA"] },
+  { id:"pb_idea", title:"13) Tradeidee", opts:["meine eigene","Mentorentrade"] },
+];
+const pbState = {};
+function renderPlaybook(){
+  const grid = document.getElementById("pbGrid");
+  grid.innerHTML = "";
+  PLAYBOOK.forEach(item=>{
+    const card = document.createElement("div");
+    card.className = "pbCard";
+    card.innerHTML = `<div class="pbTitle">${item.title}</div>`;
+    const opts = document.createElement("div");
+    opts.className = "pbOpts";
+
+    item.opts.forEach(opt=>{
+      const lab = document.createElement("label");
+      lab.className = "opt";
+      const rb = document.createElement("input");
+      rb.type = "radio";
+      rb.name = item.id;
+      rb.value = opt;
+      rb.checked = (pbState[item.id] === opt);
+      rb.addEventListener("change", ()=>{
+        pbState[item.id] = opt;
+        if(item.id === "pb_crv") document.getElementById("jCrv").value = opt;
+        autoSave(true);
+      });
+      lab.appendChild(rb);
+      lab.appendChild(document.createTextNode(opt));
+      opts.appendChild(lab);
+    });
+
+    card.appendChild(opts);
+    grid.appendChild(card);
+  });
+}
+
+/* Images */
+const IMG_SLOTS = [
+  {id:"imgMN", label:"Monthly screenshot"},
+  {id:"imgW",  label:"Weekly screenshot"},
+  {id:"imgD",  label:"Daily screenshot"},
+  {id:"img4H", label:"4H screenshot"},
+  {id:"img1H", label:"1H screenshot"},
+  {id:"img15", label:"15m screenshot"},
+  {id:"img5",  label:"5m screenshot"},
+];
+const images = {};
+
+async function compressImageToDataURL(file, maxDim=1400, quality=0.82){
+  const blobURL = URL.createObjectURL(file);
+  const img = await new Promise((res, rej)=>{
+    const im = new Image();
+    im.onload = ()=>res(im);
+    im.onerror = rej;
+    im.src = blobURL;
+  });
+  const w = img.naturalWidth || img.width;
+  const h = img.naturalHeight || img.height;
+  let nw=w, nh=h;
+  if(Math.max(w,h)>maxDim){
+    const scale=maxDim/Math.max(w,h);
+    nw=Math.round(w*scale); nh=Math.round(h*scale);
+  }
+  const canvas=document.createElement("canvas");
+  canvas.width=nw; canvas.height=nh;
+  const ctx=canvas.getContext("2d");
+  ctx.drawImage(img,0,0,nw,nh);
+  URL.revokeObjectURL(blobURL);
+  return canvas.toDataURL("image/jpeg", quality);
+}
+
+function renderImages(){
+  const grid = document.getElementById("imgGrid");
+  grid.innerHTML = "";
+  IMG_SLOTS.forEach(slot=>{
+    const box=document.createElement("div");
+    box.className="imgSlot";
+    box.innerHTML = `
+      <div class="cap">${slot.label}</div>
+      <div class="help">${images[slot.id] ? "Saved ✓" : "Drop image here oder Upload."}</div>
+      <div class="imgActions"></div>
+    `;
+    const actions = box.querySelector(".imgActions");
+
+    const inp=document.createElement("input");
+    inp.type="file"; inp.accept="image/*"; inp.style.display="none";
+
+    const up=document.createElement("button");
+    up.type="button"; up.className="mini"; up.textContent="Upload";
+    up.onclick = ()=>inp.click();
+
+    const clr=document.createElement("button");
+    clr.type="button"; clr.className="mini"; clr.textContent="Clear";
+    clr.onclick = ()=>{
+      delete images[slot.id];
+      renderImages();
+      autoSave(true);
+    };
+
+    actions.appendChild(up);
+    actions.appendChild(clr);
+    box.appendChild(inp);
+
+    inp.addEventListener("change", async ()=>{
+      const f=inp.files && inp.files[0];
+      if(!f) return;
+      const data=await compressImageToDataURL(f,1400,0.82);
+      images[slot.id]=data;
+      renderImages();
+      autoSave(true);
+    });
+
+    box.addEventListener("dragover", (e)=>{e.preventDefault(); box.classList.add("drag");});
+    box.addEventListener("dragleave", ()=>box.classList.remove("drag"));
+    box.addEventListener("drop", async (e)=>{
+      e.preventDefault(); box.classList.remove("drag");
+      const f=e.dataTransfer.files && e.dataTransfer.files[0];
+      if(!f || !f.type.startsWith("image/")) return;
+      const data=await compressImageToDataURL(f,1400,0.82);
+      images[slot.id]=data;
+      renderImages();
+      autoSave(true);
+    });
+
+    if(images[slot.id]){
+      const im=document.createElement("img");
+      im.src=images[slot.id];
+      box.appendChild(im);
+    }
+    grid.appendChild(box);
+  });
+}
+
+/* Storage */
+const editor = ()=>document.getElementById("editor");
+function storageKey(){ return `contractx.journal.v7.${brokerVal()}.${sym}`; }
+
+function todayISO(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const da= String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${da}`;
+}
+
+function computeSummary(){
+  const e=n(document.getElementById("entryF").value);
+  const s=n(document.getElementById("slF").value);
+  const tp=n(document.getElementById("tpF").value);
+  const dir=getDirection();
+
+  const riskPts=(isNum(e)&&isNum(s)&&e!==s)?Math.abs(e-s):NaN;
+
+  let rewardPtsSigned=NaN;
+  if(isNum(e)&&isNum(tp)){
+    if(dir==="long") rewardPtsSigned = tp - e;
+    else if(dir==="short") rewardPtsSigned = e - tp;
+  }
+
+  const rmult=(isNum(riskPts)&&riskPts>0&&isNum(rewardPtsSigned))?(rewardPtsSigned/riskPts):NaN;
+
+  const riskCashInput=n(document.getElementById("jRiskUsd").value);
+  const riskCash=isNum(riskCashInput)?Math.abs(riskCashInput):NaN;
+  const rewardCash=(isNum(riskCash)&&isNum(rmult))?(riskCash*rmult):NaN;
+
+  return {
+    direction:dir,
+    rmult:isNum(rmult)?rmult:null,
+    offset:isNum(offset)?offset:null,
+    riskCash:isNum(riskCash)?riskCash:null,
+    rewardCash:isNum(rewardCash)?rewardCash:null,
+    duration:document.getElementById("jDuration").value || "",
+    crv:document.getElementById("jCrv").value || (pbState["pb_crv"]||""),
+    prop:{
+      entry:document.getElementById("entryP").textContent||"—",
+      sl:document.getElementById("slP").textContent||"—",
+      tp:document.getElementById("tpP").textContent||"—",
+    }
+  };
+}
+
+let saveTimer=null;
+function autoSave(silent=true){
+  if(saveTimer) clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>save(silent), 350);
+}
+
+function save(silent=false){
+  const payload={
+    ts:Date.now(),
+    date:document.getElementById("jDate").value.trim(),
+    duration:document.getElementById("jDuration").value || "",
+    bias:document.getElementById("jBias").value.trim(),
+    dir:document.getElementById("jDir").value,
+    riskCash:document.getElementById("jRiskUsd").value.trim(),
+    crv:document.getElementById("jCrv").value || "",
+    rating:window.__rating || 0,
+    playbook:pbState,
+    text:editor().innerText||"",
+    images,
+    offset:isNum(offset)?offset:null,
+    computed:computeSummary()
+  };
+  localStorage.setItem(storageKey(), JSON.stringify(payload));
+  document.getElementById("jStatus").textContent = silent ? "Autosaved ✓" : "Saved ✓";
+}
+
+function loadJournal(){
+  setMeta();
+  setupCorrelationBox();
+  updateKPIs();
+
+  const raw=localStorage.getItem(storageKey());
+  if(!raw){
+    const el = document.getElementById("jDate");
+    if(!el.value) el.value = todayISO();
+    document.getElementById("jStatus").textContent="No saved journal yet.";
+    return;
+  }
+  try{
+    const d=JSON.parse(raw);
+    document.getElementById("jDate").value = d.date || todayISO();
+    document.getElementById("jDuration").value = d.duration || "";
+    document.getElementById("jBias").value = d.bias || "";
+    document.getElementById("jDir").value = d.dir || "auto";
+    document.getElementById("jRiskUsd").value = d.riskCash || "";
+    document.getElementById("jCrv").value = d.crv || "";
+
+    // rating
+    window.__rating = d.rating || 0;
+    renderStars();
+
+    // playbook
+    for(const k in pbState) delete pbState[k];
+    if(d.playbook){ for(const k in d.playbook) pbState[k]=d.playbook[k]; }
+    if(document.getElementById("jCrv").value) pbState["pb_crv"]=document.getElementById("jCrv").value;
+    renderPlaybook();
+
+    // notes
+    editor().textContent = d.text || "";
+
+    // images
+    for(const k in images) delete images[k];
+    if(d.images){ for(const k in d.images) images[k]=d.images[k]; }
+    renderImages();
+
+    // offset
+    if(typeof d.offset==="number" && isNum(d.offset)){
+      offset=d.offset;
+      document.getElementById("offsetVal").textContent=fmt2(offset);
+    }
+
+    document.getElementById("jStatus").textContent =
+      `Loaded ✓ (${new Date(d.ts || Date.now()).toLocaleString()})`;
+  }catch{
+    document.getElementById("jStatus").textContent="Load failed (invalid storage).";
+    const el = document.getElementById("jDate");
+    if(!el.value) el.value = todayISO();
+  }
+}
+
+function clearAll(){
+  localStorage.removeItem(storageKey());
+  document.getElementById("jDate").value = todayISO();
+  document.getElementById("jDuration").value = "";
+  document.getElementById("jBias").value = "";
+  document.getElementById("jDir").value = "auto";
+  document.getElementById("jRiskUsd").value = "";
+  document.getElementById("jCrv").value = "";
+  editor().textContent = "";
+
+  window.__rating = 0; renderStars();
+
+  for(const k in pbState) delete pbState[k];
+  renderPlaybook();
+
+  for(const k in images) delete images[k];
+  renderImages();
+
+  document.getElementById("jStatus").textContent = "Cleared.";
+  updateKPIs();
+}
+
+function insertSummary(){
+  const sum=computeSummary();
+  const date=document.getElementById("jDate").value.trim() || todayISO();
+  const duration=document.getElementById("jDuration").value || "-";
+  const bias=document.getElementById("jBias").value.trim() || "-";
+  const dir=sum.direction || "auto";
+  const rtxt=sum.rmult!=null?sum.rmult.toFixed(2)+"R":"—";
+  const off=sum.offset!=null?fmt2(sum.offset):"—";
+  const cashRisk=sum.riskCash!=null?money(sum.riskCash):"—";
+  const cashReward=sum.rewardCash!=null?money(sum.rewardCash):"—";
+  const inv=isInverted ? " (INVERTED FX: Future short = FX long)" : "";
+
+  const pbLines=PLAYBOOK.map(it=>{
+    const v=pbState[it.id] || "—";
+    return `- ${it.title.replace(/^\d+\)\s*/,'')}: ${v}`;
+  }).join("\n");
+
+  const block =
+`=== CONTRACTX SUMMARY ===
+Instrument: ${sym} • Broker: ${brokerVal()}${inv}
+Date: ${date}
+Planned duration: ${duration}
+Bias/Plan: ${bias}
+Direction: ${dir}
+Risk$: ${cashRisk} • Reward$: ${cashReward} • R: ${rtxt}
+Offset (Prop−Future): ${off}
+Prop Entry/SL/TP: ${sum.prop.entry} / ${sum.prop.sl} / ${sum.prop.tp}
+
+Playbook:
+${pbLines}
+`;
+
+  const cur=editor().innerText || "";
+  editor().textContent = (cur ? (cur + "\n\n") : "") + block;
+  autoSave(true);
+}
+
+function exportPDF(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:"pt", format:"a4" });
+  const margin=46, pageW=595, pageH=842;
+  let y=56;
+
+  const sum=computeSummary();
+  const date=document.getElementById("jDate").value.trim() || todayISO();
+  const duration=document.getElementById("jDuration").value || "-";
+  const bias=document.getElementById("jBias").value.trim() || "-";
+  const notesText=(editor().innerText||"").trim() || "-";
+
+  doc.setFont("helvetica","bold"); doc.setFontSize(18);
+  doc.text("CONTRACTX — Journal", margin, y);
+
+  y+=22;
+  doc.setFont("helvetica","normal"); doc.setFontSize(11);
+  doc.text(`Instrument: ${sym}`, margin, y); y+=16;
+  doc.text(`Broker: ${brokerVal()}`, margin, y); y+=16;
+  doc.text(`Chart Proxy: ${tvSymbol}`, margin, y); y+=16;
+
+  y+=8;
+  doc.setFont("helvetica","bold"); doc.text("Trade Data", margin, y); y+=16;
+  doc.setFont("helvetica","normal");
+
+  const off=sum.offset!=null?fmt2(sum.offset):"—";
+  const rmult=sum.rmult!=null?(sum.rmult.toFixed(2)+"R"):"—";
+  const cashRisk=sum.riskCash!=null?money(sum.riskCash):"—";
+  const cashReward=sum.rewardCash!=null?money(sum.rewardCash):"—";
+
+  doc.text(`Date: ${date}`, margin, y); y+=16;
+  doc.text(`Planned duration: ${duration}`, margin, y); y+=16;
+  doc.text(`Bias/Plan: ${bias}`, margin, y); y+=16;
+  doc.text(`Direction: ${sum.direction || "-"}`, margin, y); y+=16;
+  doc.text(`Risk$: ${cashRisk}    Reward$: ${cashReward}    R: ${rmult}`, margin, y); y+=16;
+  doc.text(`Offset (Prop−Future): ${off}`, margin, y); y+=16;
+  doc.text(`Prop Entry/SL/TP: ${sum.prop.entry} / ${sum.prop.sl} / ${sum.prop.tp}`, margin, y); y+=18;
+
+  if(isInverted){
+    doc.setFont("helvetica","bold");
+    doc.text("INVERTED FX: Future short = FX long (und umgekehrt).", margin, y);
+    doc.setFont("helvetica","normal");
+    y+=18;
+  }
+  if(sum.rmult!=null && sum.rmult < 0){
+    doc.setFont("helvetica","bold");
+    doc.text("WARNING: Reward is negative (TP wrong side vs setup).", margin, y);
+    doc.setFont("helvetica","normal");
+    y+=18;
+  }
+
+  y+=6;
+  doc.setFont("helvetica","bold"); doc.text("Playbook", margin, y); y+=16;
+  doc.setFont("helvetica","normal");
+  const pbText = PLAYBOOK.map(it=>{
+    const v = pbState[it.id] || "-";
+    return `${it.title.replace(/^\d+\)\s*/,'')}: ${v}`;
+  }).join("\n");
+  const maxWidth=pageW - margin*2;
+  const pbLines = doc.splitTextToSize(pbText, maxWidth);
+  doc.text(pbLines, margin, y);
+  y += 12 * pbLines.length + 16;
+
+  y+=6;
+  doc.setFont("helvetica","bold"); doc.text("Notes", margin, y); y+=16;
+  doc.setFont("helvetica","normal");
+  const noteLines = doc.splitTextToSize(notesText, maxWidth);
+  doc.text(noteLines, margin, y);
+  y += 12 * noteLines.length + 16;
+
+  const imgs = IMG_SLOTS.map(s=>({label:s.label, data:images[s.id]})).filter(x=>!!x.data);
+  for(const im of imgs){
+    if(y > pageH - 220){ doc.addPage(); y=56; }
+    doc.setFont("helvetica","bold"); doc.setFontSize(12);
+    doc.text(im.label, margin, y); y+=10;
+    const imgW = pageW - margin*2, imgH=320;
+    try{ doc.addImage(im.data, "JPEG", margin, y, imgW, imgH); y += imgH + 16; }
+    catch{ doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.text("(Image could not be embedded)", margin, y); y+=16; }
+  }
+
+  doc.save(`contractx-${sym}-${brokerVal()}-${date}.pdf`);
+}
+
+function printNote(){
+  const sum=computeSummary();
+  const date=document.getElementById("jDate").value.trim() || todayISO();
+  const duration=document.getElementById("jDuration").value || "-";
+  const bias=document.getElementById("jBias").value.trim() || "-";
+  const notesText=(editor().innerText||"").trim() || "-";
+  const esc = (s)=>String(s).replace(/[<>]/g, c => ({'<':'&lt;','>':'&gt;'}[c]));
+
+  const pbHtml = PLAYBOOK.map(it=>{
+    const v=pbState[it.id] || "-";
+    return `<div><b>${esc(it.title.replace(/^\d+\)\s*/,''))}:</b> ${esc(v)}</div>`;
+  }).join("");
+
+  const imgs = IMG_SLOTS.map(s=>({label:s.label, data:images[s.id]})).filter(x=>!!x.data);
+  const imgHtml = imgs.map(x=>`
+    <div class="box">
+      <b>${esc(x.label)}</b><br>
+      <img src="${x.data}" style="width:100%;border-radius:10px;margin-top:10px" />
+    </div>
+  `).join("");
+
+  const html = `
+    <html><head><meta charset="utf-8">
+      <title>CONTRACTX Journal</title>
+      <style>
+        body{font-family:Arial,Helvetica,sans-serif;padding:24px;background:#fff;color:#111;}
+        h1{margin:0 0 10px;}
+        .muted{color:#666;font-size:12px;}
+        .box{border:1px solid #ddd;border-radius:10px;padding:14px;margin-top:12px;}
+        pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;}
+        .bad{border:1px solid #ff7c7c;background:#ffecec;border-radius:10px;padding:10px;margin-top:10px;}
+      </style>
+    </head><body>
+      <h1>CONTRACTX — Journal</h1>
+      <div class="muted">Instrument: ${esc(sym)} • Broker: ${esc(brokerVal())} • Chart: ${esc(tvSymbol)}</div>
+
+      <div class="box">
+        <b>Trade Data</b><br>
+        Date: ${esc(date)}<br>
+        Planned duration: ${esc(duration)}<br>
+        Bias/Plan: ${esc(bias)}<br>
+        Direction: ${esc(sum.direction || "-")}<br>
+        Risk$: ${esc(sum.riskCash!=null?money(sum.riskCash):"—")}<br>
+        Reward$: ${esc(sum.rewardCash!=null?money(sum.rewardCash):"—")}<br>
+        R: ${esc(sum.rmult!=null?(sum.rmult.toFixed(2)+"R"):"—")}<br>
+        Offset (Prop−Future): ${esc(sum.offset!=null?sum.offset.toFixed(2):"—")}<br>
+        Prop Entry/SL/TP: ${esc(sum.prop.entry)} / ${esc(sum.prop.sl)} / ${esc(sum.prop.tp)}<br>
+        ${isInverted ? "<br><b>INVERTED FX:</b> Future short = FX long (und umgekehrt)." : ""}
+      </div>
+
+      ${ (sum.rmult!=null && sum.rmult < 0) ? `<div class="bad"><b>WARNING:</b> Reward is negative (TP wrong side vs setup).</div>` : ""}
+
+      <div class="box"><b>Playbook</b><br>${pbHtml}</div>
+
+      <div class="box">
+        <b>Notes</b>
+        <pre>${esc(notesText)}</pre>
+      </div>
+
+      ${imgHtml}
+      <script>window.onload=()=>window.print();<\/script>
+    </body></html>
+  `;
+
+  const w = window.open("", "_blank");
+  if(!w) return;
+  w.document.open(); w.document.write(html); w.document.close();
+}
+
+/* Rating */
+function renderStars(){
+  const wrap = document.getElementById("stars");
+  wrap.innerHTML = "";
+  const rating = window.__rating || 0;
+  for(let i=1;i<=5;i++){
+    const s=document.createElement("div");
+    s.className="star"+(i<=rating?" active":"");
+    s.textContent="★";
+    s.onclick=()=>{
+      window.__rating = i;
+      document.getElementById("ratingText").textContent = i+"/5";
+      renderStars();
+      autoSave(true);
+    };
+    wrap.appendChild(s);
+  }
+  document.getElementById("ratingText").textContent = (rating ? rating+"/5" : "—");
+}
+
+/* ===================== INIT ===================== */
+(function init(){
+  // landing grids
+  renderGrid(document.getElementById("gridIndices"), ASSETS.indices);
+  renderGrid(document.getElementById("gridMetals"), ASSETS.metalsEnergy);
+  renderGrid(document.getElementById("gridFx"), ASSETS.fx);
+
+  // if no symbol -> show landing
+  const raw = qSym();
+  if(!raw){
+    document.getElementById("landing").classList.remove("hidden");
+    document.getElementById("converter").classList.add("hidden");
+    return;
+  }
+
+  // show converter
+  document.getElementById("landing").classList.add("hidden");
+  document.getElementById("converter").classList.remove("hidden");
+
+  sym = normalizeSymbol(raw);
+  tvSymbol = TV_MAP[sym] || "OANDA:SPX500USD";
+  isInverted = FX_INVERTED.includes(sym);
+
+  // title/sub
+  const all = [...ASSETS.indices, ...ASSETS.metalsEnergy, ...ASSETS.fx];
+  const meta = all.find(x=>x.sym===sym);
+  document.getElementById("convTitle").textContent = `${sym} — ${meta ? meta.name : "Instrument"}`;
+  document.getElementById("convSub").textContent = isFxPair()
+    ? "FX wird mathematisch konvertiert (inkl. Inversion bei 6C/6J/6S)."
+    : "Indices/Metals/Energy werden per Offset (Prop−Future) kalibriert.";
+
+  document.getElementById("chartNote").textContent = `Chart: ${tvSymbol} (Proxy).`;
+  document.getElementById("invertHint").style.display = isInverted ? "block" : "none";
+
+  // tabs
+  document.getElementById("tabChart").onclick = ()=>setTab("chart");
+  document.getElementById("tabNotes").onclick = ()=>setTab("notes");
+
+  // timeframes
+  document.querySelectorAll("#tfRow .pill").forEach(p=>{
+    p.addEventListener("click", ()=>setTF(p.getAttribute("data-tf")));
+  });
+
+  // TV
+  renderTV();
+
+  // converter listeners
+  document.getElementById("setOffset").addEventListener("click", ()=>{
+    const f = n(document.getElementById("futureNow").value);
+    const p = n(document.getElementById("propNow").value);
+    if(isNum(f) && isNum(p)){
+      offset = p - f;
+      document.getElementById("offsetVal").textContent = fmt2(offset);
+      calcProp();
+      autoSave(true);
+    }
+  });
+
+  ["futureNow","propNow","entryF","slF","tpF"].forEach(id=>{
+    document.getElementById(id).addEventListener("input", ()=>{
+      calcProp();
+      autoSave(true);
+    });
+  });
+
+  document.getElementById("copyEntry").onclick = ()=>copyVal(document.getElementById("entryP").textContent);
+  document.getElementById("copySL").onclick = ()=>copyVal(document.getElementById("slP").textContent);
+  document.getElementById("copyTP").onclick = ()=>copyVal(document.getElementById("tpP").textContent);
+
+  // journal buttons
+  document.getElementById("btnInsertBlock").onclick = insertSummary;
+  document.getElementById("btnSave").onclick = ()=>save(false);
+  document.getElementById("btnClear").onclick = clearAll;
+  document.getElementById("btnPdf").onclick = exportPDF;
+  document.getElementById("btnPrint").onclick = printNote;
+
+  // autosave hooks
+  function hook(id){
+    const el=document.getElementById(id);
+    el.addEventListener("input", ()=>{ updateKPIs(); autoSave(true); });
+    el.addEventListener("change", ()=>{ updateKPIs(); autoSave(true); });
+  }
+  ["jDate","jDuration","jBias","jDir","jRiskUsd","jCrv"].forEach(hook);
+  document.getElementById("editor").addEventListener("input", ()=>autoSave(true));
+
+  document.getElementById("broker").addEventListener("change", ()=>{
+    setMeta();
+    loadJournal();
+  });
+
+  // playbook + images + rating
+  renderPlaybook();
+  renderImages();
+  window.__rating = 0;
+  renderStars();
+
+  // correlation + meta + load
+  setMeta();
+  setupCorrelationBox();
+
+  // default date
+  if(!document.getElementById("jDate").value) document.getElementById("jDate").value = todayISO();
+
+  // load saved journal
+  loadJournal();
+
+  // initial compute
+  updateKPIs();
+  calcProp();
+})();
 </script>
+
 </body>
 </html>
