@@ -117,7 +117,7 @@
       <h1 id="title">CONTRACTX Converter</h1>
       <div class="sub">
         Links: Future + Prop-Mid zur Kalibrierung (Offset). Darunter Entry/SL/TP in Future-Preisen.
-        Rechts: fertige Prop-Preise zum Kopieren. Unten: Live-Chart (TradingView) als **Cash-Proxy** (ohne Login).
+        Rechts: fertige Prop-Preise zum Kopieren. Unten: Live-Chart (TradingView) als Proxy (Widget-freundlich).
       </div>
 
       <div class="row">
@@ -232,11 +232,11 @@
 
   function normalizeSymbol(s){
     if(!s) return "ES";
-    if(s.startsWith("6")) return s.slice(0,2);           // 6E/6C/...
-    const known3 = ["RTY"];                               // 3-letter futures we support
+    if(s.startsWith("6")) return s.slice(0,2);        // 6E/6C/...
+    const known3 = ["RTY"];
     const s3 = s.slice(0,3);
     if(known3.includes(s3)) return s3;
-    return s.slice(0,2);                                  // ES/NQ/YM/GC/CL/NG/SI
+    return s.slice(0,2);                               // ES/NQ/YM/GC/CL/NG/SI
   }
 
   const sym = normalizeSymbol(cleaned);
@@ -248,21 +248,21 @@
     document.getElementById("invertHint").style.display = "block";
   }
 
-  /** ========= CASH/PROXY CHART MAP (NO LOGIN) ========= **/
+  /** ========= CHART MAP (WIDGET-FRIENDLY) ========= **/
   const TV_MAP = {
-    // Indices (Cash)
-    ES:  "SP:SPX",
-    NQ:  "NASDAQ:NDX",
-    YM:  "DJ:DJI",
-    RTY: "RUSSELL:RUT",
+    // Indizes: OANDA CFDs (funktionieren in Widgets deutlich zuverlässiger)
+    ES:  "OANDA:SPX500USD",
+    NQ:  "OANDA:NAS100USD",
+    YM:  "OANDA:US30USD",
+    RTY: "OANDA:US2000USD",
 
-    // Commodities (Cash/Proxy)
+    // Commodities: TradingView Proxies
     GC:  "TVC:GOLD",
     SI:  "TVC:SILVER",
     CL:  "TVC:USOIL",
     NG:  "TVC:NATGAS",
 
-    // FX Spot (aligned to what users trade)
+    // FX Spot
     "6E":"FX:EURUSD",
     "6B":"FX:GBPUSD",
     "6A":"FX:AUDUSD",
@@ -272,18 +272,15 @@
     "6S":"FX:USDCHF"
   };
 
-  const tvSymbol = TV_MAP[sym] || "SP:SPX";
-
-  // explain the proxy to avoid confusion
-  const note = document.getElementById("chartNote");
-  note.textContent = `Chart: ${tvSymbol} (Cash/Proxy, ohne TradingView-Login). Mapping/Offset bleibt auf deinen Futures-Preisen.`;
+  const tvSymbol = TV_MAP[sym] || "OANDA:SPX500USD";
+  document.getElementById("chartNote").textContent =
+    `Chart: ${tvSymbol} (widget-freundlicher Proxy). Dein Offset-Mapping bleibt auf Futures-Preisen.`;
 
   /** ========= OFFSET + PLAN ========= **/
   function n(v){
     if(!v) return NaN;
     return Number(String(v).replace(",", ".").trim());
   }
-
   function fmt2(x){
     if(!isFinite(x)) return "—";
     return Number(x).toFixed(2);
@@ -306,7 +303,6 @@
     const s = n(document.getElementById("slF").value);
     const t = n(document.getElementById("tpF").value);
 
-    // If no offset yet, show — (but don't annoy)
     if(!isFinite(offset)){
       document.getElementById("entryP").textContent = "—";
       document.getElementById("slP").textContent = "—";
@@ -314,14 +310,9 @@
       return;
     }
 
-    if (isFinite(e)) document.getElementById("entryP").textContent = fmt2(e + offset);
-    else document.getElementById("entryP").textContent = "—";
-
-    if (isFinite(s)) document.getElementById("slP").textContent = fmt2(s + offset);
-    else document.getElementById("slP").textContent = "—";
-
-    if (isFinite(t)) document.getElementById("tpP").textContent = fmt2(t + offset);
-    else document.getElementById("tpP").textContent = "—";
+    document.getElementById("entryP").textContent = isFinite(e) ? fmt2(e + offset) : "—";
+    document.getElementById("slP").textContent    = isFinite(s) ? fmt2(s + offset) : "—";
+    document.getElementById("tpP").textContent    = isFinite(t) ? fmt2(t + offset) : "—";
   }
 
   ["futureNow","propNow","entryF","slF","tpF"].forEach(id=>{
