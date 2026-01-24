@@ -4,615 +4,249 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CONTRACTX — Converter</title>
+
   <style>
     :root{
       --bg:#070A0F;
-      --stroke: rgba(255,255,255,.10);
-      --stroke2: rgba(255,255,255,.18);
+      --stroke: rgba(255,255,255,.12);
+      --stroke2: rgba(255,255,255,.22);
       --text:#EAF0FF;
       --muted: rgba(234,240,255,.70);
       --muted2: rgba(234,240,255,.45);
       --shadow: 0 18px 50px rgba(0,0,0,.55);
-      --radius: 18px;
+      --radius:18px;
+      --warn:#FFD66E;
     }
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
       color:var(--text);
       background:
         radial-gradient(1200px 800px at 15% 10%, rgba(40,110,255,.22), transparent 60%),
         radial-gradient(900px 700px at 85% 20%, rgba(255,215,80,.12), transparent 60%),
-        radial-gradient(700px 600px at 50% 95%, rgba(255,255,255,.08), transparent 55%),
         var(--bg);
-      overflow-x:hidden;
     }
-    .wrap{ max-width:1100px; margin:0 auto; padding:24px; }
-
-    .top{
-      display:flex; align-items:center; justify-content:space-between;
-      padding:14px 0 10px;
-    }
-    .brand{ display:flex; align-items:center; gap:12px; letter-spacing:.6px; }
-    .mark{
-      width:34px; height:34px; border-radius:10px;
-      background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.04));
-      border:1px solid var(--stroke);
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
-      position:relative; overflow:hidden;
-    }
-    .mark:before{
-      content:"";
-      position:absolute; inset:-40%;
-      background: conic-gradient(from 220deg, rgba(255,255,255,.0), rgba(255,255,255,.35), rgba(255,255,255,.0));
-      animation: spin 5.5s linear infinite;
-      opacity:.7;
-    }
-    @keyframes spin{ to{ transform:rotate(360deg);} }
-
-    .brand b{ font-size:15px; }
-    .brand span{ color:var(--muted2); font-size:12px; }
-
-    nav{ display:flex; gap:18px; }
-    nav a{
-      color:var(--muted);
-      text-decoration:none;
-      font-size:13px;
-      padding:8px 10px;
-      border-radius:10px;
-      transition: .15s ease;
-    }
-    nav a:hover{ background: rgba(255,255,255,.05); color:var(--text); }
-
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
     .panel{
-      margin-top:18px;
-      padding:22px;
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));
       border:1px solid var(--stroke);
-      box-shadow: var(--shadow);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:22px;
     }
-
-    .head{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
-      flex-wrap:wrap;
-    }
-    .head h1{
-      margin:0;
-      font-size:28px;
-      letter-spacing:-.3px;
-    }
-    .sub{
-      margin:8px 0 0;
-      color:var(--muted);
-      font-size:13px;
-      max-width:88ch;
-    }
+    h1{margin:0;font-size:26px}
+    .sub{color:var(--muted);font-size:13px;margin-top:6px}
 
     .row{
-      margin-top:16px;
+      margin-top:18px;
       display:grid;
-      grid-template-columns: 1.05fr .95fr;
+      grid-template-columns:1.05fr .95fr;
       gap:14px;
     }
-    @media (max-width: 920px){ .row{ grid-template-columns: 1fr; } }
+    @media(max-width:900px){.row{grid-template-columns:1fr}}
 
     .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
       border:1px solid var(--stroke);
-      border-radius: 16px;
+      border-radius:16px;
+      background:rgba(0,0,0,.25);
       padding:16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
     }
 
-    label{
-      display:block;
-      font-size:12px;
-      color:var(--muted2);
-      margin-bottom:8px;
-    }
-    input, select{
+    label{font-size:12px;color:var(--muted2);display:block;margin-bottom:6px}
+    input,select{
       width:100%;
-      padding:14px 14px;
-      border-radius: 14px;
-      border:1px solid var(--stroke2);
-      background: rgba(0,0,0,.28);
-      color:var(--text);
-      font-size:14px;
-      outline:none;
-    }
-    input{ font-size:16px; }
-    input::placeholder{ color: rgba(234,240,255,.30); }
-
-    .twoCol{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-    }
-    @media (max-width: 520px){ .twoCol{ grid-template-columns:1fr; } }
-
-    .btns{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
-    .btn{
-      border:1px solid var(--stroke2);
-      background: rgba(255,255,255,.06);
-      color:var(--text);
-      padding:10px 12px;
+      padding:13px 14px;
       border-radius:14px;
-      text-decoration:none;
-      font-weight:800;
-      font-size:13px;
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      transition:.15s ease;
+      border:1px solid var(--stroke2);
+      background:rgba(0,0,0,.35);
+      color:var(--text);
+      font-size:15px;
+    }
+
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(max-width:520px){.two{grid-template-columns:1fr}}
+
+    .btn{
+      margin-top:10px;
+      padding:11px 14px;
+      border-radius:14px;
+      border:1px solid var(--stroke2);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      font-weight:700;
       cursor:pointer;
     }
-    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); }
-    .btn.primary{ background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.06)); }
 
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:7px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
-      color:var(--muted);
-      font-size:12px;
-      white-space:nowrap;
+    .status{margin-top:10px;font-size:12px;color:var(--muted2)}
+
+    .big{
+      border:1px solid var(--stroke);
+      border-radius:16px;
+      padding:16px;
+      background:rgba(0,0,0,.35);
     }
+    .big .t{font-size:12px;color:var(--muted2)}
+    .big .v{font-size:28px;font-weight:900;margin-top:6px}
+
+    .kv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    @media(max-width:520px){.kv{grid-template-columns:1fr}}
 
     .note{
       margin-top:12px;
-      color:var(--muted2);
       font-size:12px;
+      color:var(--muted2);
       line-height:1.45;
     }
-
-    .kv{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-      margin-top:6px;
-    }
-    @media (max-width: 520px){ .kv{ grid-template-columns: 1fr; } }
-
-    .k{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      border-radius: 14px;
-      padding:12px;
-    }
-    .k .t{ font-size:11px; color:var(--muted2); }
-    .k .v{ margin-top:6px; font-weight:900; letter-spacing:.2px; font-size:18px; }
-
-    .big{
-      padding:16px;
-      border-radius: 16px;
-      border:1px solid rgba(255,255,255,.14);
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.18));
-    }
-    .big .title{ font-size:12px; color:var(--muted2); }
-    .big .value{ margin-top:8px; font-size:28px; font-weight:1000; letter-spacing:.2px; }
-
-    .status{
-      margin-top:10px;
+    .warn{
+      margin-top:12px;
+      border:1px solid rgba(255,214,110,.35);
+      background:rgba(255,214,110,.08);
+      border-radius:12px;
+      padding:10px;
       font-size:12px;
-      color:var(--muted2);
+      color:var(--warn);
     }
-    .status strong{ color:var(--text); }
-
-    footer{
-      margin:18px 0 10px;
-      padding:16px 0 30px;
-      color:var(--muted2);
-      font-size:12px;
-    }
-    footer a{ color:var(--muted); text-decoration:none; }
-    footer a:hover{ color:var(--text); }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="top">
-      <div class="brand">
-        <div class="mark" aria-hidden="true"></div>
-        <div>
-          <b>CONTRACTX</b><br/>
-          <span>Prop Price Mapper</span>
-        </div>
-      </div>
-      <nav>
-        <a href="index.html#converter">Back</a>
-        <a href="index.html#how">How it works</a>
-        <a href="index.html#about">About</a>
-      </nav>
+<div class="wrap">
+  <section class="panel">
+    <h1 id="title">Converter</h1>
+    <div class="sub">
+      Links: Future + Prop-Preis & Trade-Plan.  
+      Rechts: **fertige Prop-Preise zum Kopieren**.
     </div>
 
-    <section class="panel">
-      <div class="head">
-        <div>
-          <h1 id="title">Converter</h1>
-          <p class="sub">
-            Links: Future aktuell + Prop aktuell (Mid). Darunter planst du Entry/SL/TP in Future-Preisen.
-            Rechts bekommst du die fertigen Werte für die Propfirm (Entry/SL/TP) zum Kopieren.
-          </p>
+    <div class="row">
+      <!-- LEFT -->
+      <div class="card">
+        <div class="two">
+          <div>
+            <label>Broker</label>
+            <select id="broker">
+              <option>CampusFund</option>
+              <option>FTMO</option>
+              <option>FundingPips</option>
+            </select>
+          </div>
+          <div>
+            <label>Mode</label>
+            <select id="mode">
+              <option value="auto">Auto</option>
+              <option value="fx">FX</option>
+              <option value="offset">Offset</option>
+            </select>
+          </div>
         </div>
-        <div class="badge" id="badge">Ready</div>
+
+        <div class="two" style="margin-top:10px">
+          <div>
+            <label>Future aktuell</label>
+            <input id="futureNow">
+          </div>
+          <div>
+            <label>Prop aktuell (Mid)</label>
+            <input id="propNow">
+          </div>
+        </div>
+
+        <button class="btn" id="setOffset">Set Offset</button>
+
+        <div class="status">
+          Offset (Prop − Future): <strong id="offsetVal">—</strong>
+        </div>
+
+        <div style="margin-top:14px">
+          <label>Trade-Plan (Future)</label>
+          <div class="two">
+            <input id="entryF" placeholder="Entry">
+            <input id="slF" placeholder="SL">
+          </div>
+          <input id="tpF" placeholder="TP" style="margin-top:10px">
+        </div>
       </div>
 
-      <div class="row">
-        <!-- LEFT -->
-        <div class="card">
-          <div class="twoCol">
-            <div>
-              <label for="broker">Broker</label>
-              <select id="broker">
-                <option value="CampusFund">Campus Fund</option>
-                <option value="FTMO">FTMO</option>
-                <option value="FundingPips">FundingPips</option>
-                <option value="FTMP">FTMP</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div>
-              <label for="mode">Mode</label>
-              <select id="mode">
-                <option value="auto">Auto</option>
-                <option value="fx">FX (Convert)</option>
-                <option value="offset">Offset (Prop Broker)</option>
-              </select>
-            </div>
-          </div>
-
-          <div style="margin-top:12px;" class="twoCol">
-            <div>
-              <label for="futureNow">Future (TradingView) — aktueller Preis</label>
-              <input id="futureNow" inputmode="decimal" placeholder="z. B. 49308.45" />
-            </div>
-            <div>
-              <label for="propNow">Propfirm — aktueller Mid (Bid/Ask-Mitte)</label>
-              <input id="propNow" inputmode="decimal" placeholder="z. B. 49310.65" />
-            </div>
-          </div>
-
-          <div class="btns" style="margin-top:10px;">
-            <button class="btn" id="setOffset" type="button">Set Offset</button>
-            <button class="btn" id="clearOffset" type="button">Clear Offset</button>
-          </div>
-
-          <div class="status" id="offsetStatus">
-            Offset (Prop − Future): <strong id="offsetVal">—</strong><span id="offsetTime"></span>
-          </div>
-
-          <div style="margin-top:14px;">
-            <label style="margin-bottom:10px;">Trade Plan (Future-basiert)</label>
-            <div class="twoCol">
-              <div>
-                <label for="entryF">Entry (Future)</label>
-                <input id="entryF" inputmode="decimal" placeholder="z. B. 49240.00" />
-              </div>
-              <div>
-                <label for="slF">SL (Future)</label>
-                <input id="slF" inputmode="decimal" placeholder="z. B. 49190.00" />
-              </div>
-            </div>
-            <div style="margin-top:10px;">
-              <label for="tpF">TP (Future)</label>
-              <input id="tpF" inputmode="decimal" placeholder="z. B. 49360.00" />
-            </div>
-          </div>
-
-          <div class="btns">
-            <button class="btn primary" id="calc" type="button">Update →</button>
-            <button class="btn" id="copyAllLeft" type="button">Copy all (Prop)</button>
-          </div>
-
-          <div class="status" id="status">Instrument: <strong id="inst">—</strong></div>
-
-          <div class="note">
-            Hinweis: Für Indizes/Metals/Energy arbeiten wir per Offset (Prop − Future). Für FX wird mathematisch konvertiert (6C/6J/6S invert).
-          </div>
+      <!-- RIGHT -->
+      <div class="card">
+        <div class="big">
+          <div class="t">Prop Entry</div>
+          <div class="v" id="entryP">—</div>
+          <button class="btn" onclick="copy(entryP.textContent)">Copy Entry</button>
         </div>
 
-        <!-- RIGHT -->
-        <div class="card">
+        <div class="kv">
           <div class="big">
-            <div class="title">Propfirm Entry</div>
-            <div class="value" id="entryP">—</div>
-            <div class="btns" style="margin-top:10px;">
-              <button class="btn" id="copyEntry" type="button">Copy Entry</button>
-            </div>
+            <div class="t">Prop SL</div>
+            <div class="v" id="slP">—</div>
+            <button class="btn" onclick="copy(slP.textContent)">Copy SL</button>
           </div>
-
-          <div class="kv" style="margin-top:12px;">
-            <div class="k">
-              <div class="t">Prop SL</div>
-              <div class="v" id="slP">—</div>
-              <div class="btns" style="margin-top:8px;">
-                <button class="btn" id="copySL" type="button">Copy SL</button>
-              </div>
-            </div>
-            <div class="k">
-              <div class="t">Prop TP</div>
-              <div class="v" id="tpP">—</div>
-              <div class="btns" style="margin-top:8px;">
-                <button class="btn" id="copyTP" type="button">Copy TP</button>
-              </div>
-            </div>
+          <div class="big">
+            <div class="t">Prop TP</div>
+            <div class="v" id="tpP">—</div>
+            <button class="btn" onclick="copy(tpP.textContent)">Copy TP</button>
           </div>
+        </div>
 
-          <div class="note" id="rightNote" style="margin-top:12px;"></div>
+        <!-- INVERT WARNING -->
+        <div class="warn" id="invertHint" style="display:none">
+          ⚠️ Dieses FX-Pair ist <strong>invertiert</strong><br>
+          <strong>Future SHORT = FX LONG</strong><br>
+          <strong>Future LONG = FX SHORT</strong>
         </div>
       </div>
-    </section>
-
-    <footer>
-      © <span id="y"></span> CONTRACTX • <a href="#">Imprint</a> • <a href="#">Privacy</a>
-    </footer>
-  </div>
+    </div>
+  </section>
+</div>
 
 <script>
-  // --- Instruments
-  const MAP = {
-    ES:  { name:"S&P 500 E-mini",       type:"index"  },
-    NQ:  { name:"Nasdaq 100 E-mini",    type:"index"  },
-    YM:  { name:"Dow Jones Mini",       type:"index"  },
-    RTY: { name:"Russell 2000 E-mini",  type:"index"  },
-    GC:  { name:"Gold",                 type:"commod" },
-    SI:  { name:"Silver",               type:"commod" },
-    CL:  { name:"Crude Oil",            type:"commod" },
-    NG:  { name:"Natural Gas",          type:"commod" },
+const FX_INVERTED = ["6C","6J","6S"];
 
-    "6E": { name:"Euro",             type:"fx", invert:false },
-    "6B": { name:"British Pound",    type:"fx", invert:false },
-    "6A": { name:"Australian Dollar",type:"fx", invert:false },
-    "6N": { name:"New Zealand Dollar",type:"fx", invert:false },
-    "6C": { name:"Canadian Dollar",  type:"fx", invert:true  },
-    "6J": { name:"Japanese Yen",     type:"fx", invert:true  },
-    "6S": { name:"Swiss Franc",      type:"fx", invert:true  },
-  };
+const qs = new URLSearchParams(location.search);
+const sym = (qs.get("symbol")||"ES").toUpperCase().slice(0,2);
 
-  const qs = new URLSearchParams(location.search);
-  const raw = (qs.get("symbol") || "ES").toUpperCase().trim();
+title.textContent = sym + " Converter";
 
-  function normalize(sym){
-    if (sym.startsWith("6") && sym.length >= 2) return sym.slice(0,2);
-    return sym.replace(/[^A-Z0-9]/g, "");
+if(FX_INVERTED.includes(sym)){
+  invertHint.style.display="block";
+}
+
+function num(v){
+  if(!v) return NaN;
+  return Number(v.replace(",","."));
+}
+
+let offset = NaN;
+
+setOffset.onclick = ()=>{
+  const f = num(futureNow.value);
+  const p = num(propNow.value);
+  if(isFinite(f)&&isFinite(p)){
+    offset = p - f;
+    offsetVal.textContent = offset.toFixed(2);
+    calc();
   }
+};
 
-  const sym = normalize(raw);
-  const meta = MAP[sym] || { name:"Custom", type:"custom" };
+function calc(){
+  const e = num(entryF.value);
+  const s = num(slF.value);
+  const t = num(tpF.value);
 
-  // --- DOM
-  const elTitle = document.getElementById("title");
-  const elInst  = document.getElementById("inst");
-  const elBadge = document.getElementById("badge");
+  if(isFinite(e)) entryP.textContent = (e + offset).toFixed(2);
+  if(isFinite(s)) slP.textContent = (s + offset).toFixed(2);
+  if(isFinite(t)) tpP.textContent = (t + offset).toFixed(2);
+}
 
-  const elBroker = document.getElementById("broker");
-  const elMode   = document.getElementById("mode");
+["futureNow","propNow","entryF","slF","tpF"].forEach(id=>{
+  document.getElementById(id).addEventListener("input",calc);
+});
 
-  const elFutureNow = document.getElementById("futureNow");
-  const elPropNow   = document.getElementById("propNow");
-  const elSetOffset = document.getElementById("setOffset");
-  const elClearOffset = document.getElementById("clearOffset");
-  const elOffsetVal = document.getElementById("offsetVal");
-  const elOffsetTime = document.getElementById("offsetTime");
-  const elStatus = document.getElementById("status");
-
-  const elEntryF = document.getElementById("entryF");
-  const elSlF = document.getElementById("slF");
-  const elTpF = document.getElementById("tpF");
-
-  const elEntryP = document.getElementById("entryP");
-  const elSlP = document.getElementById("slP");
-  const elTpP = document.getElementById("tpP");
-
-  const elRightNote = document.getElementById("rightNote");
-
-  // Copy buttons
-  const elCopyEntry = document.getElementById("copyEntry");
-  const elCopySL = document.getElementById("copySL");
-  const elCopyTP = document.getElementById("copyTP");
-  const elCopyAllLeft = document.getElementById("copyAllLeft");
-
-  // --- Helpers
-  function fmt(n){
-    if(!isFinite(n)) return "—";
-    const s = Number(n).toFixed(6);
-    return s.replace(/\.?0+$/,"");
-  }
-
-  function parseNumber(val){
-    if(!val) return NaN;
-    val = val.replace(",", ".").trim();
-    val = val.replace(/[^0-9.\-]/g, "");
-    return Number(val);
-  }
-
-  function nowTime(){
-    const d = new Date();
-    return d.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
-  }
-
-  function offsetKey(broker, instrument){
-    return `contractx.offset.${broker}.${instrument}`;
-  }
-
-  function loadOffset(){
-    const raw = localStorage.getItem(offsetKey(elBroker.value, sym));
-    if(!raw) return null;
-    try { return JSON.parse(raw); } catch { return null; }
-  }
-
-  function renderOffset(){
-    const data = loadOffset();
-    if(!data){
-      elOffsetVal.textContent = "—";
-      elOffsetTime.textContent = "";
-      return;
-    }
-    elOffsetVal.textContent = fmt(data.offset);
-    elOffsetTime.textContent = ` • last: ${data.time}`;
-  }
-
-  function effectiveMode(){
-    const m = elMode.value;
-    if(m === "fx" || m === "offset") return m;
-    // auto:
-    if(meta.type === "fx") return "fx";
-    if(meta.type === "index" || meta.type === "commod") return "offset";
-    return "offset";
-  }
-
-  function setHeader(){
-    elTitle.textContent = `${sym} — ${meta.name}`;
-    elInst.textContent = sym + (raw !== sym ? ` (from: ${raw})` : "");
-
-    const m = effectiveMode();
-    if(m === "fx"){
-      elBadge.textContent = meta.invert ? "FX (Inverted)" : "FX (Aligned)";
-    } else {
-      elBadge.textContent = "Offset Mode";
-    }
-  }
-
-  function convertFX(x){
-    if(meta.type !== "fx") return x;
-    if(meta.invert) return 1 / x;
-    return x;
-  }
-
-  function applyOffset(x){
-    const data = loadOffset();
-    const off = data ? Number(data.offset) : NaN;
-    if(!isFinite(off)) return NaN;
-    return x + off;
-  }
-
-  function compute(){
-    const m = effectiveMode();
-
-    // calculate/set offset from current prices when available
-    const fn = parseNumber(elFutureNow.value);
-    const pn = parseNumber(elPropNow.value);
-    if(isFinite(fn) && fn > 0 && isFinite(pn)){
-      // offset = Prop - Future
-      const off = pn - fn;
-      elOffsetVal.textContent = fmt(off);
-      // don't overwrite storage automatically; only via "Set Offset"
-    } else {
-      renderOffset();
-    }
-
-    // plan values
-    const eF = parseNumber(elEntryF.value);
-    const sF = parseNumber(elSlF.value);
-    const tF = parseNumber(elTpF.value);
-
-    let eP = NaN, sP = NaN, tP = NaN;
-
-    if(m === "fx"){
-      if(isFinite(eF) && eF > 0) eP = convertFX(eF);
-      if(isFinite(sF) && sF > 0) sP = convertFX(sF);
-      if(isFinite(tF) && tF > 0) tP = convertFX(tF);
-
-      elRightNote.textContent =
-        meta.invert
-          ? `FX-Konvertierung: 1 / price. (Future-Quote invertiert in Spot-Quote.)`
-          : `FX-Konvertierung: price. (Quote aligned.)`;
-    } else {
-      // offset mode: requires stored offset
-      const data = loadOffset();
-      const off = data ? Number(data.offset) : NaN;
-
-      if(!isFinite(off)){
-        elRightNote.textContent = `Kein Offset gespeichert. Gib Future & Prop "aktuell" ein und klick "Set Offset".`;
-      } else {
-        elRightNote.textContent = `Prop = Future + Offset. Offset (Prop − Future) = ${fmt(off)} (${data.time}).`;
-      }
-
-      if(isFinite(eF)) eP = applyOffset(eF);
-      if(isFinite(sF)) sP = applyOffset(sF);
-      if(isFinite(tF)) tP = applyOffset(tF);
-    }
-
-    elEntryP.textContent = fmt(eP);
-    elSlP.textContent = fmt(sP);
-    elTpP.textContent = fmt(tP);
-
-    const offData = loadOffset();
-    const offTxt = offData ? fmt(offData.offset) : "—";
-    elStatus.innerHTML =
-      `Instrument: <strong>${sym}</strong> • Mode: <strong>${m}</strong> • Offset: <strong>${offTxt}</strong>`;
-  }
-
-  async function copyText(text){
-    if(!text || text === "—") return;
-    try{
-      await navigator.clipboard.writeText(text);
-      elBadge.textContent = "Copied ✓";
-      setTimeout(setHeader, 900);
-    } catch {
-      const tmp = document.createElement("textarea");
-      tmp.value = text;
-      document.body.appendChild(tmp);
-      tmp.select();
-      document.execCommand("copy");
-      tmp.remove();
-      elBadge.textContent = "Copied ✓";
-      setTimeout(setHeader, 900);
-    }
-  }
-
-  // --- Actions
-  elSetOffset.addEventListener("click", () => {
-    const fn = parseNumber(elFutureNow.value);
-    const pn = parseNumber(elPropNow.value);
-    if(!isFinite(fn) || fn <= 0 || !isFinite(pn)){
-      elStatus.innerHTML = `Instrument: <strong>${sym}</strong> • Bitte Future aktuell UND Prop aktuell (Mid) eingeben.`;
-      return;
-    }
-    const off = pn - fn;
-    localStorage.setItem(offsetKey(elBroker.value, sym), JSON.stringify({ offset: off, time: nowTime() }));
-    renderOffset();
-    compute();
-  });
-
-  elClearOffset.addEventListener("click", () => {
-    localStorage.removeItem(offsetKey(elBroker.value, sym));
-    renderOffset();
-    compute();
-  });
-
-  document.getElementById("calc").addEventListener("click", compute);
-
-  elBroker.addEventListener("change", () => { renderOffset(); compute(); });
-  elMode.addEventListener("change", () => { setHeader(); renderOffset(); compute(); });
-
-  // Auto-update while typing (feels premium)
-  ["futureNow","propNow","entryF","slF","tpF"].forEach(id=>{
-    document.getElementById(id).addEventListener("input", compute);
-  });
-
-  elCopyEntry.addEventListener("click", ()=>copyText(elEntryP.textContent));
-  elCopySL.addEventListener("click", ()=>copyText(elSlP.textContent));
-  elCopyTP.addEventListener("click", ()=>copyText(elTpP.textContent));
-
-  elCopyAllLeft.addEventListener("click", ()=>{
-    const e = elEntryP.textContent, s = elSlP.textContent, t = elTpP.textContent;
-    const txt = `ENTRY: ${e}\nSL: ${s}\nTP: ${t}`;
-    copyText(txt);
-  });
-
-  // Init
-  setHeader();
-  renderOffset();
-  compute();
-  document.getElementById("y").textContent = new Date().getFullYear();
+function copy(txt){
+  if(!txt||txt==="—") return;
+  navigator.clipboard.writeText(txt);
+}
 </script>
 </body>
 </html>
