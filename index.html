@@ -2,200 +2,354 @@
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Delta – Futures ↔ Prop</title>
-  <meta name="color-scheme" content="light dark" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CONTRACTX — Futures Converter</title>
   <style>
     :root{
-      --bg:#f5f5f7;
-      --card:#ffffff;
-      --text:#111114;
-      --muted:#6b6b73;
-      --border:#e5e5ea;
-      --radius:18px;
-      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-      --sf:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --bg:#0b0b0f;
-        --card:#15151c;
-        --text:#f5f5f7;
-        --muted:#a1a1aa;
-        --border:#2a2a33;
-      }
+      --bg:#070A0F;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.04);
+      --stroke: rgba(255,255,255,.10);
+      --stroke2: rgba(255,255,255,.18);
+      --text:#EAF0FF;
+      --muted: rgba(234,240,255,.70);
+      --muted2: rgba(234,240,255,.45);
+      --shadow: 0 18px 50px rgba(0,0,0,.55);
+      --radius: 18px;
     }
 
-    *{box-sizing:border-box}
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
     body{
       margin:0;
-      font-family:var(--sf);
-      background:var(--bg);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       color:var(--text);
-      padding:18px;
+      background:
+        radial-gradient(1200px 800px at 15% 10%, rgba(40,110,255,.22), transparent 60%),
+        radial-gradient(900px 700px at 85% 20%, rgba(255,215,80,.12), transparent 60%),
+        radial-gradient(700px 600px at 50% 95%, rgba(255,255,255,.08), transparent 55%),
+        var(--bg);
+      overflow-x:hidden;
     }
-    .wrap{
-      max-width:640px;
-      margin:0 auto;
+
+    .wrap{ max-width:1100px; margin:0 auto; padding:24px; }
+
+    /* top bar */
+    .top{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 0 10px;
     }
-    h1{
-      margin:6px 0 6px;
-      font-size:20px;
-      letter-spacing:-0.02em;
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      letter-spacing:.6px;
     }
-    .sub{
-      margin:0 0 14px;
+    .mark{
+      width:34px; height:34px; border-radius:10px;
+      background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.04));
+      border:1px solid var(--stroke);
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      position:relative;
+      overflow:hidden;
+    }
+    .mark:before{
+      content:"";
+      position:absolute; inset:-40%;
+      background: conic-gradient(from 220deg, rgba(255,255,255,.0), rgba(255,255,255,.35), rgba(255,255,255,.0));
+      animation: spin 5.5s linear infinite;
+      opacity:.7;
+    }
+    @keyframes spin{ to{ transform:rotate(360deg);} }
+
+    .brand b{ font-size:15px; }
+    .brand span{ color:var(--muted2); font-size:12px; }
+
+    nav{ display:flex; gap:18px; }
+    nav a{
       color:var(--muted);
+      text-decoration:none;
       font-size:13px;
-      line-height:1.35;
+      padding:8px 10px;
+      border-radius:10px;
+      transition: .15s ease;
+    }
+    nav a:hover{
+      background: rgba(255,255,255,.05);
+      color:var(--text);
     }
 
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      padding:16px;
-      box-shadow:0 14px 40px rgba(0,0,0,.12);
+    /* hero */
+    .hero{
+      margin-top:18px;
+      padding:28px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      border:1px solid var(--stroke);
+      box-shadow: var(--shadow);
+      position:relative;
     }
-
-    label{
-      display:block;
+    .hero h1{
+      margin:0;
+      font-size:44px;
+      line-height:1.05;
+      letter-spacing:-.8px;
+    }
+    .hero p{
+      margin:14px 0 0;
+      color:var(--muted);
+      font-size:15px;
+      max-width:70ch;
+    }
+    .actions{ margin-top:18px; display:flex; gap:12px; flex-wrap:wrap; }
+    .btn{
+      border:1px solid var(--stroke2);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:11px 14px;
+      border-radius:14px;
+      text-decoration:none;
+      font-weight:600;
+      font-size:13px;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      transition:.15s ease;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); }
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
+    }
+    .pill{
+      display:inline-flex;
+      gap:8px;
+      margin-top:14px;
+      flex-wrap:wrap;
+    }
+    .tag{
       font-size:12px;
       color:var(--muted);
-      margin:12px 0 6px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.04);
+      padding:6px 10px;
+      border-radius:999px;
     }
-    input, select{
-      width:100%;
-      padding:12px 12px;
-      font-size:16px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:transparent;
-      color:var(--text);
-      outline:none;
-    }
-    input::placeholder{color:#9b9ba3}
-    .out{
-      margin-top:14px;
-      border-top:1px solid var(--border);
-      padding-top:14px;
-    }
-    .row{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      padding:8px 0;
-    }
-    .k{color:var(--muted); font-size:13px;}
-    .v{font-family:var(--mono); font-weight:800;}
-    .big{font-size:18px;}
 
-    /* === NUR NEU: LOGO === */
-    .logo{
+    /* sections */
+    .section{ margin-top:22px; }
+    .sectionHead{
+      display:flex; align-items:end; justify-content:space-between; gap:10px;
+      padding:12px 4px;
+    }
+    .sectionHead h2{
+      margin:0;
+      font-size:16px;
+      letter-spacing:.2px;
+    }
+    .sectionHead .hint{
+      margin:0;
+      color:var(--muted2);
+      font-size:12px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap:12px;
+    }
+    @media (max-width: 980px){ .grid{ grid-template-columns: repeat(2, 1fr);} .hero h1{ font-size:36px; } }
+    @media (max-width: 520px){ .grid{ grid-template-columns: 1fr;} .hero h1{ font-size:32px; } }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--stroke);
+      border-radius: 16px;
+      padding:14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      cursor:pointer;
+      transition:.15s ease;
+      min-height:92px;
+      position:relative;
+      overflow:hidden;
+    }
+    .card:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.18); }
+    .card:after{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      background: radial-gradient(500px 120px at 20% 0%, rgba(255,255,255,.10), transparent 55%);
+      pointer-events:none;
+    }
+
+    .sym{ font-weight:800; font-size:16px; letter-spacing:.4px; }
+    .name{ margin-top:6px; color:var(--muted); font-size:12px; }
+    .meta{
+      margin-top:10px;
       display:flex;
-      justify-content:center;
-      margin:0 0 14px;
+      gap:8px;
+      flex-wrap:wrap;
+      color:var(--muted2);
+      font-size:11px;
     }
-    .logo img{
-      max-width:240px;
-      width:100%;
-      height:auto;
-      border-radius:14px;
-      border:1px solid var(--border);
+    .chip{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      padding:5px 8px;
+      border-radius:999px;
     }
+
+    /* footer */
+    footer{
+      margin:26px 0 10px;
+      padding:16px 0 30px;
+      color:var(--muted2);
+      font-size:12px;
+    }
+    footer a{ color:var(--muted); text-decoration:none; }
+    footer a:hover{ color:var(--text); }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-
-    <!-- NUR NEU: LOGO -->
-    <div class="logo">
-      <img src="56307-art-file-color-nav_650x650.webp" alt="Globex Corporation">
-    </div>
-
-    <h1>YM / NQ / ES / RTY – Delta Rechner</h1>
-    <p class="sub">Future + Prop eingeben → Delta wird gerechnet. Entry/SL/TP werden per Delta übertragen (auf Tick gerundet).</p>
-
-    <div class="card">
-      <label for="sym">Instrument</label>
-      <select id="sym">
-        <option value="YM">YM</option>
-        <option value="NQ">NQ</option>
-        <option value="ES">ES</option>
-        <option value="RTY">RTY</option>
-      </select>
-
-      <label for="futureNow">Future Preis (aktuell)</label>
-      <input id="futureNow" inputmode="decimal" placeholder="z.B. 17125.50" />
-
-      <label for="propNow">Propfirm/CFD Preis (aktuell)</label>
-      <input id="propNow" inputmode="decimal" placeholder="z.B. 17123.80" />
-
-      <label for="futureEntry">Future Entry (geplant)</label>
-      <input id="futureEntry" inputmode="decimal" placeholder="z.B. 17140.00" />
-
-      <label for="futureSL">Future SL (geplant)</label>
-      <input id="futureSL" inputmode="decimal" placeholder="z.B. 17110.00" />
-
-      <label for="futureTP">Future TP (optional)</label>
-      <input id="futureTP" inputmode="decimal" placeholder="z.B. 17210.00" />
-
-      <div class="out">
-        <div class="row"><div class="k">Delta (Prop − Future)</div><div class="v big" id="deltaOut">—</div></div>
-        <div class="row"><div class="k">Prop Entry</div><div class="v" id="propEntryOut">—</div></div>
-        <div class="row"><div class="k">Prop SL</div><div class="v" id="propSLOut">—</div></div>
-        <div class="row"><div class="k">Prop TP</div><div class="v" id="propTPOut">—</div></div>
+    <div class="top">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
+        <div>
+          <b>CONTRACTX</b><br/>
+          <span>Futures Converter</span>
+        </div>
       </div>
+      <nav>
+        <a href="#converter">Converter</a>
+        <a href="#how">How it works</a>
+        <a href="#about">About</a>
+      </nav>
     </div>
+
+    <section class="hero">
+      <h1>Convert futures to prop pricing.<br/>Fast. Clean. Correct.</h1>
+      <p>
+        Wähle dein Instrument — Indizes, Metals/Energy oder FX Majors (CME 6X).
+        CONTRACTX zeigt dir die richtige Notation (inkl. Inversion bei 6C/6J/6S).
+      </p>
+      <div class="actions">
+        <a class="btn primary" href="#converter">Open Converter →</a>
+        <a class="btn" href="#how">How it works</a>
+      </div>
+      <div class="pill">
+        <div class="tag">NY Session ready</div>
+        <div class="tag">Indices • Metals • Energy • FX</div>
+        <div class="tag">No fluff</div>
+      </div>
+    </section>
+
+    <section id="converter" class="section">
+      <div class="sectionHead">
+        <h2>Indices</h2>
+        <p class="hint">Click to convert</p>
+      </div>
+      <div class="grid" id="grid-indices"></div>
+    </section>
+
+    <section class="section">
+      <div class="sectionHead">
+        <h2>Metals & Energy</h2>
+        <p class="hint">Gold / Silver / Crude / NatGas</p>
+      </div>
+      <div class="grid" id="grid-commod"></div>
+    </section>
+
+    <section class="section">
+      <div class="sectionHead">
+        <h2>FX Majors (CME 6X)</h2>
+        <p class="hint">Auto-invert where needed (6C/6J/6S)</p>
+      </div>
+      <div class="grid" id="grid-fx"></div>
+    </section>
+
+    <section id="how" class="section">
+      <div class="sectionHead">
+        <h2>How it works</h2>
+        <p class="hint">Simple rules, clear output</p>
+      </div>
+      <div class="card" style="cursor:default;">
+        <div class="sym">Rule #1: Quotes matter.</div>
+        <div class="name">Manche Futures sind gegenüber FX-Spot invertiert. CONTRACTX zeigt dir das transparent.</div>
+        <div class="meta">
+          <span class="chip">6C CAD/USD → FX USD/CAD = 1 / price</span>
+          <span class="chip">6E EUR/USD → FX EUR/USD = price</span>
+          <span class="chip">Tick ≠ Pip (Hinweis statt Fake-Präzision)</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section">
+      <div class="sectionHead">
+        <h2>About</h2>
+        <p class="hint">Community utility</p>
+      </div>
+      <div class="card" style="cursor:default;">
+        <div class="sym">Built for traders who hate guesswork.</div>
+        <div class="name">CONTRACTX ist ein Converter — kein Broker, keine Execution, kein Bullshit.</div>
+      </div>
+    </section>
+
+    <footer>
+      © <span id="y"></span> CONTRACTX • <a href="#">Imprint</a> • <a href="#">Privacy</a>
+    </footer>
   </div>
 
 <script>
-  const SPECS = { YM:{tickSize:1.0}, NQ:{tickSize:0.25}, ES:{tickSize:0.25}, RTY:{tickSize:0.10} };
-  const el = (id) => document.getElementById(id);
+  const indices = [
+    { sym:"ES", name:"S&P 500 E-mini", chips:["CME","Index"] },
+    { sym:"NQ", name:"Nasdaq 100 E-mini", chips:["CME","Index"] },
+    { sym:"YM", name:"Dow Jones Mini", chips:["CBOT","Index"] },
+    { sym:"RTY", name:"Russell 2000 E-mini", chips:["CME","Index"] },
+  ];
 
-  function parseNum(v){
-    v = String(v ?? "").trim().replace(/\s+/g,"").replace(",",".");
-    if(!v) return NaN;
-    const n = Number(v);
-    return Number.isFinite(n) ? n : NaN;
+  const commod = [
+    { sym:"GC", name:"Gold", chips:["COMEX","Metal"] },
+    { sym:"SI", name:"Silver", chips:["COMEX","Metal"] },
+    { sym:"CL", name:"Crude Oil", chips:["NYMEX","Energy"] },
+    { sym:"NG", name:"Natural Gas", chips:["NYMEX","Energy"] },
+  ];
+
+  const fx = [
+    { sym:"6E", name:"Euro", chips:["EUR/USD","Spot aligned"] },
+    { sym:"6B", name:"British Pound", chips:["GBP/USD","Spot aligned"] },
+    { sym:"6A", name:"Australian Dollar", chips:["AUD/USD","Spot aligned"] },
+    { sym:"6N", name:"New Zealand Dollar", chips:["NZD/USD","Spot aligned"] },
+    { sym:"6C", name:"Canadian Dollar", chips:["CAD/USD","Invert → USD/CAD"] },
+    { sym:"6J", name:"Japanese Yen", chips:["JPY/USD","Invert → USD/JPY"] },
+    { sym:"6S", name:"Swiss Franc", chips:["CHF/USD","Invert → USD/CHF"] },
+  ];
+
+  function mount(list, elId){
+    const el = document.getElementById(elId);
+    el.innerHTML = list.map(x => `
+      <div class="card" role="button" tabindex="0" data-sym="${x.sym}">
+        <div class="sym">${x.sym}</div>
+        <div class="name">${x.name}</div>
+        <div class="meta">
+          ${x.chips.map(c => `<span class="chip">${c}</span>`).join("")}
+        </div>
+      </div>
+    `).join("");
+
+    el.querySelectorAll(".card").forEach(card => {
+      const go = () => {
+        const sym = card.getAttribute("data-sym");
+        // Später: converter.html bauen. Für jetzt: Demo-Route.
+        window.location.href = `converter.html?symbol=${encodeURIComponent(sym)}`;
+      };
+      card.addEventListener("click", go);
+      card.addEventListener("keydown", (e) => { if(e.key === "Enter") go(); });
+    });
   }
-  function roundToTick(price, tickSize){
-    if(!Number.isFinite(price)) return NaN;
-    return Math.round(price / tickSize) * tickSize;
-  }
-  function fmt(price, tickSize){
-    if(!Number.isFinite(price)) return "—";
-    const digits = (tickSize === 1) ? 0 : (tickSize === 0.1 ? 1 : 2);
-    return price.toFixed(digits);
-  }
 
-  function calc(){
-    const tickSize = SPECS[el("sym").value].tickSize;
-
-    const futureNow   = parseNum(el("futureNow").value);
-    const propNow     = parseNum(el("propNow").value);
-    const futureEntry = parseNum(el("futureEntry").value);
-    const futureSL    = parseNum(el("futureSL").value);
-    const futureTP    = parseNum(el("futureTP").value);
-
-    const delta = (Number.isFinite(futureNow) && Number.isFinite(propNow)) ? (propNow - futureNow) : NaN;
-    el("deltaOut").textContent = Number.isFinite(delta) ? delta.toFixed(4) : "—";
-
-    const propEntry = (Number.isFinite(delta) && Number.isFinite(futureEntry)) ? roundToTick(futureEntry + delta, tickSize) : NaN;
-    const propSL    = (Number.isFinite(delta) && Number.isFinite(futureSL))    ? roundToTick(futureSL + delta, tickSize) : NaN;
-    const propTP    = (Number.isFinite(delta) && Number.isFinite(futureTP))    ? roundToTick(futureTP + delta, tickSize) : NaN;
-
-    el("propEntryOut").textContent = fmt(propEntry, tickSize);
-    el("propSLOut").textContent    = fmt(propSL, tickSize);
-    el("propTPOut").textContent    = Number.isFinite(futureTP) ? fmt(propTP, tickSize) : "—";
-  }
-
-  ["sym","futureNow","propNow","futureEntry","futureSL","futureTP"].forEach(id=>{
-    el(id).addEventListener("input", calc);
-    el(id).addEventListener("change", calc);
-  });
-
-  calc();
+  mount(indices, "grid-indices");
+  mount(commod, "grid-commod");
+  mount(fx, "grid-fx");
+  document.getElementById("y").textContent = new Date().getFullYear();
 </script>
 </body>
 </html>
