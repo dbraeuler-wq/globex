@@ -14,9 +14,6 @@
       --muted:rgba(234,240,255,.65);
       --shadow:0 18px 50px rgba(0,0,0,.55);
       --warn:#FFD66E;
-      --pill:rgba(255,255,255,.07);
-      --pill2:rgba(255,255,255,.10);
-      --good:#7CFFB2;
       --bad:#FF7C7C;
     }
     *{box-sizing:border-box}
@@ -106,6 +103,15 @@
       font-size:12px;
       color:var(--warn);
     }
+    .warnBad{
+      margin-top:10px;
+      border:1px solid rgba(255,124,124,.40);
+      background:rgba(255,124,124,.10);
+      border-radius:12px;
+      padding:10px;
+      font-size:12px;
+      color:var(--bad);
+    }
 
     .tabs{
       display:flex; gap:8px;
@@ -143,7 +149,7 @@
       padding:8px 10px;
       border-radius:999px;
       border:1px solid var(--stroke);
-      background:var(--pill);
+      background:rgba(255,255,255,.07);
       color:var(--text);
       font-size:12px;
       font-weight:800;
@@ -259,9 +265,7 @@
       color:rgba(234,240,255,.35);
     }
 
-    .toolsRow{
-      display:flex;gap:8px;flex-wrap:wrap
-    }
+    .toolsRow{display:flex;gap:8px;flex-wrap:wrap}
     .tool{
       padding:8px 10px;border-radius:12px;border:1px solid var(--stroke2);
       background:rgba(255,255,255,.06);color:var(--text);font-weight:900;cursor:pointer;font-size:12px
@@ -275,7 +279,7 @@
   <div class="wrap">
     <section class="panel">
       <h1 id="title">CONTRACTX Converter</h1>
-      <div class="sub">Converter + Journal: klickbar, automatisiert, als PDF exportierbar.</div>
+      <div class="sub">Converter + Journal: Offset-Mapping + Journal-Automations + PDF.</div>
 
       <div class="row">
         <div class="card">
@@ -377,10 +381,13 @@
           <div class="tvTop">
             <div class="note" style="margin:0">Live Chart (TradingView)</div>
             <div class="tfRow" id="tfRow">
-              <div class="pill active" data-tf="15">15m</div>
+              <div class="pill active" data-tf="5">5m</div>
+              <div class="pill" data-tf="15">15m</div>
               <div class="pill" data-tf="60">1h</div>
               <div class="pill" data-tf="240">4h</div>
               <div class="pill" data-tf="D">D</div>
+              <div class="pill" data-tf="W">W</div>
+              <div class="pill" data-tf="M">M</div>
             </div>
           </div>
 
@@ -474,10 +481,14 @@
           </div>
 
           <div class="kpiRow">
-            <div class="kpi"><div class="k">Risk (R)</div><div class="v" id="kRisk">—</div></div>
-            <div class="kpi"><div class="k">Reward</div><div class="v" id="kReward">—</div></div>
+            <div class="kpi"><div class="k">Risk (R)</div><div class="v" id="kRiskCash">—</div></div>
+            <div class="kpi"><div class="k">Reward</div><div class="v" id="kRewardCash">—</div></div>
             <div class="kpi"><div class="k">R-Multiple</div><div class="v" id="kRmult">—</div></div>
             <div class="kpi"><div class="k">Offset</div><div class="v" id="kOffset">—</div></div>
+          </div>
+
+          <div class="warnBad" id="rewardWarn" style="display:none">
+            ❌ TP liegt „falschrum“ zum Setup → Reward ist negativ. Check Entry/SL/TP oder Direction.
           </div>
 
           <div class="warn" id="dirWarn" style="display:none">
@@ -507,9 +518,14 @@
   </div>
 
 <script>
-  function n(v){ if(!v) return NaN; return Number(String(v).replace(",", ".").trim()); }
+  function n(v){ if(v===undefined||v===null) return NaN; const s=String(v).replace(",", ".").trim(); if(!s) return NaN; return Number(s); }
   function isNum(x){ return Number.isFinite(x); }
   function fmt2(x){ return isNum(x) ? Number(x).toFixed(2) : "—"; }
+  function money(x){
+    if(!isNum(x)) return "—";
+    const v = Number(x);
+    return (v < 0 ? "-$" : "$") + Math.abs(v).toFixed(2);
+  }
 
   const RAW = (new URLSearchParams(location.search).get("symbol") || "ES").toUpperCase().trim();
   const cleaned = RAW.replace(/[^A-Z0-9!]/g, "");
@@ -528,10 +544,12 @@
   const isInverted = FX_INVERTED.includes(sym);
   if (isInverted) document.getElementById("invertHint").style.display = "block";
 
+  // TradingView Proxy symbols (embed works publicly)
   const TV_MAP = {
     ES:"OANDA:SPX500USD", NQ:"OANDA:NAS100USD", YM:"OANDA:US30USD", RTY:"OANDA:US2000USD",
     GC:"TVC:GOLD", SI:"TVC:SILVER", CL:"TVC:USOIL", NG:"TVC:NATGAS",
-    "6E":"FX:EURUSD","6B":"FX:GBPUSD","6A":"FX:AUDUSD","6N":"FX:NZDUSD","6C":"FX:USDCAD","6J":"FX:USDJPY","6S":"FX:USDCHF"
+    "6E":"FX:EURUSD","6B":"FX:GBPUSD","6A":"FX:AUDUSD","6N":"FX:NZDUSD",
+    "6C":"FX:USDCAD","6J":"FX:USDJPY","6S":"FX:USDCHF"
   };
   const tvSymbol = TV_MAP[sym] || "OANDA:SPX500USD";
   document.getElementById("chartNote").textContent = `Chart: ${tvSymbol} (Proxy).`;
@@ -559,7 +577,7 @@
   tabNotes.addEventListener("click", ()=>setTab("notes"));
 
   // tradingview
-  let tvInterval = "15";
+  let tvInterval = "5";
   function renderTV(){
     const script = document.createElement("script");
     script.type = "text/javascript";
@@ -568,7 +586,8 @@
     script.textContent = JSON.stringify({
       autosize:true, symbol:tvSymbol, interval:tvInterval,
       timezone:"Europe/Berlin", theme:"dark", style:"1", locale:"en",
-      allow_symbol_change:false, calendar:false, hide_top_toolbar:false, hide_legend:false,
+      allow_symbol_change:false, calendar:false,
+      hide_top_toolbar:false, hide_legend:false,
       support_host:"https://www.tradingview.com"
     });
     const container = document.getElementById("tv_chart");
@@ -577,18 +596,22 @@
   }
   function setTF(tf){
     tvInterval = tf;
-    document.querySelectorAll("#tfRow .pill").forEach(p=>p.classList.toggle("active", p.getAttribute("data-tf") === tf));
+    document.querySelectorAll("#tfRow .pill")
+      .forEach(p=>p.classList.toggle("active", p.getAttribute("data-tf") === tf));
     renderTV();
   }
-  document.querySelectorAll("#tfRow .pill").forEach(p=>p.addEventListener("click", ()=>setTF(p.getAttribute("data-tf"))));
+  document.querySelectorAll("#tfRow .pill")
+    .forEach(p=>p.addEventListener("click", ()=>setTF(p.getAttribute("data-tf"))));
   renderTV();
 
   // converter
   let offset = NaN;
+
   function calcProp(){
     const e = n(document.getElementById("entryF").value);
     const s = n(document.getElementById("slF").value);
     const tp = n(document.getElementById("tpF").value);
+
     if(!isNum(offset)){
       document.getElementById("entryP").textContent = "—";
       document.getElementById("slP").textContent = "—";
@@ -622,34 +645,60 @@
   document.getElementById("copySL").addEventListener("click", ()=>copyVal(document.getElementById("slP").textContent));
   document.getElementById("copyTP").addEventListener("click", ()=>copyVal(document.getElementById("tpP").textContent));
 
-  // KPIs
-  function detectDirection(){
+  // direction helpers
+  function detectDirectionFromEntrySL(){
     const e = n(document.getElementById("entryF").value);
     const s = n(document.getElementById("slF").value);
-    if(!isNum(e) || !isNum(s)) return null;
-    if(e > s) return "long";
-    if(e < s) return "short";
-    return null;
+    if(!isNum(e) || !isNum(s) || e === s) return null;
+    // long typical: SL below entry
+    return (s < e) ? "long" : "short";
   }
   function getDirection(){
     const sel = document.getElementById("jDir").value;
     if(sel !== "auto") return sel;
-    const d = detectDirection();
-    return d || "auto";
+    return detectDirectionFromEntrySL() || "auto";
   }
+
+  // KPIs: Risk$ + Reward$ (signed)
   function updateKPIs(){
     const e = n(document.getElementById("entryF").value);
     const s = n(document.getElementById("slF").value);
     const tp = n(document.getElementById("tpF").value);
 
-    const risk = (isNum(e) && isNum(s)) ? Math.abs(e - s) : NaN;
-    const reward = (isNum(e) && isNum(tp)) ? Math.abs(tp - e) : NaN;
-    const rmult = (isNum(risk) && risk > 0 && isNum(reward)) ? (reward / risk) : NaN;
+    const dir = getDirection();
 
-    document.getElementById("kRisk").textContent = fmt2(risk);
-    document.getElementById("kReward").textContent = fmt2(reward);
+    // risk points (always positive, if possible)
+    let riskPts = NaN;
+    if(isNum(e) && isNum(s) && e !== s) riskPts = Math.abs(e - s);
+
+    // signed reward points depends on direction
+    // long: tp - entry ; short: entry - tp
+    let rewardPtsSigned = NaN;
+    if(isNum(e) && isNum(tp)){
+      if(dir === "long") rewardPtsSigned = tp - e;
+      else if(dir === "short") rewardPtsSigned = e - tp;
+      else rewardPtsSigned = NaN; // auto not sure
+    }
+
+    // signed R multiple
+    let rmult = NaN;
+    if(isNum(riskPts) && riskPts > 0 && isNum(rewardPtsSigned)){
+      rmult = rewardPtsSigned / riskPts; // can be negative
+    }
+
+    // cash
+    const riskCashInput = n(document.getElementById("jRiskUsd").value);
+    const riskCash = isNum(riskCashInput) ? Math.abs(riskCashInput) : NaN; // risk should be positive
+    const rewardCash = (isNum(riskCash) && isNum(rmult)) ? (riskCash * rmult) : NaN;
+
+    document.getElementById("kRiskCash").textContent = isNum(riskCash) ? money(riskCash) : "—";
+    document.getElementById("kRewardCash").textContent = isNum(rewardCash) ? money(rewardCash) : "—";
     document.getElementById("kRmult").textContent = isNum(rmult) ? (rmult.toFixed(2) + "R") : "—";
     document.getElementById("kOffset").textContent = fmt2(isNum(offset) ? offset : NaN);
+
+    // warnings
+    const badReward = isNum(rmult) && rmult < 0;
+    document.getElementById("rewardWarn").style.display = badReward ? "block" : "none";
 
     document.getElementById("dirWarn").style.display = isInverted ? "block" : "none";
   }
@@ -675,7 +724,7 @@
   }
   renderStars();
 
-  // playbook
+  // playbook config
   const PLAYBOOK = [
     { id:"pb_pos_htf", title:"1) Position im HTF", opts:["sehr teuer","teuer","Gleichgewicht","günstig","sehr günstig"] },
     { id:"pb_trend_htf", title:"2) HTF Trend", opts:["long","short","seitwärts"] },
@@ -740,14 +789,18 @@
     autoSave(true);
   });
 
-  // images
+  // images: + 5m, weekly, monthly
   const IMG_SLOTS = [
+    {id:"imgMN", label:"Monthly screenshot"},
+    {id:"imgW",  label:"Weekly screenshot"},
     {id:"imgD",  label:"Daily screenshot"},
     {id:"img4H", label:"4H screenshot"},
     {id:"img1H", label:"1H screenshot"},
     {id:"img15", label:"15m screenshot"},
+    {id:"img5",  label:"5m screenshot"},
   ];
   const images = {};
+
   async function compressImageToDataURL(file, maxDim=1400, quality=0.82){
     const blobURL = URL.createObjectURL(file);
     const img = await new Promise((res, rej)=>{
@@ -770,6 +823,7 @@
     URL.revokeObjectURL(blobURL);
     return canvas.toDataURL("image/jpeg", quality);
   }
+
   function renderImages(){
     const grid = document.getElementById("imgGrid");
     grid.innerHTML = "";
@@ -842,24 +896,36 @@
 
   // storage
   const editor = document.getElementById("editor");
-  function storageKey(){ return `contractx.journal.v4.${brokerVal()}.${sym}`; }
+  function storageKey(){ return `contractx.journal.v5.${brokerVal()}.${sym}`; }
 
   function computeSummary(){
     const e=n(document.getElementById("entryF").value);
     const s=n(document.getElementById("slF").value);
     const tp=n(document.getElementById("tpF").value);
-    const risk=(isNum(e)&&isNum(s))?Math.abs(e-s):NaN;
-    const reward=(isNum(e)&&isNum(tp))?Math.abs(tp-e):NaN;
-    const rmult=(isNum(risk)&&risk>0&&isNum(reward))?(reward/risk):NaN;
-    const riskCash=n(document.getElementById("jRiskUsd").value);
+    const dir=getDirection();
+
+    const riskPts=(isNum(e)&&isNum(s)&&e!==s)?Math.abs(e-s):NaN;
+
+    let rewardPtsSigned=NaN;
+    if(isNum(e)&&isNum(tp)){
+      if(dir==="long") rewardPtsSigned = tp - e;
+      else if(dir==="short") rewardPtsSigned = e - tp;
+    }
+
+    const rmult=(isNum(riskPts)&&riskPts>0&&isNum(rewardPtsSigned))?(rewardPtsSigned/riskPts):NaN;
+
+    const riskCashInput=n(document.getElementById("jRiskUsd").value);
+    const riskCash=isNum(riskCashInput)?Math.abs(riskCashInput):NaN;
+    const rewardCash=(isNum(riskCash)&&isNum(rmult))?(riskCash*rmult):NaN;
 
     return {
-      direction:getDirection(),
-      risk:isNum(risk)?risk:null,
-      reward:isNum(reward)?reward:null,
+      direction:dir,
+      riskPts:isNum(riskPts)?riskPts:null,
+      rewardPtsSigned:isNum(rewardPtsSigned)?rewardPtsSigned:null,
       rmult:isNum(rmult)?rmult:null,
       offset:isNum(offset)?offset:null,
       riskCash:isNum(riskCash)?riskCash:null,
+      rewardCash:isNum(rewardCash)?rewardCash:null,
       duration:document.getElementById("jDuration").value || "",
       crv:document.getElementById("jCrv").value || (pbState["pb_crv"]||""),
       prop:{
@@ -911,7 +977,6 @@
 
     const raw=localStorage.getItem(storageKey());
     if(!raw){
-      // default date if empty
       const el = document.getElementById("jDate");
       if(!el.value) el.value = todayISO();
       document.getElementById("jStatus").textContent="No saved journal yet.";
@@ -972,6 +1037,7 @@
     renderImages();
 
     document.getElementById("jStatus").textContent = "Cleared.";
+    updateKPIs();
   }
 
   function insertSummary(){
@@ -981,10 +1047,9 @@
     const bias=document.getElementById("jBias").value.trim() || "-";
     const dir=sum.direction || "auto";
     const rtxt=sum.rmult!=null?sum.rmult.toFixed(2)+"R":"—";
-    const risk=sum.risk!=null?fmt2(sum.risk):"—";
-    const reward=sum.reward!=null?fmt2(sum.reward):"—";
     const off=sum.offset!=null?fmt2(sum.offset):"—";
-    const cash=sum.riskCash!=null?("$"+fmt2(sum.riskCash)):"—";
+    const cashRisk=sum.riskCash!=null?money(sum.riskCash):"—";
+    const cashReward=sum.rewardCash!=null?money(sum.rewardCash):"—";
     const inv=isInverted ? " (INVERTED FX: Future short = FX long)" : "";
 
     const pbLines=PLAYBOOK.map(it=>{
@@ -999,9 +1064,7 @@ Date: ${date}
 Planned duration: ${duration}
 Bias/Plan: ${bias}
 Direction: ${dir}
-Risk-$: ${cash}
-Risk: ${risk} • Reward: ${reward} • R: ${rtxt}
-CRV: ${sum.crv || "—"}
+Risk$: ${cashRisk} • Reward$: ${cashReward} • R: ${rtxt}
 Offset (Prop−Future): ${off}
 Prop Entry/SL/TP: ${sum.prop.entry} / ${sum.prop.sl} / ${sum.prop.tp}
 
@@ -1041,24 +1104,27 @@ ${pbLines}
     doc.setFont("helvetica","normal");
 
     const off=sum.offset!=null?fmt2(sum.offset):"—";
-    const risk=sum.risk!=null?fmt2(sum.risk):"—";
-    const reward=sum.reward!=null?fmt2(sum.reward):"—";
     const rmult=sum.rmult!=null?(sum.rmult.toFixed(2)+"R"):"—";
-    const cash=sum.riskCash!=null?("$"+fmt2(sum.riskCash)):"—";
+    const cashRisk=sum.riskCash!=null?money(sum.riskCash):"—";
+    const cashReward=sum.rewardCash!=null?money(sum.rewardCash):"—";
 
     doc.text(`Date: ${date}`, margin, y); y+=16;
     doc.text(`Planned duration: ${duration}`, margin, y); y+=16;
     doc.text(`Bias/Plan: ${bias}`, margin, y); y+=16;
     doc.text(`Direction: ${sum.direction || "-"}`, margin, y); y+=16;
-    doc.text(`Risk-$: ${cash}`, margin, y); y+=16;
-    doc.text(`Risk: ${risk}    Reward: ${reward}    R-Multiple: ${rmult}`, margin, y); y+=16;
-    doc.text(`CRV: ${sum.crv || "—"}`, margin, y); y+=16;
+    doc.text(`Risk$: ${cashRisk}    Reward$: ${cashReward}    R: ${rmult}`, margin, y); y+=16;
     doc.text(`Offset (Prop−Future): ${off}`, margin, y); y+=16;
     doc.text(`Prop Entry/SL/TP: ${sum.prop.entry} / ${sum.prop.sl} / ${sum.prop.tp}`, margin, y); y+=18;
 
     if(isInverted){
       doc.setFont("helvetica","bold");
       doc.text("INVERTED FX: Future short = FX long (und umgekehrt).", margin, y);
+      doc.setFont("helvetica","normal");
+      y+=18;
+    }
+    if(sum.rmult!=null && sum.rmult < 0){
+      doc.setFont("helvetica","bold");
+      doc.text("WARNING: Reward is negative (TP wrong side vs setup).", margin, y);
       doc.setFont("helvetica","normal");
       y+=18;
     }
@@ -1125,6 +1191,7 @@ ${pbLines}
           .muted{color:#666;font-size:12px;}
           .box{border:1px solid #ddd;border-radius:10px;padding:14px;margin-top:12px;}
           pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;}
+          .bad{border:1px solid #ff7c7c;background:#ffecec;border-radius:10px;padding:10px;margin-top:10px;}
         </style>
       </head><body>
         <h1>CONTRACTX — Journal</h1>
@@ -1136,13 +1203,15 @@ ${pbLines}
           Planned duration: ${esc(duration)}<br>
           Bias/Plan: ${esc(bias)}<br>
           Direction: ${esc(sum.direction || "-")}<br>
-          Risk-$: ${esc(sum.riskCash!=null?("$"+sum.riskCash.toFixed(2)):"—")}<br>
-          Risk: ${esc(sum.risk!=null?sum.risk.toFixed(2):"—")} • Reward: ${esc(sum.reward!=null?sum.reward.toFixed(2):"—")} • R: ${esc(sum.rmult!=null?(sum.rmult.toFixed(2)+"R"):"—")}<br>
-          CRV: ${esc(sum.crv || "—")}<br>
+          Risk$: ${esc(sum.riskCash!=null?money(sum.riskCash):"—")}<br>
+          Reward$: ${esc(sum.rewardCash!=null?money(sum.rewardCash):"—")}<br>
+          R: ${esc(sum.rmult!=null?(sum.rmult.toFixed(2)+"R"):"—")}<br>
           Offset (Prop−Future): ${esc(sum.offset!=null?sum.offset.toFixed(2):"—")}<br>
           Prop Entry/SL/TP: ${esc(sum.prop.entry)} / ${esc(sum.prop.sl)} / ${esc(sum.prop.tp)}<br>
           ${isInverted ? "<br><b>INVERTED FX:</b> Future short = FX long (und umgekehrt)." : ""}
         </div>
+
+        ${ (sum.rmult!=null && sum.rmult < 0) ? `<div class="bad"><b>WARNING:</b> Reward is negative (TP wrong side vs setup).</div>` : ""}
 
         <div class="box">
           <b>Playbook</b><br>
@@ -1186,8 +1255,8 @@ ${pbLines}
 
   // init
   setMeta();
-  updateKPIs();
   load();
+  updateKPIs();
   calcProp();
 </script>
 
