@@ -1,252 +1,279 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CONTRACTX — Converter</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CONTRACTX — Converter</title>
 
-  <style>
-    :root{
-      --bg:#070A0F;
-      --stroke: rgba(255,255,255,.12);
-      --stroke2: rgba(255,255,255,.22);
-      --text:#EAF0FF;
-      --muted: rgba(234,240,255,.70);
-      --muted2: rgba(234,240,255,.45);
-      --shadow: 0 18px 50px rgba(0,0,0,.55);
-      --radius:18px;
-      --warn:#FFD66E;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-      color:var(--text);
-      background:
-        radial-gradient(1200px 800px at 15% 10%, rgba(40,110,255,.22), transparent 60%),
-        radial-gradient(900px 700px at 85% 20%, rgba(255,215,80,.12), transparent 60%),
-        var(--bg);
-    }
-    .wrap{max-width:1100px;margin:0 auto;padding:24px}
-    .panel{
-      background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));
-      border:1px solid var(--stroke);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:22px;
-    }
-    h1{margin:0;font-size:26px}
-    .sub{color:var(--muted);font-size:13px;margin-top:6px}
+<style>
+:root{
+  --bg:#070A0F;
+  --stroke:rgba(255,255,255,.12);
+  --stroke2:rgba(255,255,255,.22);
+  --text:#EAF0FF;
+  --muted:rgba(234,240,255,.65);
+  --shadow:0 18px 50px rgba(0,0,0,.55);
+  --warn:#FFD66E;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  color:var(--text);
+  background:
+    radial-gradient(1200px 800px at 15% 10%, rgba(40,110,255,.22), transparent 60%),
+    radial-gradient(900px 700px at 85% 20%, rgba(255,215,80,.12), transparent 60%),
+    var(--bg);
+}
+.wrap{max-width:1200px;margin:0 auto;padding:24px}
+.panel{
+  background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));
+  border:1px solid var(--stroke);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  padding:22px;
+}
+h1{margin:0;font-size:26px}
+.sub{margin-top:6px;font-size:13px;color:var(--muted)}
 
-    .row{
-      margin-top:18px;
-      display:grid;
-      grid-template-columns:1.05fr .95fr;
-      gap:14px;
-    }
-    @media(max-width:900px){.row{grid-template-columns:1fr}}
+.row{
+  margin-top:18px;
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  gap:14px;
+}
+@media(max-width:900px){.row{grid-template-columns:1fr}}
 
-    .card{
-      border:1px solid var(--stroke);
-      border-radius:16px;
-      background:rgba(0,0,0,.25);
-      padding:16px;
-    }
+.card{
+  border:1px solid var(--stroke);
+  border-radius:16px;
+  background:rgba(0,0,0,.25);
+  padding:16px;
+}
 
-    label{font-size:12px;color:var(--muted2);display:block;margin-bottom:6px}
-    input,select{
-      width:100%;
-      padding:13px 14px;
-      border-radius:14px;
-      border:1px solid var(--stroke2);
-      background:rgba(0,0,0,.35);
-      color:var(--text);
-      font-size:15px;
-    }
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+input,select{
+  width:100%;
+  padding:13px 14px;
+  border-radius:14px;
+  border:1px solid var(--stroke2);
+  background:rgba(0,0,0,.35);
+  color:var(--text);
+  font-size:15px;
+}
 
-    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    @media(max-width:520px){.two{grid-template-columns:1fr}}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:520px){.two{grid-template-columns:1fr}}
 
-    .btn{
-      margin-top:10px;
-      padding:11px 14px;
-      border-radius:14px;
-      border:1px solid var(--stroke2);
-      background:rgba(255,255,255,.06);
-      color:var(--text);
-      font-weight:700;
-      cursor:pointer;
-    }
+.btn{
+  margin-top:10px;
+  padding:11px 14px;
+  border-radius:14px;
+  border:1px solid var(--stroke2);
+  background:rgba(255,255,255,.06);
+  color:var(--text);
+  font-weight:800;
+  cursor:pointer;
+}
 
-    .status{margin-top:10px;font-size:12px;color:var(--muted2)}
+.big{
+  border:1px solid var(--stroke);
+  border-radius:16px;
+  padding:16px;
+  background:rgba(0,0,0,.35);
+}
+.big .t{font-size:12px;color:var(--muted)}
+.big .v{font-size:28px;font-weight:900;margin-top:6px}
 
-    .big{
-      border:1px solid var(--stroke);
-      border-radius:16px;
-      padding:16px;
-      background:rgba(0,0,0,.35);
-    }
-    .big .t{font-size:12px;color:var(--muted2)}
-    .big .v{font-size:28px;font-weight:900;margin-top:6px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+@media(max-width:520px){.kv{grid-template-columns:1fr}}
 
-    .kv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-    @media(max-width:520px){.kv{grid-template-columns:1fr}}
-
-    .note{
-      margin-top:12px;
-      font-size:12px;
-      color:var(--muted2);
-      line-height:1.45;
-    }
-    .warn{
-      margin-top:12px;
-      border:1px solid rgba(255,214,110,.35);
-      background:rgba(255,214,110,.08);
-      border-radius:12px;
-      padding:10px;
-      font-size:12px;
-      color:var(--warn);
-    }
-  </style>
+.note{margin-top:12px;font-size:12px;color:var(--muted);line-height:1.45}
+.warn{
+  margin-top:12px;
+  border:1px solid rgba(255,214,110,.35);
+  background:rgba(255,214,110,.08);
+  border-radius:12px;
+  padding:10px;
+  font-size:12px;
+  color:var(--warn);
+}
+</style>
 </head>
 
 <body>
 <div class="wrap">
-  <section class="panel">
-    <h1 id="title">Converter</h1>
-    <div class="sub">
-      Links: Future + Prop-Preis & Trade-Plan.  
-      Rechts: **fertige Prop-Preise zum Kopieren**.
-    </div>
+<section class="panel">
+  <h1 id="title">Converter</h1>
+  <div class="sub">
+    Links: Kalibrierung + Trade-Plan (Future).  
+    Rechts: **fertige Prop-Preise**. Unten: **Live-Chart (TradingView)**.
+  </div>
 
-    <div class="row">
-      <!-- LEFT -->
-      <div class="card">
+  <div class="row">
+    <!-- LEFT -->
+    <div class="card">
+      <div class="two">
+        <div>
+          <label>Broker</label>
+          <select id="broker">
+            <option>CampusFund</option>
+            <option>FTMO</option>
+            <option>FundingPips</option>
+          </select>
+        </div>
+        <div>
+          <label>Mode</label>
+          <select id="mode">
+            <option value="auto">Auto</option>
+            <option value="fx">FX</option>
+            <option value="offset">Offset</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="two" style="margin-top:10px">
+        <div>
+          <label>Future aktuell</label>
+          <input id="futureNow">
+        </div>
+        <div>
+          <label>Prop aktuell (Mid)</label>
+          <input id="propNow">
+        </div>
+      </div>
+
+      <button class="btn" id="setOffset">Set Offset</button>
+
+      <div class="note">
+        Offset (Prop − Future): <strong id="offsetVal">—</strong>
+      </div>
+
+      <div style="margin-top:14px">
+        <label>Trade-Plan (Future)</label>
         <div class="two">
-          <div>
-            <label>Broker</label>
-            <select id="broker">
-              <option>CampusFund</option>
-              <option>FTMO</option>
-              <option>FundingPips</option>
-            </select>
-          </div>
-          <div>
-            <label>Mode</label>
-            <select id="mode">
-              <option value="auto">Auto</option>
-              <option value="fx">FX</option>
-              <option value="offset">Offset</option>
-            </select>
-          </div>
+          <input id="entryF" placeholder="Entry">
+          <input id="slF" placeholder="SL">
         </div>
-
-        <div class="two" style="margin-top:10px">
-          <div>
-            <label>Future aktuell</label>
-            <input id="futureNow">
-          </div>
-          <div>
-            <label>Prop aktuell (Mid)</label>
-            <input id="propNow">
-          </div>
-        </div>
-
-        <button class="btn" id="setOffset">Set Offset</button>
-
-        <div class="status">
-          Offset (Prop − Future): <strong id="offsetVal">—</strong>
-        </div>
-
-        <div style="margin-top:14px">
-          <label>Trade-Plan (Future)</label>
-          <div class="two">
-            <input id="entryF" placeholder="Entry">
-            <input id="slF" placeholder="SL">
-          </div>
-          <input id="tpF" placeholder="TP" style="margin-top:10px">
-        </div>
-      </div>
-
-      <!-- RIGHT -->
-      <div class="card">
-        <div class="big">
-          <div class="t">Prop Entry</div>
-          <div class="v" id="entryP">—</div>
-          <button class="btn" onclick="copy(entryP.textContent)">Copy Entry</button>
-        </div>
-
-        <div class="kv">
-          <div class="big">
-            <div class="t">Prop SL</div>
-            <div class="v" id="slP">—</div>
-            <button class="btn" onclick="copy(slP.textContent)">Copy SL</button>
-          </div>
-          <div class="big">
-            <div class="t">Prop TP</div>
-            <div class="v" id="tpP">—</div>
-            <button class="btn" onclick="copy(tpP.textContent)">Copy TP</button>
-          </div>
-        </div>
-
-        <!-- INVERT WARNING -->
-        <div class="warn" id="invertHint" style="display:none">
-          ⚠️ Dieses FX-Pair ist <strong>invertiert</strong><br>
-          <strong>Future SHORT = FX LONG</strong><br>
-          <strong>Future LONG = FX SHORT</strong>
-        </div>
+        <input id="tpF" placeholder="TP" style="margin-top:10px">
       </div>
     </div>
-  </section>
+
+    <!-- RIGHT -->
+    <div class="card">
+      <div class="big">
+        <div class="t">Prop Entry</div>
+        <div class="v" id="entryP">—</div>
+        <button class="btn" onclick="copyVal(entryP.textContent)">Copy Entry</button>
+      </div>
+
+      <div class="kv">
+        <div class="big">
+          <div class="t">Prop SL</div>
+          <div class="v" id="slP">—</div>
+          <button class="btn" onclick="copyVal(slP.textContent)">Copy SL</button>
+        </div>
+        <div class="big">
+          <div class="t">Prop TP</div>
+          <div class="v" id="tpP">—</div>
+          <button class="btn" onclick="copyVal(tpP.textContent)">Copy TP</button>
+        </div>
+      </div>
+
+      <div class="warn" id="invertHint" style="display:none">
+        ⚠️ Dieses FX-Pair ist <strong>invertiert</strong><br>
+        <strong>Future SHORT = FX LONG</strong><br>
+        <strong>Future LONG = FX SHORT</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHART -->
+  <div class="card" style="margin-top:16px">
+    <div class="note" style="margin-top:0">Live Chart (TradingView)</div>
+    <div id="tv_chart" style="height:520px"></div>
+  </div>
+</section>
 </div>
 
+<script src="https://s3.tradingview.com/tv.js"></script>
 <script>
-const FX_INVERTED = ["6C","6J","6S"];
+const FX_INVERTED=["6C","6J","6S"];
 
-const qs = new URLSearchParams(location.search);
-const sym = (qs.get("symbol")||"ES").toUpperCase().slice(0,2);
+const TV_MAP={
+  ES:"CME_MINI:ES1!",
+  NQ:"CME_MINI:NQ1!",
+  YM:"CBOT:YM1!",
+  RTY:"CME_MINI:RTY1!",
+  GC:"COMEX:GC1!",
+  SI:"COMEX:SI1!",
+  CL:"NYMEX:CL1!",
+  NG:"NYMEX:NG1!",
+  "6E":"CME:6E1!",
+  "6B":"CME:6B1!",
+  "6A":"CME:6A1!",
+  "6N":"CME:6N1!",
+  "6C":"CME:6C1!",
+  "6J":"CME:6J1!",
+  "6S":"CME:6S1!"
+};
 
-title.textContent = sym + " Converter";
+const qs=new URLSearchParams(location.search);
+const sym=(qs.get("symbol")||"ES").toUpperCase().slice(0,2);
+title.textContent=sym+" Converter";
 
 if(FX_INVERTED.includes(sym)){
   invertHint.style.display="block";
 }
 
-function num(v){
+function n(v){
   if(!v) return NaN;
   return Number(v.replace(",","."));
 }
 
-let offset = NaN;
+let offset=NaN;
 
-setOffset.onclick = ()=>{
-  const f = num(futureNow.value);
-  const p = num(propNow.value);
+setOffset.onclick=()=>{
+  const f=n(futureNow.value);
+  const p=n(propNow.value);
   if(isFinite(f)&&isFinite(p)){
-    offset = p - f;
-    offsetVal.textContent = offset.toFixed(2);
+    offset=p-f;
+    offsetVal.textContent=offset.toFixed(2);
     calc();
   }
 };
 
 function calc(){
-  const e = num(entryF.value);
-  const s = num(slF.value);
-  const t = num(tpF.value);
+  const e=n(entryF.value);
+  const s=n(slF.value);
+  const t=n(tpF.value);
 
-  if(isFinite(e)) entryP.textContent = (e + offset).toFixed(2);
-  if(isFinite(s)) slP.textContent = (s + offset).toFixed(2);
-  if(isFinite(t)) tpP.textContent = (t + offset).toFixed(2);
+  if(isFinite(e)) entryP.textContent=(e+offset).toFixed(2);
+  if(isFinite(s)) slP.textContent=(s+offset).toFixed(2);
+  if(isFinite(t)) tpP.textContent=(t+offset).toFixed(2);
 }
 
 ["futureNow","propNow","entryF","slF","tpF"].forEach(id=>{
   document.getElementById(id).addEventListener("input",calc);
 });
 
-function copy(txt){
-  if(!txt||txt==="—") return;
-  navigator.clipboard.writeText(txt);
+function copyVal(v){
+  if(!v||v==="—") return;
+  navigator.clipboard.writeText(v);
 }
+
+// TradingView Chart
+new TradingView.widget({
+  autosize:true,
+  symbol:TV_MAP[sym]||"CME_MINI:ES1!",
+  interval:"5",
+  timezone:"Europe/Berlin",
+  theme:"dark",
+  style:"1",
+  locale:"en",
+  allow_symbol_change:false,
+  container_id:"tv_chart"
+});
 </script>
 </body>
 </html>
