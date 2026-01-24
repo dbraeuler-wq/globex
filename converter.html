@@ -67,7 +67,6 @@
       outline:none;
     }
     input::placeholder, textarea::placeholder{color:rgba(234,240,255,.35)}
-    textarea{resize:vertical;font-size:14px;line-height:1.4}
 
     .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     @media(max-width:520px){.two{grid-template-columns:1fr}}
@@ -192,7 +191,7 @@
       border-radius:16px;
       background:rgba(0,0,0,.35);
       padding:14px;
-      min-height:220px;
+      min-height:180px;
       outline:none;
       line-height:1.45;
       color:var(--text);
@@ -228,24 +227,65 @@
     }
     .star.active{color:var(--text);background:rgba(255,255,255,.12);border-color:var(--stroke2)}
 
-    /* Checklist */
-    .checkgrid{
+    .kpiRow{
       display:grid;
-      grid-template-columns:1fr 1fr;
+      grid-template-columns:1fr 1fr 1fr 1fr;
       gap:10px;
       margin-top:10px;
     }
-    @media(max-width:720px){.checkgrid{grid-template-columns:1fr}}
-    .check{
-      display:flex;gap:10px;align-items:flex-start;
+    @media(max-width:900px){.kpiRow{grid-template-columns:1fr 1fr}}
+    @media(max-width:520px){.kpiRow{grid-template-columns:1fr}}
+    .kpi{
       border:1px solid var(--stroke);
       border-radius:14px;
       padding:10px 12px;
       background:rgba(0,0,0,.22);
     }
-    .check input{width:18px;height:18px;margin-top:2px}
-    .check .ct{font-weight:900;font-size:13px}
-    .check .cd{font-size:12px;color:var(--muted);margin-top:2px}
+    .kpi .k{font-size:12px;color:var(--muted);font-weight:900}
+    .kpi .v{margin-top:6px;font-size:18px;font-weight:950}
+    .v.good{color:var(--good)}
+    .v.bad{color:var(--bad)}
+
+    /* Playbook cards */
+    .pbGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    @media(max-width:900px){.pbGrid{grid-template-columns:1fr}}
+    .pbCard{
+      border:1px solid var(--stroke);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(0,0,0,.22);
+    }
+    .pbTitle{
+      font-weight:950;
+      font-size:13px;
+      margin-bottom:8px;
+    }
+    .pbOpts{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .opt{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.05);
+      cursor:pointer;
+      user-select:none;
+      font-size:12px;
+      color:var(--text);
+    }
+    .opt input{width:14px;height:14px;margin:0}
+    .opt:hover{background:rgba(255,255,255,.08)}
+    .pbHint{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.35}
 
     /* Image slots */
     .imgGrid{
@@ -288,28 +328,8 @@
       font-size:12px;
     }
     .mini:hover{background:rgba(255,255,255,.10)}
-
-    .kpiRow{
-      display:grid;
-      grid-template-columns:1fr 1fr 1fr 1fr;
-      gap:10px;
-      margin-top:10px;
-    }
-    @media(max-width:900px){.kpiRow{grid-template-columns:1fr 1fr}}
-    @media(max-width:520px){.kpiRow{grid-template-columns:1fr}}
-    .kpi{
-      border:1px solid var(--stroke);
-      border-radius:14px;
-      padding:10px 12px;
-      background:rgba(0,0,0,.22);
-    }
-    .kpi .k{font-size:12px;color:var(--muted);font-weight:900}
-    .kpi .v{margin-top:6px;font-size:18px;font-weight:950}
-    .v.good{color:var(--good)}
-    .v.bad{color:var(--bad)}
   </style>
 
-  <!-- jsPDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
@@ -318,8 +338,7 @@
     <section class="panel">
       <h1 id="title">CONTRACTX Converter</h1>
       <div class="sub">
-        Links: Future + Prop-Mid zur Kalibrierung (Offset). Rechts: fertige Prop-Preise.
-        Unten: Chart + Notes mit Automationen (Direction, R-Multiple, Stars, Checklist, Images) + PDF.
+        Converter + Journal (klickbar, automatisiert): Direction, R-Multiple, Risk-$, Stars, Playbook-Formular, Images + PDF.
       </div>
 
       <div class="row">
@@ -448,13 +467,13 @@
         <div id="panelNotes" class="hidden" style="margin-top:12px">
           <div class="notesTop">
             <div>
-              <div style="font-weight:950">Notes</div>
+              <div style="font-weight:950">Journal</div>
               <div class="note" style="margin-top:4px">
-                Auto: Direction, Risk, Reward, R-Multiple, Stars, Checklist. Bilder reinziehen → PDF nimmt alles mit.
+                Alles klickbar, so wenig tippen wie möglich. PDF nimmt Daten + Playbook + Notes + Images mit.
               </div>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <button class="tool" id="btnInsertBlock" type="button">Insert trade block</button>
+              <button class="tool" id="btnInsertBlock" type="button">Insert summary</button>
               <button class="tool" id="btnSave" type="button">Save</button>
               <button class="tool" id="btnClear" type="button">Clear</button>
               <button class="tool" id="btnPdf" type="button">PDF</button>
@@ -497,12 +516,30 @@
             </div>
 
             <div>
+              <label>Risk $ (Geldbetrag)</label>
+              <input id="jRiskUsd" inputmode="decimal" placeholder="z. B. 450">
+            </div>
+          </div>
+
+          <div class="two" style="margin-top:10px">
+            <div>
               <label>Rating</label>
               <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;
                           padding:10px 12px;border:1px solid var(--stroke2);border-radius:14px;background:rgba(0,0,0,.35)">
                 <div class="stars" id="stars"></div>
                 <div class="pill secondary" id="ratingText">—</div>
               </div>
+            </div>
+
+            <div>
+              <label>CRV (manuell / Playbook)</label>
+              <select id="jCrv">
+                <option value="">—</option>
+                <option>2:1</option>
+                <option>3:1</option>
+                <option>4:1</option>
+                <option>4:1+</option>
+              </select>
             </div>
           </div>
 
@@ -531,8 +568,8 @@
 
           <div class="divider"></div>
 
-          <div style="font-weight:950">Playbook Checklist</div>
-          <div class="checkgrid" id="checkgrid"></div>
+          <div style="font-weight:950">Playbook (klickbar)</div>
+          <div class="pbGrid" id="pbGrid"></div>
 
           <div class="divider"></div>
 
@@ -544,18 +581,9 @@
 
           <div class="divider"></div>
 
-          <div class="toolbar" aria-label="Editor Toolbar">
-            <button class="tool" type="button" data-cmd="bold"><b>B</b></button>
-            <button class="tool" type="button" data-cmd="italic"><i>I</i></button>
-            <button class="tool" type="button" data-cmd="underline"><u>U</u></button>
-            <button class="tool" type="button" data-cmd="insertUnorderedList">• List</button>
-            <button class="tool" type="button" data-cmd="insertOrderedList">1. List</button>
-            <button class="tool" type="button" data-cmd="removeFormat">Clear fmt</button>
-            <span class="pill secondary" id="autoInfo">Autosave ✓</span>
-          </div>
-
+          <div style="font-weight:950">Free Notes (optional)</div>
           <div id="editor" class="editor" contenteditable="true" spellcheck="false"
-               data-placeholder="Write your trade note..."></div>
+               data-placeholder="Optional. Wenn’s wichtig ist, schreib’s. Sonst reicht Playbook + KPIs."></div>
 
           <div class="note" id="jStatus"></div>
         </div>
@@ -685,9 +713,8 @@
   tabChart.addEventListener("click", ()=>setTab("chart"));
   tabNotes.addEventListener("click", ()=>setTab("notes"));
 
-  // ---------- tradingview embed (rerender on timeframe change) ----------
-  let tvInterval = "15"; // default
-
+  // ---------- tradingview embed ----------
+  let tvInterval = "15";
   function renderTV(){
     const script = document.createElement("script");
     script.type = "text/javascript";
@@ -707,12 +734,10 @@
       hide_legend: false,
       support_host: "https://www.tradingview.com"
     });
-
     const container = document.getElementById("tv_chart");
     container.innerHTML = "";
     container.appendChild(script);
   }
-
   function setTF(tf){
     tvInterval = tf;
     document.querySelectorAll("#tfRow .pill").forEach(p=>{
@@ -720,12 +745,9 @@
     });
     renderTV();
   }
-
   document.querySelectorAll("#tfRow .pill").forEach(p=>{
     p.addEventListener("click", ()=>setTF(p.getAttribute("data-tf")));
   });
-
-  // initial render
   renderTV();
 
   // ---------- Notes automation ----------
@@ -739,7 +761,6 @@
     if(e < s) return "short";
     return null;
   }
-
   function getDirection(){
     const sel = document.getElementById("jDir").value;
     if(sel !== "auto") return sel;
@@ -792,39 +813,82 @@
   }
   renderStars();
 
-  // ---------- checklist ----------
-  const CHECKS = [
-    {id:"orig_zone",  title:"Original Zone", desc:"Original/fresh zone (nicht 5x getestet)"},
-    {id:"sweep",      title:"Sweep / Liquidity", desc:"Liquidity taken (High/Low sweep)"},
-    {id:"killzone",   title:"Killzone OK", desc:"NY Open / Power Hour / Zeitfenster passt"},
-    {id:"htf_align",  title:"HTF aligned", desc:"Bias/Trend stimmt (oder bewusst countertrend)"},
-    {id:"news_ok",    title:"News OK", desc:"Keine dummen News direkt rein"},
-    {id:"entry_rule", title:"Entry rule met", desc:"Entry-Regel erfüllt (Limit/Trigger wie geplant)"},
-    {id:"mgmt_rule",  title:"Management rule", desc:"BE/Trail/Partial nach Regel"},
-    {id:"risk_ok",    title:"Risk respected", desc:"Risk exakt wie geplant (kein Overtrade)"}
+  // ---------- playbook form ----------
+  const PLAYBOOK = [
+    { id:"pb_pos_htf", title:"1) Position im HTF", opts:["sehr teuer","teuer","Gleichgewicht","günstig","sehr günstig"] },
+    { id:"pb_trend_htf", title:"2) HTF Trend", opts:["long","short","seitwärts"] },
+    { id:"pb_ltf_entry", title:"3) Einstieg auf dem LTF gefunden?", opts:["ja","nein"] },
+    { id:"pb_leave_htf", title:"4a) Zone im HTF verlassen", opts:["explosiv","entschlossen","unentschlossen"] },
+    { id:"pb_leave_ltf", title:"4b) Zone im LTF verlassen", opts:["explosiv","entschlossen","unentschlossen"] },
+    { id:"pb_base", title:"5) Kerzen in der Basis", opts:["0-3","3-5","6+"] },
+    { id:"pb_original", title:"6) Originalität", opts:["ja","nein"] },
+    { id:"pb_flip", title:"7) Flipzone", opts:["ja","nein"] },
+    { id:"pb_crv", title:"8) CRV", opts:["2:1","3:1","4:1","4:1+"] },
+    { id:"pb_tested_ext", title:"9) Erweiterte Version getestet?", opts:["ja","nein","ja, aber weniger als 25%"] },
+    { id:"pb_into_zone", title:"10) Markt kommt in die Zone", opts:["explosiv","steil","stufenartig"] },
+    { id:"pb_twin", title:"11) Zwillingszone", opts:["ja","nein"] },
+    { id:"pb_form", title:"12) Formation", opts:["ABA","ABF","FBF","FBA"] },
+    { id:"pb_idea", title:"13) Tradeidee", opts:["meine eigene","Mentorentrade"] },
   ];
-  const checkState = {};
-  function renderChecklist(){
-    const grid = document.getElementById("checkgrid");
+
+  const pbState = {}; // id -> selected string
+
+  function renderPlaybook(){
+    const grid = document.getElementById("pbGrid");
     grid.innerHTML = "";
-    CHECKS.forEach(c=>{
-      const row = document.createElement("label");
-      row.className = "check";
-      const cb = document.createElement("input");
-      cb.type="checkbox";
-      cb.checked = !!checkState[c.id];
-      cb.addEventListener("change", ()=>{
-        checkState[c.id] = cb.checked;
-        autoSave(true);
+    PLAYBOOK.forEach(item=>{
+      const card = document.createElement("div");
+      card.className = "pbCard";
+
+      const t = document.createElement("div");
+      t.className = "pbTitle";
+      t.textContent = item.title;
+      card.appendChild(t);
+
+      const opts = document.createElement("div");
+      opts.className = "pbOpts";
+
+      item.opts.forEach(opt=>{
+        const lab = document.createElement("label");
+        lab.className = "opt";
+
+        const rb = document.createElement("input");
+        rb.type = "radio";
+        rb.name = item.id;
+        rb.value = opt;
+        rb.checked = (pbState[item.id] === opt);
+        rb.addEventListener("change", ()=>{
+          pbState[item.id] = opt;
+          // sync CRV dropdown too if pb_crv changes
+          if(item.id === "pb_crv"){
+            document.getElementById("jCrv").value = opt;
+          }
+          autoSave(true);
+        });
+
+        const span = document.createElement("span");
+        span.textContent = opt;
+
+        lab.appendChild(rb);
+        lab.appendChild(span);
+        opts.appendChild(lab);
       });
-      const txt = document.createElement("div");
-      txt.innerHTML = `<div class="ct">${c.title}</div><div class="cd">${c.desc}</div>`;
-      row.appendChild(cb);
-      row.appendChild(txt);
-      grid.appendChild(row);
+
+      card.appendChild(opts);
+      grid.appendChild(card);
     });
   }
-  renderChecklist();
+  renderPlaybook();
+
+  // sync jCrv dropdown -> pb_crv
+  document.getElementById("jCrv").addEventListener("change", ()=>{
+    const v = document.getElementById("jCrv").value;
+    if(v){
+      pbState["pb_crv"] = v;
+      renderPlaybook();
+    }
+    autoSave(true);
+  });
 
   // ---------- image slots ----------
   const IMG_SLOTS = [
@@ -842,7 +906,6 @@
     IMG_SLOTS.forEach(slot=>{
       const box = document.createElement("div");
       box.className = "imgSlot";
-      box.dataset.slot = slot.id;
 
       const cap = document.createElement("div");
       cap.className="cap";
@@ -945,22 +1008,11 @@
     URL.revokeObjectURL(blobURL);
     return canvas.toDataURL("image/jpeg", quality);
   }
-
   renderImages();
-
-  // ---------- toolbar formatting ----------
-  document.querySelectorAll(".tool[data-cmd]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const cmd = btn.getAttribute("data-cmd");
-      editor.focus();
-      try { document.execCommand(cmd, false, null); } catch {}
-      autoSave(true);
-    });
-  });
 
   // ---------- storage ----------
   function storageKey(){
-    return `contractx.journal.v2.${brokerVal()}.${sym}`;
+    return `contractx.journal.v3.${brokerVal()}.${sym}`;
   }
 
   function computeSummary(){
@@ -972,18 +1024,49 @@
     const reward = (isNum(e) && isNum(tp)) ? Math.abs(tp - e) : NaN;
     const rmult = (isNum(risk) && risk > 0 && isNum(reward)) ? (reward / risk) : NaN;
 
+    const riskCash = n(document.getElementById("jRiskUsd").value);
+
     return {
       direction: getDirection(),
       risk: isNum(risk) ? risk : null,
       reward: isNum(reward) ? reward : null,
       rmult: isNum(rmult) ? rmult : null,
       offset: isNum(offset) ? offset : null,
+      riskCash: isNum(riskCash) ? riskCash : null,
+      crv: document.getElementById("jCrv").value || (pbState["pb_crv"] || ""),
       prop: {
         entry: document.getElementById("entryP").textContent || "—",
         sl:    document.getElementById("slP").textContent || "—",
         tp:    document.getElementById("tpP").textContent || "—",
-      }
+      },
+      playbook: pbState
     };
+  }
+
+  function save(silent=false){
+    const payload = {
+      ts: Date.now(),
+      date: document.getElementById("jDate").value.trim(),
+      tags: document.getElementById("jTags").value.trim(),
+      bias: document.getElementById("jBias").value.trim(),
+      dir:  document.getElementById("jDir").value,
+      rating,
+      riskCash: document.getElementById("jRiskUsd").value.trim(),
+      crv: document.getElementById("jCrv").value || "",
+      playbook: pbState,
+      text: editor.innerText || "",
+      images,
+      offset: isNum(offset) ? offset : null,
+      computed: computeSummary()
+    };
+    localStorage.setItem(storageKey(), JSON.stringify(payload));
+    document.getElementById("jStatus").textContent = silent ? "Autosaved ✓" : "Saved ✓";
+  }
+
+  let saveTimer = null;
+  function autoSave(silent=true){
+    if(saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(()=>save(silent), 350);
   }
 
   function load(){
@@ -1001,16 +1084,24 @@
       document.getElementById("jTags").value = d.tags || "";
       document.getElementById("jBias").value = d.bias || "";
       document.getElementById("jDir").value  = d.dir || "auto";
+      document.getElementById("jRiskUsd").value = d.riskCash || "";
+      document.getElementById("jCrv").value = d.crv || "";
+
       rating = d.rating || 0;
       renderStars();
 
-      Object.keys(checkState).forEach(k=>delete checkState[k]);
-      if(d.checks){
-        for(const k in d.checks) checkState[k] = !!d.checks[k];
+      // playbook
+      for(const k in pbState) delete pbState[k];
+      if(d.playbook){
+        for(const k in d.playbook) pbState[k] = d.playbook[k];
       }
-      renderChecklist();
+      // ensure CRV sync
+      if(document.getElementById("jCrv").value){
+        pbState["pb_crv"] = document.getElementById("jCrv").value;
+      }
+      renderPlaybook();
 
-      editor.textContent = d.text || ""; // store as plain text to avoid html leakage
+      editor.textContent = d.text || "";
 
       if(d.images){
         for(const k in d.images) images[k] = d.images[k];
@@ -1029,66 +1120,28 @@
     }
   }
 
-  function save(silent=false){
-    const payload = {
-      ts: Date.now(),
-      date: document.getElementById("jDate").value.trim(),
-      tags: document.getElementById("jTags").value.trim(),
-      bias: document.getElementById("jBias").value.trim(),
-      dir:  document.getElementById("jDir").value,
-      rating,
-      checks: checkState,
-      text: editor.innerText || "",
-      images,
-      offset: isNum(offset) ? offset : null,
-      computed: computeSummary()
-    };
-    localStorage.setItem(storageKey(), JSON.stringify(payload));
-    document.getElementById("jStatus").textContent = silent ? "Autosaved ✓" : "Saved ✓";
-  }
-
-  let saveTimer = null;
-  function autoSave(silent=true){
-    if(saveTimer) clearTimeout(saveTimer);
-    saveTimer = setTimeout(()=>save(silent), 350);
-  }
-
   function clearAll(){
     localStorage.removeItem(storageKey());
     document.getElementById("jDate").value = "";
     document.getElementById("jTags").value = "";
     document.getElementById("jBias").value = "";
     document.getElementById("jDir").value = "auto";
+    document.getElementById("jRiskUsd").value = "";
+    document.getElementById("jCrv").value = "";
     editor.textContent = "";
     rating = 0; renderStars();
 
-    Object.keys(checkState).forEach(k=>delete checkState[k]);
-    renderChecklist();
+    for(const k in pbState) delete pbState[k];
+    renderPlaybook();
 
-    Object.keys(images).forEach(k=>delete images[k]);
+    for(const k in images) delete images[k];
     renderImages();
 
     document.getElementById("jStatus").textContent = "Cleared.";
   }
 
-  // ---------- direction ----------
-  function detectDirection(){
-    const e = n(document.getElementById("entryF").value);
-    const s = n(document.getElementById("slF").value);
-    if(!isNum(e) || !isNum(s)) return null;
-    if(e > s) return "long";
-    if(e < s) return "short";
-    return null;
-  }
-  function getDirection(){
-    const sel = document.getElementById("jDir").value;
-    if(sel !== "auto") return sel;
-    const d = detectDirection();
-    return d || "auto";
-  }
-
-  // ---------- trade block insert ----------
-  function insertTradeBlock(){
+  // ---------- summary insertion ----------
+  function insertSummary(){
     const sum = computeSummary();
     const date = document.getElementById("jDate").value.trim() || "-";
     const tags = document.getElementById("jTags").value.trim() || "-";
@@ -1098,19 +1151,30 @@
     const risk = sum.risk != null ? fmt2(sum.risk) : "—";
     const reward = sum.reward != null ? fmt2(sum.reward) : "—";
     const off = sum.offset != null ? fmt2(sum.offset) : "—";
+    const cash = sum.riskCash != null ? ("$" + fmt2(sum.riskCash)) : "—";
+
     const inv = isInverted ? " (INVERTED FX: Future short = FX long)" : "";
 
+    const pbLines = PLAYBOOK.map(it=>{
+      const v = pbState[it.id] || "—";
+      return `- ${it.title.replace(/^\d+\)\s*/,'')}: ${v}`;
+    }).join("\n");
+
     const block =
-`Trade Block
+`=== CONTRACTX SUMMARY ===
 Instrument: ${sym} • Broker: ${brokerVal()}${inv}
 Date/Session: ${date}
 Tags: ${tags}
 Bias/Plan: ${bias}
 Direction: ${dir}
+Risk-$: ${cash}
 Risk: ${risk} • Reward: ${reward} • R: ${rtxt}
+CRV: ${sum.crv || "—"}
 Offset (Prop−Future): ${off}
 Prop Entry/SL/TP: ${sum.prop.entry} / ${sum.prop.sl} / ${sum.prop.tp}
 
+Playbook:
+${pbLines}
 `;
 
     const cur = editor.innerText || "";
@@ -1128,10 +1192,10 @@ Prop Entry/SL/TP: ${sum.prop.entry} / ${sum.prop.sl} / ${sum.prop.tp}
     const pageH = 842;
     let y = 56;
 
+    const sum = computeSummary();
     const date = document.getElementById("jDate").value.trim();
     const tags = document.getElementById("jTags").value.trim();
     const bias = document.getElementById("jBias").value.trim();
-    const sum = computeSummary();
     const notesText = (editor.innerText || "").trim() || "-";
 
     doc.setFont("helvetica","bold"); doc.setFontSize(18);
@@ -1146,15 +1210,18 @@ Prop Entry/SL/TP: ${sum.prop.entry} / ${sum.prop.sl} / ${sum.prop.tp}
     y += 8;
     doc.setFont("helvetica","bold"); doc.text("Trade Data", margin, y); y += 16;
     doc.setFont("helvetica","normal");
-    doc.text(`Direction: ${sum.direction || "-"}`, margin, y); y += 16;
 
     const off = sum.offset != null ? fmt2(sum.offset) : "—";
     const risk = sum.risk != null ? fmt2(sum.risk) : "—";
     const reward = sum.reward != null ? fmt2(sum.reward) : "—";
     const rmult = sum.rmult != null ? (sum.rmult.toFixed(2) + "R") : "—";
+    const cash = sum.riskCash != null ? ("$" + fmt2(sum.riskCash)) : "—";
 
-    doc.text(`Offset (Prop − Future): ${off}`, margin, y); y += 16;
+    doc.text(`Direction: ${sum.direction || "-"}`, margin, y); y += 16;
+    doc.text(`Risk-$: ${cash}`, margin, y); y += 16;
     doc.text(`Risk: ${risk}    Reward: ${reward}    R-Multiple: ${rmult}`, margin, y); y += 16;
+    doc.text(`CRV: ${sum.crv || "—"}`, margin, y); y += 16;
+    doc.text(`Offset (Prop − Future): ${off}`, margin, y); y += 16;
     doc.text(`Prop Entry/SL/TP: ${sum.prop.entry} / ${sum.prop.sl} / ${sum.prop.tp}`, margin, y); y += 18;
 
     if(isInverted){
@@ -1172,25 +1239,25 @@ Prop Entry/SL/TP: ${sum.prop.entry} / ${sum.prop.sl} / ${sum.prop.tp}
     doc.text(`Bias/Plan: ${bias || "-"}`, margin, y); y += 18;
 
     y += 6;
-    doc.setFont("helvetica","bold"); doc.text("Checklist", margin, y); y += 16;
+    doc.setFont("helvetica","bold"); doc.text("Playbook", margin, y); y += 16;
     doc.setFont("helvetica","normal");
-    const done = CHECKS.filter(c=>!!checkState[c.id]).map(c=>c.title);
-    const todo = CHECKS.filter(c=>!checkState[c.id]).map(c=>c.title);
-    const c1 = "Done: " + (done.length ? done.join(", ") : "-");
-    const c2 = "Missing: " + (todo.length ? todo.join(", ") : "-");
+    const pbText = PLAYBOOK.map(it=>{
+      const v = pbState[it.id] || "-";
+      return `${it.title.replace(/^\d+\)\s*/,'')}: ${v}`;
+    }).join("\n");
     const maxWidth = pageW - margin*2;
-    const l1 = doc.splitTextToSize(c1, maxWidth);
-    doc.text(l1, margin, y); y += 12 * l1.length + 8;
-    const l2 = doc.splitTextToSize(c2, maxWidth);
-    doc.text(l2, margin, y); y += 12 * l2.length + 16;
+    const pbLines = doc.splitTextToSize(pbText, maxWidth);
+    doc.text(pbLines, margin, y);
+    y += 12 * pbLines.length + 16;
 
     y += 6;
     doc.setFont("helvetica","bold"); doc.text("Notes", margin, y); y += 16;
     doc.setFont("helvetica","normal");
-    const lines = doc.splitTextToSize(notesText, maxWidth);
-    doc.text(lines, margin, y);
-    y += 12 * lines.length + 16;
+    const noteLines = doc.splitTextToSize(notesText, maxWidth);
+    doc.text(noteLines, margin, y);
+    y += 12 * noteLines.length + 16;
 
+    // Images
     const imgs = IMG_SLOTS.map(s=>({label:s.label, data:images[s.id]})).filter(x=>!!x.data);
     for(const im of imgs){
       if(y > pageH - 220){
@@ -1217,15 +1284,17 @@ Prop Entry/SL/TP: ${sum.prop.entry} / ${sum.prop.sl} / ${sum.prop.tp}
   }
 
   function printNote(){
+    const sum = computeSummary();
     const date = document.getElementById("jDate").value.trim();
     const tags = document.getElementById("jTags").value.trim();
     const bias = document.getElementById("jBias").value.trim();
-    const sum = computeSummary();
     const notesText = (editor.innerText || "").trim() || "-";
-
     const esc = (s)=>String(s).replace(/[<>]/g, c => ({'<':'&lt;','>':'&gt;'}[c]));
-    const done = CHECKS.filter(c=>!!checkState[c.id]).map(c=>c.title).join(", ") || "-";
-    const miss = CHECKS.filter(c=>!checkState[c.id]).map(c=>c.title).join(", ") || "-";
+
+    const pbHtml = PLAYBOOK.map(it=>{
+      const v = pbState[it.id] || "-";
+      return `<div><b>${esc(it.title.replace(/^\d+\)\s*/,''))}:</b> ${esc(v)}</div>`;
+    }).join("");
 
     const imgs = IMG_SLOTS.map(s=>({label:s.label, data:images[s.id]})).filter(x=>!!x.data);
     const imgHtml = imgs.map(x=>`
@@ -1252,8 +1321,10 @@ Prop Entry/SL/TP: ${sum.prop.entry} / ${sum.prop.sl} / ${sum.prop.tp}
         <div class="box">
           <b>Trade Data</b><br>
           Direction: ${esc(sum.direction || "-")}<br>
-          Offset (Prop−Future): ${esc(sum.offset!=null?fmt2(sum.offset):"—")}<br>
-          Risk: ${esc(sum.risk!=null?fmt2(sum.risk):"—")} • Reward: ${esc(sum.reward!=null?fmt2(sum.reward):"—")} • R: ${esc(sum.rmult!=null?(sum.rmult.toFixed(2)+"R"):"—")}<br>
+          Risk-$: ${esc(sum.riskCash!=null?("$"+sum.riskCash.toFixed(2)):"—")}<br>
+          Risk: ${esc(sum.risk!=null?sum.risk.toFixed(2):"—")} • Reward: ${esc(sum.reward!=null?sum.reward.toFixed(2):"—")} • R: ${esc(sum.rmult!=null?(sum.rmult.toFixed(2)+"R"):"—")}<br>
+          CRV: ${esc(sum.crv || "—")}<br>
+          Offset (Prop−Future): ${esc(sum.offset!=null?sum.offset.toFixed(2):"—")}<br>
           Prop Entry/SL/TP: ${esc(sum.prop.entry)} / ${esc(sum.prop.sl)} / ${esc(sum.prop.tp)}<br>
           ${isInverted ? "<br><b>INVERTED FX:</b> Future short = FX long (und umgekehrt)." : ""}
         </div>
@@ -1266,9 +1337,8 @@ Prop Entry/SL/TP: ${sum.prop.entry} / ${sum.prop.sl} / ${sum.prop.tp}
         </div>
 
         <div class="box">
-          <b>Checklist</b><br>
-          Done: ${esc(done)}<br>
-          Missing: ${esc(miss)}
+          <b>Playbook</b><br>
+          ${pbHtml}
         </div>
 
         <div class="box">
@@ -1289,22 +1359,21 @@ Prop Entry/SL/TP: ${sum.prop.entry} / ${sum.prop.sl} / ${sum.prop.tp}
     w.document.close();
   }
 
-  // ---------- buttons ----------
-  document.getElementById("btnInsertBlock").addEventListener("click", insertTradeBlock);
+  // ---------- events ----------
+  document.getElementById("btnInsertBlock").addEventListener("click", insertSummary);
   document.getElementById("btnSave").addEventListener("click", ()=>save(false));
   document.getElementById("btnClear").addEventListener("click", clearAll);
   document.getElementById("btnPdf").addEventListener("click", exportPDF);
   document.getElementById("btnPrint").addEventListener("click", printNote);
 
-  // ---------- notes autosave hooks ----------
-  function onNotesInput(){ updateKPIs(); autoSave(true); }
-  ["jDate","jTags","jBias","jDir"].forEach(id=>{
-    document.getElementById(id).addEventListener("input", onNotesInput);
-    document.getElementById(id).addEventListener("change", onNotesInput);
+  // autosave hooks
+  const autos = ["jDate","jTags","jBias","jDir","jRiskUsd","jCrv"];
+  autos.forEach(id=>{
+    document.getElementById(id).addEventListener("input", ()=>{ updateKPIs(); autoSave(true); });
+    document.getElementById(id).addEventListener("change", ()=>{ updateKPIs(); autoSave(true); });
   });
   editor.addEventListener("input", ()=>autoSave(true));
 
-  // ---------- broker change: different storage per broker ----------
   document.getElementById("broker").addEventListener("change", ()=>{
     setMeta();
     load();
