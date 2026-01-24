@@ -270,12 +270,11 @@
 
         <div class="note" id="jStatus"></div>
       </div>
-
     </section>
   </div>
 
 <script>
-  /** ========= SYMBOL NORMALIZE ========= **/
+  // ========= SYMBOL NORMALIZE =========
   const RAW = (new URLSearchParams(location.search).get("symbol") || "ES").toUpperCase().trim();
   const cleaned = RAW.replace(/[^A-Z0-9!]/g, "");
 
@@ -291,21 +290,21 @@
   const sym = normalizeSymbol(cleaned);
   document.getElementById("title").textContent = sym + " — CONTRACTX Converter";
 
-  /** ========= INVERT WARNING ========= **/
+  // ========= INVERT WARNING =========
   const FX_INVERTED = ["6C","6J","6S"];
   if (FX_INVERTED.includes(sym)) {
     document.getElementById("invertHint").style.display = "block";
   }
 
-  /** ========= CHART MAP (WIDGET-FRIENDLY) ========= **/
+  // ========= CHART MAP (WIDGET-FRIENDLY) =========
   const TV_MAP = {
-    // Indizes: OANDA CFDs (funktionieren in Widgets zuverlässig)
+    // Indizes: OANDA CFDs (widgets funktionieren)
     ES:  "OANDA:SPX500USD",
     NQ:  "OANDA:NAS100USD",
     YM:  "OANDA:US30USD",
     RTY: "OANDA:US2000USD",
 
-    // Commodities: Proxies
+    // Commodities
     GC:  "TVC:GOLD",
     SI:  "TVC:SILVER",
     CL:  "TVC:USOIL",
@@ -325,7 +324,7 @@
   document.getElementById("chartNote").textContent =
     `Chart: ${tvSymbol} (Proxy). Dein Offset-Mapping bleibt auf Futures-Preisen.`;
 
-  /** ========= OFFSET + PLAN ========= **/
+  // ========= OFFSET + PLAN =========
   function n(v){
     if(!v) return NaN;
     return Number(String(v).replace(",", ".").trim());
@@ -344,9 +343,6 @@
       offset = p - f;
       document.getElementById("offsetVal").textContent = fmt2(offset);
       calc();
-      // journal status update (optional)
-      const st = document.getElementById("jStatus");
-      if(st) st.textContent = st.textContent || "";
     }
   });
 
@@ -379,7 +375,7 @@
   document.getElementById("copySL").addEventListener("click", ()=>copyVal(document.getElementById("slP").textContent));
   document.getElementById("copyTP").addEventListener("click", ()=>copyVal(document.getElementById("tpP").textContent));
 
-  /** ========= TRADINGVIEW EMBED (ADVANCED CHART) ========= **/
+  // ========= TRADINGVIEW EMBED (ADVANCED CHART) =========
   (function renderTV(){
     const script = document.createElement("script");
     script.type = "text/javascript";
@@ -405,7 +401,7 @@
     container.appendChild(script);
   })();
 
-  /** ========= JOURNAL (localStorage + PDF) ========= **/
+  // ========= JOURNAL (localStorage + PDF) =========
   function journalKey(){
     const b = document.getElementById("broker")?.value || "Broker";
     return `contractx.journal.${b}.${sym}`;
@@ -460,6 +456,7 @@
   }
 
   function exportJournalPDF(){
+    // jsPDF UMD
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit:"pt", format:"a4" });
 
@@ -508,7 +505,7 @@
     doc.text("Notes", margin, y); y += 16;
     doc.setFont("helvetica","normal");
 
-    const maxWidth = 595 - margin*2; // A4 width
+    const maxWidth = 595 - margin*2;
     const lines = doc.splitTextToSize(notes || "-", maxWidth);
     doc.text(lines, margin, y);
 
@@ -529,6 +526,8 @@
     const off = document.getElementById("offsetVal")?.textContent || "—";
 
     const escapeHtml = (s) => String(s).replace(/[<>]/g, c => ({'<':'&lt;','>':'&gt;'}[c]));
+
+    // WICHTIG: <\/script> damit NICHT unser Script-Block im Hauptdokument beendet wird
     const html = `
       <html><head><meta charset="utf-8">
         <title>CONTRACTX Journal</title>
@@ -560,9 +559,11 @@
           <b>Notes</b>
           <pre>${escapeHtml(notes || "-")}</pre>
         </div>
-        <script>window.onload=()=>window.print();</script>
+
+        <script>window.onload=()=>window.print();<\/script>
       </body></html>
     `;
+
     const w = window.open("", "_blank");
     if(!w) return;
     w.document.open();
@@ -576,7 +577,7 @@
   document.getElementById("jPdf").addEventListener("click", exportJournalPDF);
   document.getElementById("jPrint").addEventListener("click", printJournal);
 
-  // Auto-save on typing (optional)
+  // Auto-save on typing
   ["jDate","jTags","jBias","jNotes"].forEach(id=>{
     document.getElementById(id).addEventListener("input", () => saveJournal(true));
   });
