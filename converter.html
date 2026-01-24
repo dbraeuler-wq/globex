@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CONTRACTX — Converter</title>
+  <style>
+    :root{
+      --bg:#070A0F;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.04);
+      --stroke: rgba(255,255,255,.10);
+      --stroke2: rgba(255,255,255,.18);
+      --text:#EAF0FF;
+      --muted: rgba(234,240,255,.70);
+      --muted2: rgba(234,240,255,.45);
+      --shadow: 0 18px 50px rgba(0,0,0,.55);
+      --radius: 18px;
+      --ok: rgba(120,255,180,.95);
+      --warn: rgba(255,215,80,.95);
+      --bad: rgba(255,120,120,.95);
+    }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 15% 10%, rgba(40,110,255,.22), transparent 60%),
+        radial-gradient(900px 700px at 85% 20%, rgba(255,215,80,.12), transparent 60%),
+        radial-gradient(700px 600px at 50% 95%, rgba(255,255,255,.08), transparent 55%),
+        var(--bg);
+      overflow-x:hidden;
+    }
+    .wrap{ max-width:1100px; margin:0 auto; padding:24px; }
+
+    .top{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 0 10px;
+    }
+    .brand{ display:flex; align-items:center; gap:12px; letter-spacing:.6px; }
+    .mark{
+      width:34px; height:34px; border-radius:10px;
+      background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.04));
+      border:1px solid var(--stroke);
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      position:relative; overflow:hidden;
+    }
+    .mark:before{
+      content:"";
+      position:absolute; inset:-40%;
+      background: conic-gradient(from 220deg, rgba(255,255,255,.0), rgba(255,255,255,.35), rgba(255,255,255,.0));
+      animation: spin 5.5s linear infinite;
+      opacity:.7;
+    }
+    @keyframes spin{ to{ transform:rotate(360deg);} }
+
+    .brand b{ font-size:15px; }
+    .brand span{ color:var(--muted2); font-size:12px; }
+
+    nav{ display:flex; gap:18px; }
+    nav a{
+      color:var(--muted);
+      text-decoration:none;
+      font-size:13px;
+      padding:8px 10px;
+      border-radius:10px;
+      transition: .15s ease;
+    }
+    nav a:hover{ background: rgba(255,255,255,.05); color:var(--text); }
+
+    .panel{
+      margin-top:18px;
+      padding:22px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      border:1px solid var(--stroke);
+      box-shadow: var(--shadow);
+    }
+
+    .head{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      flex-wrap:wrap;
+    }
+    .head h1{
+      margin:0;
+      font-size:28px;
+      letter-spacing:-.3px;
+    }
+    .sub{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      max-width:80ch;
+    }
+
+    .row{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:14px;
+    }
+    @media (max-width: 920px){ .row{ grid-template-columns: 1fr; } }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--stroke);
+      border-radius: 16px;
+      padding:16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted2);
+      margin-bottom:8px;
+    }
+    input{
+      width:100%;
+      padding:14px 14px;
+      border-radius: 14px;
+      border:1px solid var(--stroke2);
+      background: rgba(0,0,0,.28);
+      color:var(--text);
+      font-size:16px;
+      outline:none;
+    }
+    input::placeholder{ color: rgba(234,240,255,.30); }
+
+    .btns{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+    .btn{
+      border:1px solid var(--stroke2);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      text-decoration:none;
+      font-weight:700;
+      font-size:13px;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      transition:.15s ease;
+      cursor:pointer;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); }
+    .btn.primary{ background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.06)); }
+
+    .kv{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    @media (max-width: 520px){ .kv{ grid-template-columns: 1fr; } }
+
+    .k{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      border-radius: 14px;
+      padding:12px;
+    }
+    .k .t{ font-size:11px; color:var(--muted2); }
+    .k .v{ margin-top:6px; font-weight:800; letter-spacing:.2px; }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    .note{
+      margin-top:12px;
+      color:var(--muted2);
+      font-size:12px;
+      line-height:1.45;
+    }
+
+    .status{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted2);
+    }
+    .status strong{ color:var(--text); }
+
+    footer{
+      margin:18px 0 10px;
+      padding:16px 0 30px;
+      color:var(--muted2);
+      font-size:12px;
+    }
+    footer a{ color:var(--muted); text-decoration:none; }
+    footer a:hover{ color:var(--text); }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
+        <div>
+          <b>CONTRACTX</b><br/>
+          <span>Futures Converter</span>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html#converter">Back</a>
+        <a href="index.html#how">How it works</a>
+        <a href="index.html#about">About</a>
+      </nav>
+    </div>
+
+    <section class="panel">
+      <div class="head">
+        <div>
+          <h1 id="title">Converter</h1>
+          <p class="sub" id="subtitle">Gib den Futures-Preis ein. CONTRACTX zeigt dir die passende FX-Quote (inkl. Inversion, falls nötig).</p>
+        </div>
+        <div class="badge" id="badge">Ready</div>
+      </div>
+
+      <div class="row">
+        <div class="card">
+          <label for="price">Futures-Preis (z. B. 0.7425)</label>
+          <input id="price" inputmode="decimal" placeholder="Enter price…" />
+
+          <div class="btns">
+            <button class="btn primary" id="calc">Convert →</button>
+            <button class="btn" id="copy">Copy result</button>
+            <a class="btn" href="index.html#converter">Change instrument</a>
+          </div>
+
+          <div class="status" id="status">Instrument: <strong id="inst">—</strong></div>
+
+          <div class="note" id="warn">
+            Hinweis: Futures-Ticks sind nicht 1:1 FX-Pips. CONTRACTX ist für Quote/Level-Mapping gedacht – nicht für blindes Tick-to-Pip-Scalen.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="kv">
+            <div class="k">
+              <div class="t">Future quote</div>
+              <div class="v" id="fQuote">—</div>
+            </div>
+            <div class="k">
+              <div class="t">FX quote</div>
+              <div class="v" id="xQuote">—</div>
+            </div>
+            <div class="k">
+              <div class="t">Conversion</div>
+              <div class="v" id="conv">—</div>
+            </div>
+            <div class="k">
+              <div class="t">Result</div>
+              <div class="v" id="result">—</div>
+            </div>
+          </div>
+
+          <div class="note" id="detail"></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      © <span id="y"></span> CONTRACTX • <a href="#">Imprint</a> • <a href="#">Privacy</a>
+    </footer>
+  </div>
+
+<script>
+  const MAP = {
+    // Indices / Commod (no inversion, just display as-is)
+    ES: { name:"S&P 500 E-mini", type:"index", fQuote:"ES (points)", xQuote:"Prop pricing (points)", invert:false },
+    NQ: { name:"Nasdaq 100 E-mini", type:"index", fQuote:"NQ (points)", xQuote:"Prop pricing (points)", invert:false },
+    YM: { name:"Dow Jones Mini", type:"index", fQuote:"YM (points)", xQuote:"Prop pricing (points)", invert:false },
+    RTY:{ name:"Russell 2000 E-mini", type:"index", fQuote:"RTY (points)", xQuote:"Prop pricing (points)", invert:false },
+
+    GC: { name:"Gold", type:"commod", fQuote:"GC (USD/oz)", xQuote:"Prop pricing (USD/oz)", invert:false },
+    SI: { name:"Silver", type:"commod", fQuote:"SI (USD/oz)", xQuote:"Prop pricing (USD/oz)", invert:false },
+    CL: { name:"Crude Oil", type:"commod", fQuote:"CL (USD/bbl)", xQuote:"Prop pricing (USD/bbl)", invert:false },
+    NG: { name:"Natural Gas", type:"commod", fQuote:"NG (USD/MMBtu)", xQuote:"Prop pricing (USD/MMBtu)", invert:false },
+
+    // FX Majors (CME 6X)
+    "6E": { name:"Euro", type:"fx", fQuote:"EUR/USD", xQuote:"EUR/USD", invert:false },
+    "6B": { name:"British Pound", type:"fx", fQuote:"GBP/USD", xQuote:"GBP/USD", invert:false },
+    "6A": { name:"Australian Dollar", type:"fx", fQuote:"AUD/USD", xQuote:"AUD/USD", invert:false },
+    "6N": { name:"New Zealand Dollar", type:"fx", fQuote:"NZD/USD", xQuote:"NZD/USD", invert:false },
+
+    // Inverted vs common FX display
+    "6C": { name:"Canadian Dollar", type:"fx", fQuote:"CAD/USD", xQuote:"USD/CAD", invert:true },
+    "6J": { name:"Japanese Yen",  type:"fx", fQuote:"JPY/USD", xQuote:"USD/JPY", invert:true },
+    "6S": { name:"Swiss Franc",   type:"fx", fQuote:"CHF/USD", xQuote:"USD/CHF", invert:true },
+  };
+
+  const qs = new URLSearchParams(location.search);
+  const raw = (qs.get("symbol") || "ES").toUpperCase().trim();
+
+  // normalize symbols like 6C1! -> 6C
+  function normalize(sym){
+    if (sym.startsWith("6") && sym.length >= 2) return sym.slice(0,2); // 6C / 6E etc.
+    // strip common TV suffixes
+    return sym.replace(/[^A-Z0-9]/g, "");
+  }
+
+  const sym = normalize(raw);
+  const meta = MAP[sym] || { name:"Custom", type:"custom", fQuote:sym, xQuote:sym, invert:false };
+
+  const elTitle = document.getElementById("title");
+  const elInst  = document.getElementById("inst");
+  const elFQ    = document.getElementById("fQuote");
+  const elXQ    = document.getElementById("xQuote");
+  const elConv  = document.getElementById("conv");
+  const elRes   = document.getElementById("result");
+  const elDet   = document.getElementById("detail");
+  const elBadge = document.getElementById("badge");
+  const elPrice = document.getElementById("price");
+
+  function fmt(n){
+    // keep it clean: up to 6 decimals, trim zeros
+    const s = Number(n).toFixed(6);
+    return s.replace(/\.?0+$/,"");
+  }
+
+  function setHeader(){
+    elTitle.textContent = `${sym} — ${meta.name}`;
+    elInst.textContent = sym + (raw !== sym ? ` (from: ${raw})` : "");
+    elFQ.textContent = meta.fQuote;
+    elXQ.textContent = meta.xQuote;
+
+    if(meta.type === "fx"){
+      if(meta.invert){
+        elBadge.textContent = "FX (Inverted)";
+        elConv.textContent = "1 / price";
+        elDet.textContent = `Dieser Future wird häufig als ${meta.fQuote} notiert. Im FX-Spot wird meist ${meta.xQuote} genutzt. CONTRACTX invertiert deshalb automatisch.`;
+      } else {
+        elBadge.textContent = "FX (Aligned)";
+        elConv.textContent = "price";
+        elDet.textContent = `Future-Quote und FX-Spot-Quote sind hier gleichlaufend (${meta.xQuote}).`;
+      }
+    } else {
+      elBadge.textContent = meta.type === "index" ? "Index" : (meta.type === "commod" ? "Commodity" : "Converter");
+      elConv.textContent = "price";
+      elDet.textContent = `Für ${sym} wird der Preis 1:1 übernommen (keine Inversion).`;
+    }
+  }
+
+  function parseNumber(val){
+    if(!val) return NaN;
+    // allow comma
+    val = val.replace(",", ".").trim();
+    // keep digits, dot, minus
+    val = val.replace(/[^0-9.\-]/g,"");
+    return Number(val);
+  }
+
+  function calc(){
+    const p = parseNumber(elPrice.value);
+    if(!isFinite(p) || p <= 0){
+      elRes.textContent = "—";
+      document.getElementById("status").innerHTML = `Instrument: <strong>${sym}</strong> • Bitte gültigen Preis eingeben.`;
+      return;
+    }
+
+    let out = p;
+    let rule = "price";
+    if(meta.type === "fx" && meta.invert){
+      out = 1 / p;
+      rule = "1 / price";
+    }
+
+    elRes.textContent = fmt(out);
+    elConv.textContent = rule;
+    document.getElementById("status").innerHTML = `Instrument: <strong>${sym}</strong> • Input: <strong>${fmt(p)}</strong> • Output: <strong>${fmt(out)}</strong>`;
+  }
+
+  async function copy(){
+    const text = elRes.textContent;
+    if(!text || text === "—") return;
+    try{
+      await navigator.clipboard.writeText(text);
+      elBadge.textContent = "Copied";
+      setTimeout(() => setHeader(), 900);
+    }catch(e){
+      // fallback
+      const tmp = document.createElement("textarea");
+      tmp.value = text;
+      document.body.appendChild(tmp);
+      tmp.select();
+      document.execCommand("copy");
+      tmp.remove();
+      elBadge.textContent = "Copied";
+      setTimeout(() => setHeader(), 900);
+    }
+  }
+
+  setHeader();
+  document.getElementById("calc").addEventListener("click", calc);
+  document.getElementById("copy").addEventListener("click", copy);
+  elPrice.addEventListener("keydown", (e) => { if(e.key === "Enter") calc(); });
+  document.getElementById("y").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
