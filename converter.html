@@ -957,9 +957,10 @@ function calcProp(){
     updateKPIs();
     return;
   }
-  document.getElementById("entryP").textContent = isNum(e) ? fmt2(e + offset) : "—";
-  document.getElementById("slP").textContent    = isNum(s) ? fmt2(s + offset) : "—";
-  document.getElementById("tpP").textContent    = isNum(tp)? fmt2(tp+ offset) : "—";
+  document.getElementById("entryP").textContent = isNum(e)  ? fmt2(toPropLevel(sym, e, offset))  : "—";
+document.getElementById("slP").textContent    = isNum(s)  ? fmt2(toPropLevel(sym, s, offset))  : "—";
+document.getElementById("tpP").textContent    = isNum(tp) ? fmt2(toPropLevel(sym, tp, offset)) : "—";
+
   updateKPIs();
 }
 
@@ -1565,13 +1566,22 @@ function renderStars(){
 
   // converter listeners
   document.getElementById("setOffset").addEventListener("click", ()=>{
-    const f = n(document.getElementById("futureNow").value);
-    const p = n(document.getElementById("propNow").value);
-    if(isNum(f) && isNum(p)){
-      offset = p - f;
-      document.getElementById("offsetVal").textContent = fmt2(offset);
-      calcProp();
-      autoSave(true);
+  const f = n(document.getElementById("futureNow").value);
+  const p = n(document.getElementById("propNow").value);
+  if(isNum(f) && isNum(p)){
+
+    // ✅ FIX: bei invertierten FX-Paaren erst auf Target-Quote drehen (1/f)
+    const targetNow = toTargetQuote(sym, f);
+    if(!isNum(targetNow)) return;
+
+    offset = p - targetNow;
+
+    document.getElementById("offsetVal").textContent = fmt2(offset);
+    calcProp();
+    autoSave(true);
+  }
+});
+
     }
   });
 
