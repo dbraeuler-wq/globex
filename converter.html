@@ -240,21 +240,24 @@ if (FX_INVERTED.includes(sym)) {
 
 // Chart symbol map
 const TV_MAP = {
-  ES:"CME_MINI:ES1!",
-  NQ:"CME_MINI:NQ1!",
-  YM:"CBOT:YM1!",
-  RTY:"CME_MINI:RTY1!",
-  GC:"COMEX:GC1!",
-  SI:"COMEX:SI1!",
-  CL:"NYMEX:CL1!",
-  NG:"NYMEX:NG1!",
-  "6E":"CME:6E1!",
-  "6B":"CME:6B1!",
-  "6A":"CME:6A1!",
-  "6N":"CME:6N1!",
-  "6C":"CME:6C1!",
-  "6J":"CME:6J1!",
-  "6S":"CME:6S1!"
+  const TV_MAP = {
+  ES:  "SP:SPX",
+  NQ:  "NASDAQ:NDX",
+  YM:  "DJ:DJI",
+  RTY: "RUSSELL:RUT",
+
+  GC:  "TVC:GOLD",
+  SI:  "TVC:SILVER",
+  CL:  "TVC:USOIL",
+  NG:  "TVC:NATGAS",
+
+  "6E":"FX:EURUSD",
+  "6B":"FX:GBPUSD",
+  "6A":"FX:AUDUSD",
+  "6N":"FX:NZDUSD",
+  "6C":"FX:USDCAD",
+  "6J":"FX:USDJPY",
+  "6S":"FX:USDCHF"
 };
 
 // number parser
