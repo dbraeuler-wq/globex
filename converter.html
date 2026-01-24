@@ -957,9 +957,9 @@ function calcProp(){
     updateKPIs();
     return;
   }
-  document.getElementById("entryP").textContent = isNum(e) ? fmt2(e + offset) : "—";
-  document.getElementById("slP").textContent    = isNum(s) ? fmt2(s + offset) : "—";
-  document.getElementById("tpP").textContent    = isNum(tp)? fmt2(tp+ offset) : "—";
+  document.getElementById("entryP").textContent = isNum(e) ? fmt2((isInverted ? (1 / e) : e) + offset) : "—";
+  document.getElementById("slP").textContent    = isNum(s) ? fmt2((isInverted ? (1 / s) : s) + offset) : "—";
+  document.getElementById("tpP").textContent    = isNum(tp)? fmt2((isInverted ? (1 / tp) : tp) + offset) : "—";
   updateKPIs();
 }
 
@@ -1538,7 +1538,7 @@ function renderStars(){
 
   sym = normalizeSymbol(raw);
   tvSymbol = TV_MAP[sym] || "OANDA:SPX500USD";
-  isInverted = FX_INVERTED.includes(sym);
+  isInverted = ["6C","6J","6S"].includes(sym);
 
   // title/sub
   const all = [...ASSETS.indices, ...ASSETS.metalsEnergy, ...ASSETS.fx];
@@ -1568,7 +1568,8 @@ function renderStars(){
     const f = n(document.getElementById("futureNow").value);
     const p = n(document.getElementById("propNow").value);
     if(isNum(f) && isNum(p)){
-      offset = p - f;
+      const targetNow = isInverted ? (1 / f) : f;
+      offset = p - targetNow;
       document.getElementById("offsetVal").textContent = fmt2(offset);
       calcProp();
       autoSave(true);
