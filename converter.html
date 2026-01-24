@@ -52,7 +52,7 @@
     }
 
     label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
-    input,select{
+    input,select,textarea{
       width:100%;
       padding:13px 14px;
       border-radius:14px;
@@ -62,7 +62,8 @@
       font-size:15px;
       outline:none;
     }
-    input::placeholder{color:rgba(234,240,255,.35)}
+    input::placeholder, textarea::placeholder{color:rgba(234,240,255,.35)}
+    textarea{resize:vertical;font-size:14px;line-height:1.4}
 
     .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     @media(max-width:520px){.two{grid-template-columns:1fr}}
@@ -109,6 +110,9 @@
       overflow:hidden;
     }
   </style>
+
+  <!-- jsPDF (PDF Download) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
 <body>
@@ -117,7 +121,7 @@
       <h1 id="title">CONTRACTX Converter</h1>
       <div class="sub">
         Links: Future + Prop-Mid zur Kalibrierung (Offset). Darunter Entry/SL/TP in Future-Preisen.
-        Rechts: fertige Prop-Preise zum Kopieren. Unten: Live-Chart (TradingView) als Proxy (Widget-freundlich).
+        Rechts: fertige Prop-Preise zum Kopieren. Unten: Live-Chart (TradingView Proxy) + Journal + PDF.
       </div>
 
       <div class="row">
@@ -222,6 +226,51 @@
           </div>
         </div>
       </div>
+
+      <!-- JOURNAL -->
+      <div class="card" style="margin-top:16px">
+        <div class="note" style="margin-top:0">Journal (lokal gespeichert)</div>
+
+        <div class="two" style="margin-top:10px">
+          <div>
+            <label>Datum / Session</label>
+            <input id="jDate" placeholder="z. B. 2026-01-24 / NY Open">
+          </div>
+          <div>
+            <label>Setup / Tags</label>
+            <input id="jTags" placeholder="z. B. Globex Trap, A+, Sweep, S/D">
+          </div>
+        </div>
+
+        <div class="two" style="margin-top:10px">
+          <div>
+            <label>Bias / Plan</label>
+            <input id="jBias" placeholder="z. B. Short unter Vortages-High, Ziel EQ">
+          </div>
+          <div>
+            <label>Instrument / Broker</label>
+            <input id="jMeta" readonly>
+          </div>
+        </div>
+
+        <div style="margin-top:10px">
+          <label>Notizen</label>
+          <textarea id="jNotes" rows="8" placeholder="Dein kurzer Trade-Journal-Text..."></textarea>
+        </div>
+
+        <div class="two" style="margin-top:10px">
+          <button class="btn" id="jSave" type="button">Save Notes</button>
+          <button class="btn" id="jClear" type="button">Clear Notes</button>
+        </div>
+
+        <div class="two" style="margin-top:10px">
+          <button class="btn" id="jPdf" type="button">Download PDF</button>
+          <button class="btn" id="jPrint" type="button">Print / Save as PDF</button>
+        </div>
+
+        <div class="note" id="jStatus"></div>
+      </div>
+
     </section>
   </div>
 
@@ -250,13 +299,13 @@
 
   /** ========= CHART MAP (WIDGET-FRIENDLY) ========= **/
   const TV_MAP = {
-    // Indizes: OANDA CFDs (funktionieren in Widgets deutlich zuverlässiger)
+    // Indizes: OANDA CFDs (funktionieren in Widgets zuverlässig)
     ES:  "OANDA:SPX500USD",
     NQ:  "OANDA:NAS100USD",
     YM:  "OANDA:US30USD",
     RTY: "OANDA:US2000USD",
 
-    // Commodities: TradingView Proxies
+    // Commodities: Proxies
     GC:  "TVC:GOLD",
     SI:  "TVC:SILVER",
     CL:  "TVC:USOIL",
@@ -274,7 +323,7 @@
 
   const tvSymbol = TV_MAP[sym] || "OANDA:SPX500USD";
   document.getElementById("chartNote").textContent =
-    `Chart: ${tvSymbol} (widget-freundlicher Proxy). Dein Offset-Mapping bleibt auf Futures-Preisen.`;
+    `Chart: ${tvSymbol} (Proxy). Dein Offset-Mapping bleibt auf Futures-Preisen.`;
 
   /** ========= OFFSET + PLAN ========= **/
   function n(v){
@@ -295,6 +344,9 @@
       offset = p - f;
       document.getElementById("offsetVal").textContent = fmt2(offset);
       calc();
+      // journal status update (optional)
+      const st = document.getElementById("jStatus");
+      if(st) st.textContent = st.textContent || "";
     }
   });
 
@@ -352,6 +404,192 @@
     container.innerHTML = "";
     container.appendChild(script);
   })();
+
+  /** ========= JOURNAL (localStorage + PDF) ========= **/
+  function journalKey(){
+    const b = document.getElementById("broker")?.value || "Broker";
+    return `contractx.journal.${b}.${sym}`;
+  }
+
+  function setJournalMeta(){
+    const b = document.getElementById("broker")?.value || "Broker";
+    const meta = `${sym} • ${b} • Chart: ${tvSymbol}`;
+    const el = document.getElementById("jMeta");
+    if(el) el.value = meta;
+  }
+
+  function loadJournal(){
+    setJournalMeta();
+    const raw = localStorage.getItem(journalKey());
+    if(!raw){
+      document.getElementById("jStatus").textContent = "No saved notes yet.";
+      return;
+    }
+    try{
+      const data = JSON.parse(raw);
+      document.getElementById("jDate").value  = data.date || "";
+      document.getElementById("jTags").value  = data.tags || "";
+      document.getElementById("jBias").value  = data.bias || "";
+      document.getElementById("jNotes").value = data.notes || "";
+      document.getElementById("jStatus").textContent =
+        `Loaded ✓ (${new Date(data.ts || Date.now()).toLocaleString()})`;
+    } catch {
+      document.getElementById("jStatus").textContent = "Load failed (invalid storage).";
+    }
+  }
+
+  function saveJournal(silent=false){
+    const data = {
+      date:  document.getElementById("jDate").value.trim(),
+      tags:  document.getElementById("jTags").value.trim(),
+      bias:  document.getElementById("jBias").value.trim(),
+      notes: document.getElementById("jNotes").value.trim(),
+      ts: Date.now()
+    };
+    localStorage.setItem(journalKey(), JSON.stringify(data));
+    document.getElementById("jStatus").textContent = silent ? "Autosaved ✓" : "Saved ✓";
+  }
+
+  function clearJournal(){
+    localStorage.removeItem(journalKey());
+    document.getElementById("jDate").value = "";
+    document.getElementById("jTags").value = "";
+    document.getElementById("jBias").value = "";
+    document.getElementById("jNotes").value = "";
+    document.getElementById("jStatus").textContent = "Cleared.";
+  }
+
+  function exportJournalPDF(){
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit:"pt", format:"a4" });
+
+    const b = document.getElementById("broker")?.value || "Broker";
+    const date = document.getElementById("jDate").value.trim();
+    const tags = document.getElementById("jTags").value.trim();
+    const bias = document.getElementById("jBias").value.trim();
+    const notes = document.getElementById("jNotes").value.trim();
+
+    const pEntry = document.getElementById("entryP")?.textContent || "—";
+    const pSL = document.getElementById("slP")?.textContent || "—";
+    const pTP = document.getElementById("tpP")?.textContent || "—";
+    const off = document.getElementById("offsetVal")?.textContent || "—";
+
+    const margin = 46;
+    let y = 56;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("CONTRACTX — Journal", margin, y);
+
+    y += 22;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    doc.text(`Instrument: ${sym}`, margin, y); y += 16;
+    doc.text(`Broker: ${b}`, margin, y); y += 16;
+    doc.text(`Chart Proxy: ${tvSymbol}`, margin, y); y += 16;
+
+    y += 8;
+    doc.setFont("helvetica","bold");
+    doc.text("Trade Data", margin, y); y += 16;
+    doc.setFont("helvetica","normal");
+    doc.text(`Offset (Prop − Future): ${off}`, margin, y); y += 16;
+    doc.text(`Prop Entry: ${pEntry}    Prop SL: ${pSL}    Prop TP: ${pTP}`, margin, y); y += 18;
+
+    y += 6;
+    doc.setFont("helvetica","bold");
+    doc.text("Session", margin, y); y += 16;
+    doc.setFont("helvetica","normal");
+    doc.text(`Datum/Session: ${date || "-"}`, margin, y); y += 16;
+    doc.text(`Setup/Tags: ${tags || "-"}`, margin, y); y += 16;
+    doc.text(`Bias/Plan: ${bias || "-"}`, margin, y); y += 18;
+
+    y += 6;
+    doc.setFont("helvetica","bold");
+    doc.text("Notes", margin, y); y += 16;
+    doc.setFont("helvetica","normal");
+
+    const maxWidth = 595 - margin*2; // A4 width
+    const lines = doc.splitTextToSize(notes || "-", maxWidth);
+    doc.text(lines, margin, y);
+
+    const safeDate = (date || new Date().toISOString().slice(0,10)).replace(/[^0-9A-Za-z_-]/g,"-");
+    doc.save(`contractx-${sym}-${b}-${safeDate}.pdf`);
+  }
+
+  function printJournal(){
+    const b = document.getElementById("broker")?.value || "Broker";
+    const date = document.getElementById("jDate").value.trim();
+    const tags = document.getElementById("jTags").value.trim();
+    const bias = document.getElementById("jBias").value.trim();
+    const notes = document.getElementById("jNotes").value.trim();
+
+    const pEntry = document.getElementById("entryP")?.textContent || "—";
+    const pSL = document.getElementById("slP")?.textContent || "—";
+    const pTP = document.getElementById("tpP")?.textContent || "—";
+    const off = document.getElementById("offsetVal")?.textContent || "—";
+
+    const escapeHtml = (s) => String(s).replace(/[<>]/g, c => ({'<':'&lt;','>':'&gt;'}[c]));
+    const html = `
+      <html><head><meta charset="utf-8">
+        <title>CONTRACTX Journal</title>
+        <style>
+          body{font-family:Arial,Helvetica,sans-serif;padding:24px;}
+          h1{margin:0 0 10px;}
+          .muted{color:#666;font-size:12px;}
+          .box{border:1px solid #ddd;border-radius:10px;padding:14px;margin-top:12px;}
+          pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;}
+        </style>
+      </head><body>
+        <h1>CONTRACTX — Journal</h1>
+        <div class="muted">Instrument: ${escapeHtml(sym)} • Broker: ${escapeHtml(b)} • Chart: ${escapeHtml(tvSymbol)}</div>
+
+        <div class="box">
+          <b>Trade Data</b><br>
+          Offset (Prop − Future): ${escapeHtml(off)}<br>
+          Prop Entry: ${escapeHtml(pEntry)} • Prop SL: ${escapeHtml(pSL)} • Prop TP: ${escapeHtml(pTP)}
+        </div>
+
+        <div class="box">
+          <b>Session</b><br>
+          Datum/Session: ${escapeHtml(date || "-")}<br>
+          Setup/Tags: ${escapeHtml(tags || "-")}<br>
+          Bias/Plan: ${escapeHtml(bias || "-")}
+        </div>
+
+        <div class="box">
+          <b>Notes</b>
+          <pre>${escapeHtml(notes || "-")}</pre>
+        </div>
+        <script>window.onload=()=>window.print();</script>
+      </body></html>
+    `;
+    const w = window.open("", "_blank");
+    if(!w) return;
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+  }
+
+  // Buttons
+  document.getElementById("jSave").addEventListener("click", () => saveJournal(false));
+  document.getElementById("jClear").addEventListener("click", clearJournal);
+  document.getElementById("jPdf").addEventListener("click", exportJournalPDF);
+  document.getElementById("jPrint").addEventListener("click", printJournal);
+
+  // Auto-save on typing (optional)
+  ["jDate","jTags","jBias","jNotes"].forEach(id=>{
+    document.getElementById(id).addEventListener("input", () => saveJournal(true));
+  });
+
+  // Separate journal per broker
+  document.getElementById("broker").addEventListener("change", () => {
+    setJournalMeta();
+    loadJournal();
+  });
+
+  // Init journal
+  setJournalMeta();
+  loadJournal();
 </script>
 
 </body>
