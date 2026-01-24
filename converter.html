@@ -56,7 +56,7 @@
     }
 
     label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
-    input,select,textarea{
+    input,select{
       width:100%;
       padding:13px 14px;
       border-radius:14px;
@@ -66,7 +66,7 @@
       font-size:15px;
       outline:none;
     }
-    input::placeholder, textarea::placeholder{color:rgba(234,240,255,.35)}
+    input::placeholder{color:rgba(234,240,255,.35)}
 
     .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     @media(max-width:520px){.two{grid-template-columns:1fr}}
@@ -107,7 +107,6 @@
       color:var(--warn);
     }
 
-    /* Tabs */
     .tabs{
       display:flex; gap:8px;
       padding:6px;
@@ -151,81 +150,12 @@
       cursor:pointer;
       user-select:none;
     }
-    .pill:hover{background:var(--pill2)}
-    .pill.secondary{color:var(--muted);font-weight:700}
+    .pill:hover{background:rgba(255,255,255,.10)}
     .pill.active{background:rgba(255,255,255,.14);border-color:var(--stroke2)}
-
     .tvbox{height:560px;border-radius:16px;overflow:hidden}
 
-    /* Notes UI */
-    .notesTop{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      margin-top:10px;
-      flex-wrap:wrap;
-    }
-    .toolbar{
-      display:flex; flex-wrap:wrap; gap:8px;
-      padding:10px;
-      border:1px solid var(--stroke);
-      border-radius:14px;
-      background:rgba(0,0,0,.28);
-      margin-top:12px;
-      align-items:center;
-    }
-    .tool{
-      padding:8px 10px;
-      border-radius:12px;
-      border:1px solid var(--stroke2);
-      background:rgba(255,255,255,.06);
-      color:var(--text);
-      font-weight:900;
-      cursor:pointer;
-      font-size:12px;
-      white-space:nowrap;
-    }
-    .tool:hover{background:rgba(255,255,255,.10)}
-
-    .editor{
-      margin-top:10px;
-      border:1px solid var(--stroke2);
-      border-radius:16px;
-      background:rgba(0,0,0,.35);
-      padding:14px;
-      min-height:180px;
-      outline:none;
-      line-height:1.45;
-      color:var(--text);
-      overflow:auto;
-      white-space:pre-wrap;
-    }
-    .editor:empty:before{
-      content:attr(data-placeholder);
-      color:rgba(234,240,255,.35);
-      white-space:pre-wrap;
-    }
-
-    .divider{
-      height:1px;
-      background:rgba(255,255,255,.10);
-      margin:14px 0;
-      border-radius:999px;
-    }
     .hidden{display:none !important}
-
-    /* Rating stars */
-    .stars{display:flex;gap:6px;align-items:center}
-    .star{
-      width:22px;height:22px;
-      display:inline-flex;align-items:center;justify-content:center;
-      border:1px solid var(--stroke);
-      border-radius:8px;
-      background:rgba(255,255,255,.06);
-      cursor:pointer;
-      user-select:none;
-      font-weight:900;
-      color:rgba(234,240,255,.55);
-    }
-    .star.active{color:var(--text);background:rgba(255,255,255,.12);border-color:var(--stroke2)}
+    .divider{height:1px;background:rgba(255,255,255,.10);margin:14px 0;border-radius:999px}
 
     .kpiRow{
       display:grid;
@@ -243,10 +173,21 @@
     }
     .kpi .k{font-size:12px;color:var(--muted);font-weight:900}
     .kpi .v{margin-top:6px;font-size:18px;font-weight:950}
-    .v.good{color:var(--good)}
-    .v.bad{color:var(--bad)}
 
-    /* Playbook cards */
+    .stars{display:flex;gap:6px;align-items:center}
+    .star{
+      width:22px;height:22px;
+      display:inline-flex;align-items:center;justify-content:center;
+      border:1px solid var(--stroke);
+      border-radius:8px;
+      background:rgba(255,255,255,.06);
+      cursor:pointer;
+      user-select:none;
+      font-weight:900;
+      color:rgba(234,240,255,.55);
+    }
+    .star.active{color:var(--text);background:rgba(255,255,255,.12);border-color:var(--stroke2)}
+
     .pbGrid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -260,16 +201,8 @@
       padding:12px;
       background:rgba(0,0,0,.22);
     }
-    .pbTitle{
-      font-weight:950;
-      font-size:13px;
-      margin-bottom:8px;
-    }
-    .pbOpts{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
+    .pbTitle{font-weight:950;font-size:13px;margin-bottom:8px}
+    .pbOpts{display:flex;flex-wrap:wrap;gap:8px}
     .opt{
       display:inline-flex;
       align-items:center;
@@ -281,13 +214,9 @@
       cursor:pointer;
       user-select:none;
       font-size:12px;
-      color:var(--text);
     }
     .opt input{width:14px;height:14px;margin:0}
-    .opt:hover{background:rgba(255,255,255,.08)}
-    .pbHint{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.35}
 
-    /* Image slots */
     .imgGrid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -301,33 +230,42 @@
       padding:12px;
       background:rgba(0,0,0,.20);
       min-height:160px;
-      position:relative;
       overflow:hidden;
     }
     .imgSlot.drag{border-color:rgba(124,255,178,.60);background:rgba(124,255,178,.06)}
     .imgSlot .cap{font-size:12px;color:var(--muted);font-weight:900}
     .imgSlot .help{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.35}
-    .imgSlot img{
-      width:100%;
-      height:auto;
-      border-radius:12px;
-      margin-top:10px;
-      display:block;
-    }
-    .imgActions{
-      display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;
-    }
+    .imgSlot img{width:100%;border-radius:12px;margin-top:10px;display:block}
+    .imgActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
     .mini{
-      padding:8px 10px;
-      border-radius:12px;
-      border:1px solid var(--stroke2);
-      background:rgba(255,255,255,.06);
-      color:var(--text);
-      font-weight:900;
-      cursor:pointer;
-      font-size:12px;
+      padding:8px 10px;border-radius:12px;border:1px solid var(--stroke2);
+      background:rgba(255,255,255,.06);color:var(--text);font-weight:900;cursor:pointer;font-size:12px
     }
-    .mini:hover{background:rgba(255,255,255,.10)}
+
+    .editor{
+      margin-top:10px;
+      border:1px solid var(--stroke2);
+      border-radius:16px;
+      background:rgba(0,0,0,.35);
+      padding:14px;
+      min-height:180px;
+      outline:none;
+      line-height:1.45;
+      overflow:auto;
+      white-space:pre-wrap;
+    }
+    .editor:empty:before{
+      content:attr(data-placeholder);
+      color:rgba(234,240,255,.35);
+    }
+
+    .toolsRow{
+      display:flex;gap:8px;flex-wrap:wrap
+    }
+    .tool{
+      padding:8px 10px;border-radius:12px;border:1px solid var(--stroke2);
+      background:rgba(255,255,255,.06);color:var(--text);font-weight:900;cursor:pointer;font-size:12px
+    }
   </style>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -337,12 +275,9 @@
   <div class="wrap">
     <section class="panel">
       <h1 id="title">CONTRACTX Converter</h1>
-      <div class="sub">
-        Converter + Journal (klickbar, automatisiert): Direction, R-Multiple, Risk-$, Stars, Playbook-Formular, Images + PDF.
-      </div>
+      <div class="sub">Converter + Journal: klickbar, automatisiert, als PDF exportierbar.</div>
 
       <div class="row">
-        <!-- LEFT -->
         <div class="card">
           <div class="two">
             <div>
@@ -398,12 +333,9 @@
             </div>
           </div>
 
-          <div class="note">
-            Tipp: Prop Mid = (Bid + Ask) / 2. Offset ist session-/brokerabhängig.
-          </div>
+          <div class="note">Tipp: Prop Mid = (Bid + Ask) / 2.</div>
         </div>
 
-        <!-- RIGHT -->
         <div class="card">
           <div class="big">
             <div class="t">Prop Entry</div>
@@ -425,26 +357,22 @@
           </div>
 
           <div class="warn" id="invertHint" style="display:none">
-            ⚠️ Dieses FX-Pair ist <strong>invertiert</strong><br>
-            <strong>Future SHORT = FX LONG</strong><br>
-            <strong>Future LONG = FX SHORT</strong>
+            ⚠️ Invertiertes FX-Pair: <strong>Future SHORT = FX LONG</strong> (und umgekehrt).
           </div>
 
           <div class="note" id="chartNote"></div>
         </div>
       </div>
 
-      <!-- Tabs + Content -->
       <div class="card" style="margin-top:16px">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-          <div class="tabs" role="tablist">
+          <div class="tabs">
             <button class="tab active" id="tabChart" type="button">Chart</button>
             <button class="tab" id="tabNotes" type="button">Notes</button>
           </div>
           <div class="note" id="metaTop" style="margin:0"></div>
         </div>
 
-        <!-- CHART PANEL -->
         <div id="panelChart" style="margin-top:12px">
           <div class="tvTop">
             <div class="note" style="margin:0">Live Chart (TradingView)</div>
@@ -463,16 +391,13 @@
           </div>
         </div>
 
-        <!-- NOTES PANEL -->
         <div id="panelNotes" class="hidden" style="margin-top:12px">
-          <div class="notesTop">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
             <div>
               <div style="font-weight:950">Journal</div>
-              <div class="note" style="margin-top:4px">
-                Alles klickbar, so wenig tippen wie möglich. PDF nimmt Daten + Playbook + Notes + Images mit.
-              </div>
+              <div class="note" style="margin-top:4px">Datum automatisch = heute (wenn leer).</div>
             </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div class="toolsRow">
               <button class="tool" id="btnInsertBlock" type="button">Insert summary</button>
               <button class="tool" id="btnSave" type="button">Save</button>
               <button class="tool" id="btnClear" type="button">Clear</button>
@@ -485,12 +410,17 @@
 
           <div class="two">
             <div>
-              <label>Datum / Session</label>
-              <input id="jDate" placeholder="z. B. 2026-01-24 / NY Open">
+              <label>Datum</label>
+              <input id="jDate" placeholder="YYYY-MM-DD">
             </div>
             <div>
-              <label>Setup / Tags</label>
-              <input id="jTags" placeholder="z. B. Globex Trap, A+, Sweep, S/D">
+              <label>Geplante Dauer</label>
+              <select id="jDuration">
+                <option value="">—</option>
+                <option value="swing">Swing</option>
+                <option value="daytrading">Daytrading</option>
+                <option value="globex">Globex</option>
+              </select>
             </div>
           </div>
 
@@ -527,7 +457,7 @@
               <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;
                           padding:10px 12px;border:1px solid var(--stroke2);border-radius:14px;background:rgba(0,0,0,.35)">
                 <div class="stars" id="stars"></div>
-                <div class="pill secondary" id="ratingText">—</div>
+                <div class="pill" id="ratingText" style="color:var(--muted);font-weight:800">—</div>
               </div>
             </div>
 
@@ -543,23 +473,11 @@
             </div>
           </div>
 
-          <div class="kpiRow" id="kpis">
-            <div class="kpi">
-              <div class="k">Risk (R)</div>
-              <div class="v" id="kRisk">—</div>
-            </div>
-            <div class="kpi">
-              <div class="k">Reward</div>
-              <div class="v" id="kReward">—</div>
-            </div>
-            <div class="kpi">
-              <div class="k">R-Multiple</div>
-              <div class="v" id="kRmult">—</div>
-            </div>
-            <div class="kpi">
-              <div class="k">Offset (Prop−Future)</div>
-              <div class="v" id="kOffset">—</div>
-            </div>
+          <div class="kpiRow">
+            <div class="kpi"><div class="k">Risk (R)</div><div class="v" id="kRisk">—</div></div>
+            <div class="kpi"><div class="k">Reward</div><div class="v" id="kReward">—</div></div>
+            <div class="kpi"><div class="k">R-Multiple</div><div class="v" id="kRmult">—</div></div>
+            <div class="kpi"><div class="k">Offset</div><div class="v" id="kOffset">—</div></div>
           </div>
 
           <div class="warn" id="dirWarn" style="display:none">
@@ -574,16 +492,13 @@
           <div class="divider"></div>
 
           <div style="font-weight:950">Screenshots / Images (manuell)</div>
-          <div class="note" style="margin-top:6px">
-            Drag & Drop oder Upload. Automatische Screenshots aus dem TradingView-Widget sind technisch blockiert (Cross-Origin).
-          </div>
           <div class="imgGrid" id="imgGrid"></div>
 
           <div class="divider"></div>
 
           <div style="font-weight:950">Free Notes (optional)</div>
           <div id="editor" class="editor" contenteditable="true" spellcheck="false"
-               data-placeholder="Optional. Wenn’s wichtig ist, schreib’s. Sonst reicht Playbook + KPIs."></div>
+               data-placeholder="Optional. Wenn’s wichtig ist, schreib’s."></div>
 
           <div class="note" id="jStatus"></div>
         </div>
@@ -592,18 +507,10 @@
   </div>
 
 <script>
-  // ---------- helpers ----------
-  function n(v){
-    if(!v) return NaN;
-    return Number(String(v).replace(",", ".").trim());
-  }
+  function n(v){ if(!v) return NaN; return Number(String(v).replace(",", ".").trim()); }
   function isNum(x){ return Number.isFinite(x); }
-  function fmt2(x){
-    if(!isNum(x)) return "—";
-    return Number(x).toFixed(2);
-  }
+  function fmt2(x){ return isNum(x) ? Number(x).toFixed(2) : "—"; }
 
-  // ---------- symbol normalize ----------
   const RAW = (new URLSearchParams(location.search).get("symbol") || "ES").toUpperCase().trim();
   const cleaned = RAW.replace(/[^A-Z0-9!]/g, "");
   function normalizeSymbol(s){
@@ -617,34 +524,18 @@
   const sym = normalizeSymbol(cleaned);
   document.getElementById("title").textContent = sym + " — CONTRACTX Converter";
 
-  // ---------- invert warning ----------
   const FX_INVERTED = ["6C","6J","6S"];
   const isInverted = FX_INVERTED.includes(sym);
   if (isInverted) document.getElementById("invertHint").style.display = "block";
 
-  // ---------- chart map (widget-friendly) ----------
   const TV_MAP = {
-    ES:  "OANDA:SPX500USD",
-    NQ:  "OANDA:NAS100USD",
-    YM:  "OANDA:US30USD",
-    RTY: "OANDA:US2000USD",
-    GC:  "TVC:GOLD",
-    SI:  "TVC:SILVER",
-    CL:  "TVC:USOIL",
-    NG:  "TVC:NATGAS",
-    "6E":"FX:EURUSD",
-    "6B":"FX:GBPUSD",
-    "6A":"FX:AUDUSD",
-    "6N":"FX:NZDUSD",
-    "6C":"FX:USDCAD",
-    "6J":"FX:USDJPY",
-    "6S":"FX:USDCHF"
+    ES:"OANDA:SPX500USD", NQ:"OANDA:NAS100USD", YM:"OANDA:US30USD", RTY:"OANDA:US2000USD",
+    GC:"TVC:GOLD", SI:"TVC:SILVER", CL:"TVC:USOIL", NG:"TVC:NATGAS",
+    "6E":"FX:EURUSD","6B":"FX:GBPUSD","6A":"FX:AUDUSD","6N":"FX:NZDUSD","6C":"FX:USDCAD","6J":"FX:USDJPY","6S":"FX:USDCHF"
   };
   const tvSymbol = TV_MAP[sym] || "OANDA:SPX500USD";
-  document.getElementById("chartNote").textContent =
-    `Chart: ${tvSymbol} (Proxy). Offset-Mapping bleibt auf deinen eingegebenen Future/Prop-Preisen.`;
+  document.getElementById("chartNote").textContent = `Chart: ${tvSymbol} (Proxy).`;
 
-  // ---------- meta ----------
   function brokerVal(){ return document.getElementById("broker")?.value || "Broker"; }
   function setMeta(){
     const meta = `${sym} • ${brokerVal()} • Chart: ${tvSymbol}`;
@@ -652,14 +543,52 @@
     document.getElementById("metaTop").textContent = meta;
   }
 
-  // ---------- offset + plan ----------
-  let offset = NaN;
+  // tabs
+  const tabChart = document.getElementById("tabChart");
+  const tabNotes = document.getElementById("tabNotes");
+  const panelChart = document.getElementById("panelChart");
+  const panelNotes = document.getElementById("panelNotes");
+  function setTab(which){
+    const chart = which === "chart";
+    tabChart.classList.toggle("active", chart);
+    tabNotes.classList.toggle("active", !chart);
+    panelChart.classList.toggle("hidden", !chart);
+    panelNotes.classList.toggle("hidden", chart);
+  }
+  tabChart.addEventListener("click", ()=>setTab("chart"));
+  tabNotes.addEventListener("click", ()=>setTab("notes"));
 
+  // tradingview
+  let tvInterval = "15";
+  function renderTV(){
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+    script.async = true;
+    script.textContent = JSON.stringify({
+      autosize:true, symbol:tvSymbol, interval:tvInterval,
+      timezone:"Europe/Berlin", theme:"dark", style:"1", locale:"en",
+      allow_symbol_change:false, calendar:false, hide_top_toolbar:false, hide_legend:false,
+      support_host:"https://www.tradingview.com"
+    });
+    const container = document.getElementById("tv_chart");
+    container.innerHTML = "";
+    container.appendChild(script);
+  }
+  function setTF(tf){
+    tvInterval = tf;
+    document.querySelectorAll("#tfRow .pill").forEach(p=>p.classList.toggle("active", p.getAttribute("data-tf") === tf));
+    renderTV();
+  }
+  document.querySelectorAll("#tfRow .pill").forEach(p=>p.addEventListener("click", ()=>setTF(p.getAttribute("data-tf"))));
+  renderTV();
+
+  // converter
+  let offset = NaN;
   function calcProp(){
     const e = n(document.getElementById("entryF").value);
     const s = n(document.getElementById("slF").value);
     const tp = n(document.getElementById("tpF").value);
-
     if(!isNum(offset)){
       document.getElementById("entryP").textContent = "—";
       document.getElementById("slP").textContent = "—";
@@ -667,11 +596,9 @@
       updateKPIs();
       return;
     }
-
     document.getElementById("entryP").textContent = isNum(e) ? fmt2(e + offset) : "—";
     document.getElementById("slP").textContent    = isNum(s) ? fmt2(s + offset) : "—";
-    document.getElementById("tpP").textContent    = isNum(tp) ? fmt2(tp + offset) : "—";
-
+    document.getElementById("tpP").textContent    = isNum(tp)? fmt2(tp+ offset) : "—";
     updateKPIs();
   }
 
@@ -690,69 +617,12 @@
     document.getElementById(id).addEventListener("input", () => { calcProp(); autoSave(true); });
   });
 
-  async function copyVal(v){
-    if(!v || v === "—") return;
-    try { await navigator.clipboard.writeText(v); } catch {}
-  }
+  async function copyVal(v){ if(!v || v === "—") return; try{ await navigator.clipboard.writeText(v);}catch{} }
   document.getElementById("copyEntry").addEventListener("click", ()=>copyVal(document.getElementById("entryP").textContent));
   document.getElementById("copySL").addEventListener("click", ()=>copyVal(document.getElementById("slP").textContent));
   document.getElementById("copyTP").addEventListener("click", ()=>copyVal(document.getElementById("tpP").textContent));
 
-  // ---------- tabs ----------
-  const tabChart = document.getElementById("tabChart");
-  const tabNotes = document.getElementById("tabNotes");
-  const panelChart = document.getElementById("panelChart");
-  const panelNotes = document.getElementById("panelNotes");
-  function setTab(which){
-    const chart = which === "chart";
-    tabChart.classList.toggle("active", chart);
-    tabNotes.classList.toggle("active", !chart);
-    panelChart.classList.toggle("hidden", !chart);
-    panelNotes.classList.toggle("hidden", chart);
-  }
-  tabChart.addEventListener("click", ()=>setTab("chart"));
-  tabNotes.addEventListener("click", ()=>setTab("notes"));
-
-  // ---------- tradingview embed ----------
-  let tvInterval = "15";
-  function renderTV(){
-    const script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
-    script.async = true;
-    script.textContent = JSON.stringify({
-      autosize: true,
-      symbol: tvSymbol,
-      interval: tvInterval,
-      timezone: "Europe/Berlin",
-      theme: "dark",
-      style: "1",
-      locale: "en",
-      allow_symbol_change: false,
-      calendar: false,
-      hide_top_toolbar: false,
-      hide_legend: false,
-      support_host: "https://www.tradingview.com"
-    });
-    const container = document.getElementById("tv_chart");
-    container.innerHTML = "";
-    container.appendChild(script);
-  }
-  function setTF(tf){
-    tvInterval = tf;
-    document.querySelectorAll("#tfRow .pill").forEach(p=>{
-      p.classList.toggle("active", p.getAttribute("data-tf") === tf);
-    });
-    renderTV();
-  }
-  document.querySelectorAll("#tfRow .pill").forEach(p=>{
-    p.addEventListener("click", ()=>setTF(p.getAttribute("data-tf")));
-  });
-  renderTV();
-
-  // ---------- Notes automation ----------
-  const editor = document.getElementById("editor");
-
+  // KPIs
   function detectDirection(){
     const e = n(document.getElementById("entryF").value);
     const s = n(document.getElementById("slF").value);
@@ -767,7 +637,6 @@
     const d = detectDirection();
     return d || "auto";
   }
-
   function updateKPIs(){
     const e = n(document.getElementById("entryF").value);
     const s = n(document.getElementById("slF").value);
@@ -779,20 +648,13 @@
 
     document.getElementById("kRisk").textContent = fmt2(risk);
     document.getElementById("kReward").textContent = fmt2(reward);
-
-    const rEl = document.getElementById("kRmult");
-    rEl.textContent = isNum(rmult) ? rmult.toFixed(2) + "R" : "—";
-    rEl.classList.remove("good","bad");
-    if(isNum(rmult)){
-      if(rmult >= 2) rEl.classList.add("good");
-      else if(rmult < 1) rEl.classList.add("bad");
-    }
-
+    document.getElementById("kRmult").textContent = isNum(rmult) ? (rmult.toFixed(2) + "R") : "—";
     document.getElementById("kOffset").textContent = fmt2(isNum(offset) ? offset : NaN);
+
     document.getElementById("dirWarn").style.display = isInverted ? "block" : "none";
   }
 
-  // ---------- stars ----------
+  // stars
   let rating = 0;
   function renderStars(){
     const wrap = document.getElementById("stars");
@@ -813,7 +675,7 @@
   }
   renderStars();
 
-  // ---------- playbook form ----------
+  // playbook
   const PLAYBOOK = [
     { id:"pb_pos_htf", title:"1) Position im HTF", opts:["sehr teuer","teuer","Gleichgewicht","günstig","sehr günstig"] },
     { id:"pb_trend_htf", title:"2) HTF Trend", opts:["long","short","seitwärts"] },
@@ -830,9 +692,7 @@
     { id:"pb_form", title:"12) Formation", opts:["ABA","ABF","FBF","FBA"] },
     { id:"pb_idea", title:"13) Tradeidee", opts:["meine eigene","Mentorentrade"] },
   ];
-
-  const pbState = {}; // id -> selected string
-
+  const pbState = {};
   function renderPlaybook(){
     const grid = document.getElementById("pbGrid");
     grid.innerHTML = "";
@@ -859,18 +719,12 @@
         rb.checked = (pbState[item.id] === opt);
         rb.addEventListener("change", ()=>{
           pbState[item.id] = opt;
-          // sync CRV dropdown too if pb_crv changes
-          if(item.id === "pb_crv"){
-            document.getElementById("jCrv").value = opt;
-          }
+          if(item.id === "pb_crv") document.getElementById("jCrv").value = opt;
           autoSave(true);
         });
 
-        const span = document.createElement("span");
-        span.textContent = opt;
-
         lab.appendChild(rb);
-        lab.appendChild(span);
+        lab.appendChild(document.createTextNode(opt));
         opts.appendChild(lab);
       });
 
@@ -880,106 +734,20 @@
   }
   renderPlaybook();
 
-  // sync jCrv dropdown -> pb_crv
   document.getElementById("jCrv").addEventListener("change", ()=>{
     const v = document.getElementById("jCrv").value;
-    if(v){
-      pbState["pb_crv"] = v;
-      renderPlaybook();
-    }
+    if(v){ pbState["pb_crv"] = v; renderPlaybook(); }
     autoSave(true);
   });
 
-  // ---------- image slots ----------
+  // images
   const IMG_SLOTS = [
     {id:"imgD",  label:"Daily screenshot"},
     {id:"img4H", label:"4H screenshot"},
     {id:"img1H", label:"1H screenshot"},
     {id:"img15", label:"15m screenshot"},
   ];
-  const images = {}; // id -> dataUrl
-
-  function renderImages(){
-    const grid = document.getElementById("imgGrid");
-    grid.innerHTML = "";
-
-    IMG_SLOTS.forEach(slot=>{
-      const box = document.createElement("div");
-      box.className = "imgSlot";
-
-      const cap = document.createElement("div");
-      cap.className="cap";
-      cap.textContent = slot.label;
-      box.appendChild(cap);
-
-      const help = document.createElement("div");
-      help.className="help";
-      help.textContent = "Drop image here oder Upload. (Wird lokal gespeichert)";
-      box.appendChild(help);
-
-      const actions = document.createElement("div");
-      actions.className = "imgActions";
-
-      const inp = document.createElement("input");
-      inp.type = "file";
-      inp.accept = "image/*";
-      inp.style.display="none";
-
-      const btnUp = document.createElement("button");
-      btnUp.type="button";
-      btnUp.className="mini";
-      btnUp.textContent="Upload";
-      btnUp.addEventListener("click", ()=>inp.click());
-
-      const btnClear = document.createElement("button");
-      btnClear.type="button";
-      btnClear.className="mini";
-      btnClear.textContent="Clear";
-      btnClear.addEventListener("click", ()=>{
-        delete images[slot.id];
-        renderImages();
-        autoSave(true);
-      });
-
-      actions.appendChild(btnUp);
-      actions.appendChild(btnClear);
-      box.appendChild(actions);
-
-      inp.addEventListener("change", async ()=>{
-        const f = inp.files && inp.files[0];
-        if(!f) return;
-        const data = await compressImageToDataURL(f, 1400, 0.82);
-        images[slot.id] = data;
-        renderImages();
-        autoSave(true);
-      });
-
-      box.addEventListener("dragover", (e)=>{ e.preventDefault(); box.classList.add("drag"); });
-      box.addEventListener("dragleave", ()=>box.classList.remove("drag"));
-      box.addEventListener("drop", async (e)=>{
-        e.preventDefault();
-        box.classList.remove("drag");
-        const f = e.dataTransfer.files && e.dataTransfer.files[0];
-        if(!f) return;
-        if(!f.type.startsWith("image/")) return;
-        const data = await compressImageToDataURL(f, 1400, 0.82);
-        images[slot.id] = data;
-        renderImages();
-        autoSave(true);
-      });
-
-      if(images[slot.id]){
-        const img = document.createElement("img");
-        img.src = images[slot.id];
-        box.appendChild(img);
-        help.textContent = "Saved ✓ (lokal)";
-      }
-
-      box.appendChild(inp);
-      grid.appendChild(box);
-    });
-  }
-
+  const images = {};
   async function compressImageToDataURL(file, maxDim=1400, quality=0.82){
     const blobURL = URL.createObjectURL(file);
     const img = await new Promise((res, rej)=>{
@@ -988,142 +756,208 @@
       im.onerror = rej;
       im.src = blobURL;
     });
-
     const w = img.naturalWidth || img.width;
     const h = img.naturalHeight || img.height;
-
-    let nw = w, nh = h;
-    if(Math.max(w,h) > maxDim){
-      const scale = maxDim / Math.max(w,h);
-      nw = Math.round(w * scale);
-      nh = Math.round(h * scale);
+    let nw=w, nh=h;
+    if(Math.max(w,h)>maxDim){
+      const scale=maxDim/Math.max(w,h);
+      nw=Math.round(w*scale); nh=Math.round(h*scale);
     }
-
-    const canvas = document.createElement("canvas");
-    canvas.width = nw;
-    canvas.height = nh;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0, nw, nh);
-
+    const canvas=document.createElement("canvas");
+    canvas.width=nw; canvas.height=nh;
+    const ctx=canvas.getContext("2d");
+    ctx.drawImage(img,0,0,nw,nh);
     URL.revokeObjectURL(blobURL);
     return canvas.toDataURL("image/jpeg", quality);
   }
+  function renderImages(){
+    const grid = document.getElementById("imgGrid");
+    grid.innerHTML = "";
+    IMG_SLOTS.forEach(slot=>{
+      const box=document.createElement("div");
+      box.className="imgSlot";
+
+      const cap=document.createElement("div");
+      cap.className="cap"; cap.textContent=slot.label;
+      box.appendChild(cap);
+
+      const help=document.createElement("div");
+      help.className="help"; help.textContent="Drop image here oder Upload.";
+      box.appendChild(help);
+
+      const actions=document.createElement("div");
+      actions.className="imgActions";
+
+      const inp=document.createElement("input");
+      inp.type="file"; inp.accept="image/*"; inp.style.display="none";
+
+      const up=document.createElement("button");
+      up.type="button"; up.className="mini"; up.textContent="Upload";
+      up.addEventListener("click", ()=>inp.click());
+
+      const clr=document.createElement("button");
+      clr.type="button"; clr.className="mini"; clr.textContent="Clear";
+      clr.addEventListener("click", ()=>{
+        delete images[slot.id];
+        renderImages();
+        autoSave(true);
+      });
+
+      actions.appendChild(up); actions.appendChild(clr);
+      box.appendChild(actions);
+
+      inp.addEventListener("change", async ()=>{
+        const f=inp.files && inp.files[0];
+        if(!f) return;
+        const data=await compressImageToDataURL(f,1400,0.82);
+        images[slot.id]=data;
+        renderImages();
+        autoSave(true);
+      });
+
+      box.addEventListener("dragover", (e)=>{e.preventDefault(); box.classList.add("drag");});
+      box.addEventListener("dragleave", ()=>box.classList.remove("drag"));
+      box.addEventListener("drop", async (e)=>{
+        e.preventDefault(); box.classList.remove("drag");
+        const f=e.dataTransfer.files && e.dataTransfer.files[0];
+        if(!f || !f.type.startsWith("image/")) return;
+        const data=await compressImageToDataURL(f,1400,0.82);
+        images[slot.id]=data;
+        renderImages();
+        autoSave(true);
+      });
+
+      if(images[slot.id]){
+        const img=document.createElement("img");
+        img.src=images[slot.id];
+        box.appendChild(img);
+        help.textContent="Saved ✓";
+      }
+
+      box.appendChild(inp);
+      grid.appendChild(box);
+    });
+  }
   renderImages();
 
-  // ---------- storage ----------
-  function storageKey(){
-    return `contractx.journal.v3.${brokerVal()}.${sym}`;
-  }
+  // storage
+  const editor = document.getElementById("editor");
+  function storageKey(){ return `contractx.journal.v4.${brokerVal()}.${sym}`; }
 
   function computeSummary(){
-    const e = n(document.getElementById("entryF").value);
-    const s = n(document.getElementById("slF").value);
-    const tp = n(document.getElementById("tpF").value);
-
-    const risk = (isNum(e) && isNum(s)) ? Math.abs(e - s) : NaN;
-    const reward = (isNum(e) && isNum(tp)) ? Math.abs(tp - e) : NaN;
-    const rmult = (isNum(risk) && risk > 0 && isNum(reward)) ? (reward / risk) : NaN;
-
-    const riskCash = n(document.getElementById("jRiskUsd").value);
+    const e=n(document.getElementById("entryF").value);
+    const s=n(document.getElementById("slF").value);
+    const tp=n(document.getElementById("tpF").value);
+    const risk=(isNum(e)&&isNum(s))?Math.abs(e-s):NaN;
+    const reward=(isNum(e)&&isNum(tp))?Math.abs(tp-e):NaN;
+    const rmult=(isNum(risk)&&risk>0&&isNum(reward))?(reward/risk):NaN;
+    const riskCash=n(document.getElementById("jRiskUsd").value);
 
     return {
-      direction: getDirection(),
-      risk: isNum(risk) ? risk : null,
-      reward: isNum(reward) ? reward : null,
-      rmult: isNum(rmult) ? rmult : null,
-      offset: isNum(offset) ? offset : null,
-      riskCash: isNum(riskCash) ? riskCash : null,
-      crv: document.getElementById("jCrv").value || (pbState["pb_crv"] || ""),
-      prop: {
-        entry: document.getElementById("entryP").textContent || "—",
-        sl:    document.getElementById("slP").textContent || "—",
-        tp:    document.getElementById("tpP").textContent || "—",
+      direction:getDirection(),
+      risk:isNum(risk)?risk:null,
+      reward:isNum(reward)?reward:null,
+      rmult:isNum(rmult)?rmult:null,
+      offset:isNum(offset)?offset:null,
+      riskCash:isNum(riskCash)?riskCash:null,
+      duration:document.getElementById("jDuration").value || "",
+      crv:document.getElementById("jCrv").value || (pbState["pb_crv"]||""),
+      prop:{
+        entry:document.getElementById("entryP").textContent||"—",
+        sl:document.getElementById("slP").textContent||"—",
+        tp:document.getElementById("tpP").textContent||"—",
       },
-      playbook: pbState
+      playbook:pbState
     };
   }
 
   function save(silent=false){
-    const payload = {
-      ts: Date.now(),
-      date: document.getElementById("jDate").value.trim(),
-      tags: document.getElementById("jTags").value.trim(),
-      bias: document.getElementById("jBias").value.trim(),
-      dir:  document.getElementById("jDir").value,
+    const payload={
+      ts:Date.now(),
+      date:document.getElementById("jDate").value.trim(),
+      duration:document.getElementById("jDuration").value || "",
+      bias:document.getElementById("jBias").value.trim(),
+      dir:document.getElementById("jDir").value,
       rating,
-      riskCash: document.getElementById("jRiskUsd").value.trim(),
-      crv: document.getElementById("jCrv").value || "",
-      playbook: pbState,
-      text: editor.innerText || "",
+      riskCash:document.getElementById("jRiskUsd").value.trim(),
+      crv:document.getElementById("jCrv").value || "",
+      playbook:pbState,
+      text:editor.innerText||"",
       images,
-      offset: isNum(offset) ? offset : null,
-      computed: computeSummary()
+      offset:isNum(offset)?offset:null,
+      computed:computeSummary()
     };
     localStorage.setItem(storageKey(), JSON.stringify(payload));
     document.getElementById("jStatus").textContent = silent ? "Autosaved ✓" : "Saved ✓";
   }
 
-  let saveTimer = null;
+  let saveTimer=null;
   function autoSave(silent=true){
     if(saveTimer) clearTimeout(saveTimer);
-    saveTimer = setTimeout(()=>save(silent), 350);
+    saveTimer=setTimeout(()=>save(silent), 350);
+  }
+
+  function todayISO(){
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const da= String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${da}`;
   }
 
   function load(){
     setMeta();
     updateKPIs();
 
-    const raw = localStorage.getItem(storageKey());
+    const raw=localStorage.getItem(storageKey());
     if(!raw){
-      document.getElementById("jStatus").textContent = "No saved journal yet.";
+      // default date if empty
+      const el = document.getElementById("jDate");
+      if(!el.value) el.value = todayISO();
+      document.getElementById("jStatus").textContent="No saved journal yet.";
       return;
     }
     try{
-      const d = JSON.parse(raw);
-      document.getElementById("jDate").value = d.date || "";
-      document.getElementById("jTags").value = d.tags || "";
+      const d=JSON.parse(raw);
+      document.getElementById("jDate").value = d.date || todayISO();
+      document.getElementById("jDuration").value = d.duration || "";
       document.getElementById("jBias").value = d.bias || "";
-      document.getElementById("jDir").value  = d.dir || "auto";
+      document.getElementById("jDir").value = d.dir || "auto";
       document.getElementById("jRiskUsd").value = d.riskCash || "";
       document.getElementById("jCrv").value = d.crv || "";
 
       rating = d.rating || 0;
       renderStars();
 
-      // playbook
       for(const k in pbState) delete pbState[k];
-      if(d.playbook){
-        for(const k in d.playbook) pbState[k] = d.playbook[k];
-      }
-      // ensure CRV sync
-      if(document.getElementById("jCrv").value){
-        pbState["pb_crv"] = document.getElementById("jCrv").value;
-      }
+      if(d.playbook){ for(const k in d.playbook) pbState[k]=d.playbook[k]; }
+      if(document.getElementById("jCrv").value) pbState["pb_crv"]=document.getElementById("jCrv").value;
       renderPlaybook();
 
       editor.textContent = d.text || "";
 
-      if(d.images){
-        for(const k in d.images) images[k] = d.images[k];
-      }
+      for(const k in images) delete images[k];
+      if(d.images){ for(const k in d.images) images[k]=d.images[k]; }
       renderImages();
 
-      if(typeof d.offset === "number" && isNum(d.offset)){
-        offset = d.offset;
-        document.getElementById("offsetVal").textContent = fmt2(offset);
+      if(typeof d.offset==="number" && isNum(d.offset)){
+        offset=d.offset;
+        document.getElementById("offsetVal").textContent=fmt2(offset);
       }
 
       document.getElementById("jStatus").textContent =
         `Loaded ✓ (${new Date(d.ts || Date.now()).toLocaleString()})`;
-    } catch {
-      document.getElementById("jStatus").textContent = "Load failed (invalid storage).";
+    }catch{
+      document.getElementById("jStatus").textContent="Load failed (invalid storage).";
+      const el = document.getElementById("jDate");
+      if(!el.value) el.value = todayISO();
     }
   }
 
   function clearAll(){
     localStorage.removeItem(storageKey());
-    document.getElementById("jDate").value = "";
-    document.getElementById("jTags").value = "";
+    document.getElementById("jDate").value = todayISO();
+    document.getElementById("jDuration").value = "";
     document.getElementById("jBias").value = "";
     document.getElementById("jDir").value = "auto";
     document.getElementById("jRiskUsd").value = "";
@@ -1140,31 +974,29 @@
     document.getElementById("jStatus").textContent = "Cleared.";
   }
 
-  // ---------- summary insertion ----------
   function insertSummary(){
-    const sum = computeSummary();
-    const date = document.getElementById("jDate").value.trim() || "-";
-    const tags = document.getElementById("jTags").value.trim() || "-";
-    const bias = document.getElementById("jBias").value.trim() || "-";
-    const dir = sum.direction || "auto";
-    const rtxt = sum.rmult != null ? sum.rmult.toFixed(2) + "R" : "—";
-    const risk = sum.risk != null ? fmt2(sum.risk) : "—";
-    const reward = sum.reward != null ? fmt2(sum.reward) : "—";
-    const off = sum.offset != null ? fmt2(sum.offset) : "—";
-    const cash = sum.riskCash != null ? ("$" + fmt2(sum.riskCash)) : "—";
+    const sum=computeSummary();
+    const date=document.getElementById("jDate").value.trim() || todayISO();
+    const duration=document.getElementById("jDuration").value || "-";
+    const bias=document.getElementById("jBias").value.trim() || "-";
+    const dir=sum.direction || "auto";
+    const rtxt=sum.rmult!=null?sum.rmult.toFixed(2)+"R":"—";
+    const risk=sum.risk!=null?fmt2(sum.risk):"—";
+    const reward=sum.reward!=null?fmt2(sum.reward):"—";
+    const off=sum.offset!=null?fmt2(sum.offset):"—";
+    const cash=sum.riskCash!=null?("$"+fmt2(sum.riskCash)):"—";
+    const inv=isInverted ? " (INVERTED FX: Future short = FX long)" : "";
 
-    const inv = isInverted ? " (INVERTED FX: Future short = FX long)" : "";
-
-    const pbLines = PLAYBOOK.map(it=>{
-      const v = pbState[it.id] || "—";
+    const pbLines=PLAYBOOK.map(it=>{
+      const v=pbState[it.id] || "—";
       return `- ${it.title.replace(/^\d+\)\s*/,'')}: ${v}`;
     }).join("\n");
 
     const block =
 `=== CONTRACTX SUMMARY ===
 Instrument: ${sym} • Broker: ${brokerVal()}${inv}
-Date/Session: ${date}
-Tags: ${tags}
+Date: ${date}
+Planned duration: ${duration}
 Bias/Plan: ${bias}
 Direction: ${dir}
 Risk-$: ${cash}
@@ -1177,122 +1009,102 @@ Playbook:
 ${pbLines}
 `;
 
-    const cur = editor.innerText || "";
+    const cur=editor.innerText || "";
     editor.textContent = (cur ? (cur + "\n\n") : "") + block;
     autoSave(true);
   }
 
-  // ---------- pdf / print ----------
   function exportPDF(){
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit:"pt", format:"a4" });
 
-    const margin = 46;
-    const pageW = 595;
-    const pageH = 842;
-    let y = 56;
+    const margin=46, pageW=595, pageH=842;
+    let y=56;
 
-    const sum = computeSummary();
-    const date = document.getElementById("jDate").value.trim();
-    const tags = document.getElementById("jTags").value.trim();
-    const bias = document.getElementById("jBias").value.trim();
-    const notesText = (editor.innerText || "").trim() || "-";
+    const sum=computeSummary();
+    const date=document.getElementById("jDate").value.trim() || todayISO();
+    const duration=document.getElementById("jDuration").value || "-";
+    const bias=document.getElementById("jBias").value.trim() || "-";
+    const notesText=(editor.innerText||"").trim() || "-";
 
     doc.setFont("helvetica","bold"); doc.setFontSize(18);
     doc.text("CONTRACTX — Journal", margin, y);
 
-    y += 22;
+    y+=22;
     doc.setFont("helvetica","normal"); doc.setFontSize(11);
-    doc.text(`Instrument: ${sym}`, margin, y); y += 16;
-    doc.text(`Broker: ${brokerVal()}`, margin, y); y += 16;
-    doc.text(`Chart Proxy: ${tvSymbol}`, margin, y); y += 16;
+    doc.text(`Instrument: ${sym}`, margin, y); y+=16;
+    doc.text(`Broker: ${brokerVal()}`, margin, y); y+=16;
+    doc.text(`Chart Proxy: ${tvSymbol}`, margin, y); y+=16;
 
-    y += 8;
-    doc.setFont("helvetica","bold"); doc.text("Trade Data", margin, y); y += 16;
+    y+=8;
+    doc.setFont("helvetica","bold"); doc.text("Trade Data", margin, y); y+=16;
     doc.setFont("helvetica","normal");
 
-    const off = sum.offset != null ? fmt2(sum.offset) : "—";
-    const risk = sum.risk != null ? fmt2(sum.risk) : "—";
-    const reward = sum.reward != null ? fmt2(sum.reward) : "—";
-    const rmult = sum.rmult != null ? (sum.rmult.toFixed(2) + "R") : "—";
-    const cash = sum.riskCash != null ? ("$" + fmt2(sum.riskCash)) : "—";
+    const off=sum.offset!=null?fmt2(sum.offset):"—";
+    const risk=sum.risk!=null?fmt2(sum.risk):"—";
+    const reward=sum.reward!=null?fmt2(sum.reward):"—";
+    const rmult=sum.rmult!=null?(sum.rmult.toFixed(2)+"R"):"—";
+    const cash=sum.riskCash!=null?("$"+fmt2(sum.riskCash)):"—";
 
-    doc.text(`Direction: ${sum.direction || "-"}`, margin, y); y += 16;
-    doc.text(`Risk-$: ${cash}`, margin, y); y += 16;
-    doc.text(`Risk: ${risk}    Reward: ${reward}    R-Multiple: ${rmult}`, margin, y); y += 16;
-    doc.text(`CRV: ${sum.crv || "—"}`, margin, y); y += 16;
-    doc.text(`Offset (Prop − Future): ${off}`, margin, y); y += 16;
-    doc.text(`Prop Entry/SL/TP: ${sum.prop.entry} / ${sum.prop.sl} / ${sum.prop.tp}`, margin, y); y += 18;
+    doc.text(`Date: ${date}`, margin, y); y+=16;
+    doc.text(`Planned duration: ${duration}`, margin, y); y+=16;
+    doc.text(`Bias/Plan: ${bias}`, margin, y); y+=16;
+    doc.text(`Direction: ${sum.direction || "-"}`, margin, y); y+=16;
+    doc.text(`Risk-$: ${cash}`, margin, y); y+=16;
+    doc.text(`Risk: ${risk}    Reward: ${reward}    R-Multiple: ${rmult}`, margin, y); y+=16;
+    doc.text(`CRV: ${sum.crv || "—"}`, margin, y); y+=16;
+    doc.text(`Offset (Prop−Future): ${off}`, margin, y); y+=16;
+    doc.text(`Prop Entry/SL/TP: ${sum.prop.entry} / ${sum.prop.sl} / ${sum.prop.tp}`, margin, y); y+=18;
 
     if(isInverted){
       doc.setFont("helvetica","bold");
       doc.text("INVERTED FX: Future short = FX long (und umgekehrt).", margin, y);
       doc.setFont("helvetica","normal");
-      y += 18;
+      y+=18;
     }
 
-    y += 6;
-    doc.setFont("helvetica","bold"); doc.text("Context", margin, y); y += 16;
-    doc.setFont("helvetica","normal");
-    doc.text(`Datum/Session: ${date || "-"}`, margin, y); y += 16;
-    doc.text(`Setup/Tags: ${tags || "-"}`, margin, y); y += 16;
-    doc.text(`Bias/Plan: ${bias || "-"}`, margin, y); y += 18;
-
-    y += 6;
-    doc.setFont("helvetica","bold"); doc.text("Playbook", margin, y); y += 16;
+    y+=6;
+    doc.setFont("helvetica","bold"); doc.text("Playbook", margin, y); y+=16;
     doc.setFont("helvetica","normal");
     const pbText = PLAYBOOK.map(it=>{
       const v = pbState[it.id] || "-";
       return `${it.title.replace(/^\d+\)\s*/,'')}: ${v}`;
     }).join("\n");
-    const maxWidth = pageW - margin*2;
+    const maxWidth=pageW - margin*2;
     const pbLines = doc.splitTextToSize(pbText, maxWidth);
     doc.text(pbLines, margin, y);
     y += 12 * pbLines.length + 16;
 
-    y += 6;
-    doc.setFont("helvetica","bold"); doc.text("Notes", margin, y); y += 16;
+    y+=6;
+    doc.setFont("helvetica","bold"); doc.text("Notes", margin, y); y+=16;
     doc.setFont("helvetica","normal");
     const noteLines = doc.splitTextToSize(notesText, maxWidth);
     doc.text(noteLines, margin, y);
     y += 12 * noteLines.length + 16;
 
-    // Images
     const imgs = IMG_SLOTS.map(s=>({label:s.label, data:images[s.id]})).filter(x=>!!x.data);
     for(const im of imgs){
-      if(y > pageH - 220){
-        doc.addPage();
-        y = 56;
-      }
+      if(y > pageH - 220){ doc.addPage(); y=56; }
       doc.setFont("helvetica","bold"); doc.setFontSize(12);
-      doc.text(im.label, margin, y); y += 10;
-
-      const imgW = pageW - margin*2;
-      const imgH = 320;
-
-      try{
-        doc.addImage(im.data, "JPEG", margin, y, imgW, imgH);
-        y += imgH + 16;
-      } catch {
-        doc.setFont("helvetica","normal"); doc.setFontSize(11);
-        doc.text("(Image could not be embedded)", margin, y); y += 16;
-      }
+      doc.text(im.label, margin, y); y+=10;
+      const imgW = pageW - margin*2, imgH=320;
+      try{ doc.addImage(im.data, "JPEG", margin, y, imgW, imgH); y += imgH + 16; }
+      catch{ doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.text("(Image could not be embedded)", margin, y); y+=16; }
     }
 
-    const safeDate = (date || new Date().toISOString().slice(0,10)).replace(/[^0-9A-Za-z_-]/g,"-");
-    doc.save(`contractx-${sym}-${brokerVal()}-${safeDate}.pdf`);
+    doc.save(`contractx-${sym}-${brokerVal()}-${date}.pdf`);
   }
 
   function printNote(){
-    const sum = computeSummary();
-    const date = document.getElementById("jDate").value.trim();
-    const tags = document.getElementById("jTags").value.trim();
-    const bias = document.getElementById("jBias").value.trim();
-    const notesText = (editor.innerText || "").trim() || "-";
+    const sum=computeSummary();
+    const date=document.getElementById("jDate").value.trim() || todayISO();
+    const duration=document.getElementById("jDuration").value || "-";
+    const bias=document.getElementById("jBias").value.trim() || "-";
+    const notesText=(editor.innerText||"").trim() || "-";
     const esc = (s)=>String(s).replace(/[<>]/g, c => ({'<':'&lt;','>':'&gt;'}[c]));
 
     const pbHtml = PLAYBOOK.map(it=>{
-      const v = pbState[it.id] || "-";
+      const v=pbState[it.id] || "-";
       return `<div><b>${esc(it.title.replace(/^\d+\)\s*/,''))}:</b> ${esc(v)}</div>`;
     }).join("");
 
@@ -1300,7 +1112,7 @@ ${pbLines}
     const imgHtml = imgs.map(x=>`
       <div class="box">
         <b>${esc(x.label)}</b><br>
-        <img src="${x.data}" style="width:100%;max-width:100%;border-radius:10px;margin-top:10px" />
+        <img src="${x.data}" style="width:100%;border-radius:10px;margin-top:10px" />
       </div>
     `).join("");
 
@@ -1320,6 +1132,9 @@ ${pbLines}
 
         <div class="box">
           <b>Trade Data</b><br>
+          Date: ${esc(date)}<br>
+          Planned duration: ${esc(duration)}<br>
+          Bias/Plan: ${esc(bias)}<br>
           Direction: ${esc(sum.direction || "-")}<br>
           Risk-$: ${esc(sum.riskCash!=null?("$"+sum.riskCash.toFixed(2)):"—")}<br>
           Risk: ${esc(sum.risk!=null?sum.risk.toFixed(2):"—")} • Reward: ${esc(sum.reward!=null?sum.reward.toFixed(2):"—")} • R: ${esc(sum.rmult!=null?(sum.rmult.toFixed(2)+"R"):"—")}<br>
@@ -1327,13 +1142,6 @@ ${pbLines}
           Offset (Prop−Future): ${esc(sum.offset!=null?sum.offset.toFixed(2):"—")}<br>
           Prop Entry/SL/TP: ${esc(sum.prop.entry)} / ${esc(sum.prop.sl)} / ${esc(sum.prop.tp)}<br>
           ${isInverted ? "<br><b>INVERTED FX:</b> Future short = FX long (und umgekehrt)." : ""}
-        </div>
-
-        <div class="box">
-          <b>Context</b><br>
-          Datum/Session: ${esc(date || "-")}<br>
-          Setup/Tags: ${esc(tags || "-")}<br>
-          Bias/Plan: ${esc(bias || "-")}
         </div>
 
         <div class="box">
@@ -1347,40 +1155,36 @@ ${pbLines}
         </div>
 
         ${imgHtml}
-
         <script>window.onload=()=>window.print();<\/script>
       </body></html>
     `;
 
     const w = window.open("", "_blank");
     if(!w) return;
-    w.document.open();
-    w.document.write(html);
-    w.document.close();
+    w.document.open(); w.document.write(html); w.document.close();
   }
 
-  // ---------- events ----------
+  // autosave hooks
+  function hook(id){
+    const el=document.getElementById(id);
+    el.addEventListener("input", ()=>{ updateKPIs(); autoSave(true); });
+    el.addEventListener("change", ()=>{ updateKPIs(); autoSave(true); });
+  }
+
   document.getElementById("btnInsertBlock").addEventListener("click", insertSummary);
   document.getElementById("btnSave").addEventListener("click", ()=>save(false));
   document.getElementById("btnClear").addEventListener("click", clearAll);
   document.getElementById("btnPdf").addEventListener("click", exportPDF);
   document.getElementById("btnPrint").addEventListener("click", printNote);
 
-  // autosave hooks
-  const autos = ["jDate","jTags","jBias","jDir","jRiskUsd","jCrv"];
-  autos.forEach(id=>{
-    document.getElementById(id).addEventListener("input", ()=>{ updateKPIs(); autoSave(true); });
-    document.getElementById(id).addEventListener("change", ()=>{ updateKPIs(); autoSave(true); });
-  });
+  ["jDate","jDuration","jBias","jDir","jRiskUsd","jCrv"].forEach(hook);
   editor.addEventListener("input", ()=>autoSave(true));
 
   document.getElementById("broker").addEventListener("change", ()=>{
-    setMeta();
-    load();
-    autoSave(true);
+    setMeta(); load(); autoSave(true);
   });
 
-  // ---------- init ----------
+  // init
   setMeta();
   updateKPIs();
   load();
