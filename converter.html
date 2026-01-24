@@ -960,8 +960,7 @@ function calcProp(){
   document.getElementById("entryP").textContent = isNum(e)  ? fmt2(toPropLevel(sym, e, offset))  : "—";
 document.getElementById("slP").textContent    = isNum(s)  ? fmt2(toPropLevel(sym, s, offset))  : "—";
 document.getElementById("tpP").textContent    = isNum(tp) ? fmt2(toPropLevel(sym, tp, offset)) : "—";
-
-  updateKPIs();
+    updateKPIs();
 }
 
 async function copyVal(v){ if(!v || v === "—") return; try{ await navigator.clipboard.writeText(v);}catch{} }
