@@ -4,352 +4,303 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CONTRACTX — Futures Converter</title>
+
   <style>
     :root{
       --bg:#070A0F;
-      --panel: rgba(255,255,255,.06);
-      --panel2: rgba(255,255,255,.04);
-      --stroke: rgba(255,255,255,.10);
-      --stroke2: rgba(255,255,255,.18);
+      --stroke:rgba(255,255,255,.12);
+      --stroke2:rgba(255,255,255,.22);
       --text:#EAF0FF;
-      --muted: rgba(234,240,255,.70);
-      --muted2: rgba(234,240,255,.45);
-      --shadow: 0 18px 50px rgba(0,0,0,.55);
-      --radius: 18px;
+      --muted:rgba(234,240,255,.65);
+      --shadow:0 18px 50px rgba(0,0,0,.55);
+      --warn:#FFD66E;
+      --bad:#FF7C7C;
     }
-
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
       color:var(--text);
       background:
         radial-gradient(1200px 800px at 15% 10%, rgba(40,110,255,.22), transparent 60%),
         radial-gradient(900px 700px at 85% 20%, rgba(255,215,80,.12), transparent 60%),
-        radial-gradient(700px 600px at 50% 95%, rgba(255,255,255,.08), transparent 55%),
         var(--bg);
-      overflow-x:hidden;
     }
-
-    .wrap{ max-width:1100px; margin:0 auto; padding:24px; }
-
-    /* top bar */
-    .top{
-      display:flex; align-items:center; justify-content:space-between;
-      padding:14px 0 10px;
-    }
-    .brand{
-      display:flex; align-items:center; gap:12px;
-      letter-spacing:.6px;
-    }
-    .mark{
-      width:34px; height:34px; border-radius:10px;
-      background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.04));
+    a{color:inherit;text-decoration:none}
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
+    .panel{
+      background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));
       border:1px solid var(--stroke);
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
-      position:relative;
-      overflow:hidden;
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:22px;
     }
-    .mark:before{
-      content:"";
-      position:absolute; inset:-40%;
-      background: conic-gradient(from 220deg, rgba(255,255,255,.0), rgba(255,255,255,.35), rgba(255,255,255,.0));
-      animation: spin 5.5s linear infinite;
-      opacity:.7;
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+      margin-bottom:14px;
     }
-    @keyframes spin{ to{ transform:rotate(360deg);} }
-
-    .brand b{ font-size:15px; }
-    .brand span{ color:var(--muted2); font-size:12px; }
-
-    nav{ display:flex; gap:18px; }
-    nav a{
-      color:var(--muted);
-      text-decoration:none;
-      font-size:13px;
-      padding:8px 10px;
-      border-radius:10px;
-      transition: .15s ease;
-    }
-    nav a:hover{
-      background: rgba(255,255,255,.05);
-      color:var(--text);
-    }
-
-    /* hero */
-    .hero{
-      margin-top:18px;
-      padding:28px;
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-      border:1px solid var(--stroke);
-      box-shadow: var(--shadow);
-      position:relative;
-    }
-    .hero h1{
-      margin:0;
-      font-size:44px;
-      line-height:1.05;
-      letter-spacing:-.8px;
-    }
-    .hero p{
-      margin:14px 0 0;
-      color:var(--muted);
-      font-size:15px;
-      max-width:70ch;
-    }
-    .actions{ margin-top:18px; display:flex; gap:12px; flex-wrap:wrap; }
-    .btn{
+    .brand{display:flex;gap:10px;align-items:center}
+    .logo{
+      width:36px;height:36px;border-radius:12px;
+      background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.06));
       border:1px solid var(--stroke2);
-      background: rgba(255,255,255,.06);
-      color:var(--text);
-      padding:11px 14px;
-      border-radius:14px;
-      text-decoration:none;
-      font-weight:600;
-      font-size:13px;
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      transition:.15s ease;
+      box-shadow:0 12px 30px rgba(0,0,0,.35);
     }
-    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); }
-    .btn.primary{
-      background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
-    }
-    .pill{
-      display:inline-flex;
-      gap:8px;
+    .brandTxt{display:flex;flex-direction:column;line-height:1.1}
+    .brandTxt b{letter-spacing:.6px}
+    .brandTxt span{font-size:12px;color:var(--muted);margin-top:3px}
+    .nav{display:flex;gap:14px;align-items:center}
+    .nav a{font-size:13px;color:var(--muted);font-weight:900}
+    .nav a:hover{color:var(--text)}
+
+    h1{margin:0;font-size:28px;letter-spacing:.2px}
+    .sub{margin-top:6px;font-size:13px;color:var(--muted);line-height:1.45}
+
+    /* LANDING */
+    .hero{
       margin-top:14px;
-      flex-wrap:wrap;
-    }
-    .tag{
-      font-size:12px;
-      color:var(--muted);
       border:1px solid var(--stroke);
-      background: rgba(255,255,255,.04);
-      padding:6px 10px;
-      border-radius:999px;
+      border-radius:18px;
+      padding:18px;
+      background:radial-gradient(900px 420px at 10% 0%, rgba(55,120,255,.18), transparent 55%),
+                 radial-gradient(700px 360px at 90% 0%, rgba(255,215,80,.10), transparent 55%),
+                 rgba(0,0,0,.20);
+    }
+    .heroRow{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .heroBtns{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{
+      padding:11px 14px;border-radius:14px;border:1px solid var(--stroke2);
+      background:rgba(255,255,255,.06);color:var(--text);font-weight:950;cursor:pointer;
+      transition:.15s ease; font-size:13px;
+    }
+    .btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.09)}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .chip{
+      font-size:12px;color:rgba(234,240,255,.70);
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.05);
+      padding:7px 10px;border-radius:999px;font-weight:950;
     }
 
-    /* sections */
-    .section{ margin-top:22px; }
-    .sectionHead{
-      display:flex; align-items:end; justify-content:space-between; gap:10px;
-      padding:12px 4px;
-    }
-    .sectionHead h2{
-      margin:0;
-      font-size:16px;
+    .sectionTitle{
+      margin-top:18px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      color:rgba(234,240,255,.85);
+      font-weight:950;
+      font-size:14px;
       letter-spacing:.2px;
     }
-    .sectionHead .hint{
-      margin:0;
-      color:var(--muted2);
-      font-size:12px;
-    }
+    .sectionHint{font-size:12px;color:var(--muted);font-weight:900}
 
     .grid{
+      margin-top:10px;
       display:grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns:repeat(4, 1fr);
       gap:12px;
     }
-    @media (max-width: 980px){ .grid{ grid-template-columns: repeat(2, 1fr);} .hero h1{ font-size:36px; } }
-    @media (max-width: 520px){ .grid{ grid-template-columns: 1fr;} .hero h1{ font-size:32px; } }
+    @media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:520px){.grid{grid-template-columns:1fr}}
 
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    .asset{
       border:1px solid var(--stroke);
-      border-radius: 16px;
+      border-radius:16px;
+      background:rgba(0,0,0,.22);
       padding:14px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
       cursor:pointer;
       transition:.15s ease;
-      min-height:92px;
+      min-height:88px;
       position:relative;
       overflow:hidden;
     }
-    .card:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.18); }
-    .card:after{
+    .asset:hover{transform:translateY(-1px);background:rgba(0,0,0,.28);border-color:rgba(255,255,255,.18)}
+    .asset:before{
       content:"";
-      position:absolute;
-      inset:-1px;
-      background: radial-gradient(500px 120px at 20% 0%, rgba(255,255,255,.10), transparent 55%);
+      position:absolute;inset:-60px -60px auto auto;
+      width:200px;height:200px;border-radius:50%;
+      background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.10), transparent 60%);
       pointer-events:none;
     }
-
-    .sym{ font-weight:800; font-size:16px; letter-spacing:.4px; }
-    .name{ margin-top:6px; color:var(--muted); font-size:12px; }
-    .meta{
-      margin-top:10px;
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      color:var(--muted2);
-      font-size:11px;
-    }
-    .chip{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      padding:5px 8px;
-      border-radius:999px;
+    .aCode{font-weight:950;font-size:15px}
+    .aName{margin-top:4px;color:var(--muted);font-size:12px;font-weight:900}
+    .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .tag{
+      font-size:11px;color:rgba(234,240,255,.58);
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.04);
+      padding:5px 8px;border-radius:999px;font-weight:950;
     }
 
-    /* footer */
+    .card{
+      border:1px solid var(--stroke);
+      border-radius:16px;
+      background:rgba(0,0,0,.25);
+      padding:16px;
+      margin-top:12px;
+    }
+
     footer{
-      margin:26px 0 10px;
-      padding:16px 0 30px;
-      color:var(--muted2);
+      margin-top:16px;
+      color:rgba(234,240,255,.45);
       font-size:12px;
+      display:flex;gap:10px;flex-wrap:wrap;
     }
-    footer a{ color:var(--muted); text-decoration:none; }
-    footer a:hover{ color:var(--text); }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="top">
-      <div class="brand">
-        <div class="mark" aria-hidden="true"></div>
-        <div>
-          <b>CONTRACTX</b><br/>
-          <span>Futures Converter</span>
+    <section class="panel">
+
+      <div class="topbar">
+        <div class="brand" style="cursor:pointer" onclick="location.href='index.html'">
+          <div class="logo"></div>
+          <div class="brandTxt">
+            <b>CONTRACTX</b>
+            <span>Futures Converter</span>
+          </div>
+        </div>
+        <div class="nav">
+          <a href="#how">How it works</a>
+          <a href="#about">About</a>
         </div>
       </div>
-      <nav>
-        <a href="#converter">Converter</a>
-        <a href="#how">How it works</a>
-        <a href="#about">About</a>
-      </nav>
-    </div>
 
-    <section class="hero">
-      <h1>Convert futures to prop pricing.<br/>Fast. Clean. Correct.</h1>
-      <p>
-        Wähle dein Instrument — Indizes, Metals/Energy oder FX Majors (CME 6X).
-        CONTRACTX zeigt dir die richtige Notation (inkl. Inversion bei 6C/6J/6S).
-      </p>
-      <div class="actions">
-        <a class="btn primary" href="#converter">Open Converter →</a>
-        <a class="btn" href="#how">How it works</a>
-      </div>
-      <div class="pill">
-        <div class="tag">NY Session ready</div>
-        <div class="tag">Indices • Metals • Energy • FX</div>
-        <div class="tag">No fluff</div>
-      </div>
-    </section>
-
-    <section id="converter" class="section">
-      <div class="sectionHead">
-        <h2>Indices</h2>
-        <p class="hint">Click to convert</p>
-      </div>
-      <div class="grid" id="grid-indices"></div>
-    </section>
-
-    <section class="section">
-      <div class="sectionHead">
-        <h2>Metals & Energy</h2>
-        <p class="hint">Gold / Silver / Crude / NatGas</p>
-      </div>
-      <div class="grid" id="grid-commod"></div>
-    </section>
-
-    <section class="section">
-      <div class="sectionHead">
-        <h2>FX Majors (CME 6X)</h2>
-        <p class="hint">Auto-invert where needed (6C/6J/6S)</p>
-      </div>
-      <div class="grid" id="grid-fx"></div>
-    </section>
-
-    <section id="how" class="section">
-      <div class="sectionHead">
-        <h2>How it works</h2>
-        <p class="hint">Simple rules, clear output</p>
-      </div>
-      <div class="card" style="cursor:default;">
-        <div class="sym">Rule #1: Quotes matter.</div>
-        <div class="name">Manche Futures sind gegenüber FX-Spot invertiert. CONTRACTX zeigt dir das transparent.</div>
-        <div class="meta">
-          <span class="chip">6C CAD/USD → FX USD/CAD = 1 / price</span>
-          <span class="chip">6E EUR/USD → FX EUR/USD = price</span>
-          <span class="chip">Tick ≠ Pip (Hinweis statt Fake-Präzision)</span>
+      <div class="hero">
+        <div class="heroRow">
+          <div>
+            <h1>Convert futures to prop pricing. Fast. Clean. Correct.</h1>
+            <div class="sub">
+              Wähle dein Instrument — Indizes, Metals/Energy oder FX Majors (CME 6X).
+              CONTRACTX zeigt dir die richtige Notation (inkl. Inversion bei 6C/6J/6S).
+            </div>
+          </div>
+          <div class="heroBtns">
+            <button class="btn" type="button" onclick="go('ES')">Open Converter →</button>
+            <button class="btn" type="button" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">How it works</button>
+          </div>
+        </div>
+        <div class="chips">
+          <span class="chip">NY Session ready</span>
+          <span class="chip">Indices • Metals • Energy • FX</span>
+          <span class="chip">No fluff</span>
         </div>
       </div>
-    </section>
 
-    <section id="about" class="section">
-      <div class="sectionHead">
-        <h2>About</h2>
-        <p class="hint">Community utility</p>
+      <div class="sectionTitle">
+        <div>Indices</div>
+        <div class="sectionHint">Click to convert</div>
       </div>
-      <div class="card" style="cursor:default;">
-        <div class="sym">Built for traders who hate guesswork.</div>
-        <div class="name">CONTRACTX ist ein Converter — kein Broker, keine Execution, kein Bullshit.</div>
+      <div class="grid">
+        <div class="asset" onclick="go('ES')">
+          <div class="aCode">ES</div><div class="aName">S&P 500 E-mini</div>
+          <div class="tags"><span class="tag">CME</span><span class="tag">Index</span></div>
+        </div>
+        <div class="asset" onclick="go('NQ')">
+          <div class="aCode">NQ</div><div class="aName">Nasdaq 100 E-mini</div>
+          <div class="tags"><span class="tag">CME</span><span class="tag">Index</span></div>
+        </div>
+        <div class="asset" onclick="go('YM')">
+          <div class="aCode">YM</div><div class="aName">Dow Jones Mini</div>
+          <div class="tags"><span class="tag">CBOT</span><span class="tag">Index</span></div>
+        </div>
+        <div class="asset" onclick="go('RTY')">
+          <div class="aCode">RTY</div><div class="aName">Russell 2000 E-mini</div>
+          <div class="tags"><span class="tag">CME</span><span class="tag">Index</span></div>
+        </div>
       </div>
-    </section>
 
-    <footer>
-      © <span id="y"></span> CONTRACTX • <a href="#">Imprint</a> • <a href="#">Privacy</a>
-    </footer>
+      <div class="sectionTitle" style="margin-top:18px">
+        <div>Metals & Energy</div>
+        <div class="sectionHint">Gold / Silver / Crude / Copper</div>
+      </div>
+      <div class="grid">
+        <div class="asset" onclick="go('GC')">
+          <div class="aCode">GC</div><div class="aName">Gold</div>
+          <div class="tags"><span class="tag">COMEX</span><span class="tag">Metal</span></div>
+        </div>
+        <div class="asset" onclick="go('SI')">
+          <div class="aCode">SI</div><div class="aName">Silver</div>
+          <div class="tags"><span class="tag">COMEX</span><span class="tag">Metal</span></div>
+        </div>
+        <div class="asset" onclick="go('CL')">
+          <div class="aCode">CL</div><div class="aName">Crude Oil</div>
+          <div class="tags"><span class="tag">NYMEX</span><span class="tag">Energy</span></div>
+        </div>
+        <!-- ✅ NG IS GONE. COPPER IS HERE -->
+        <div class="asset" onclick="go('HG')">
+          <div class="aCode">HG</div><div class="aName">Copper</div>
+          <div class="tags"><span class="tag">COMEX</span><span class="tag">Metal</span></div>
+        </div>
+      </div>
+
+      <div class="sectionTitle" style="margin-top:18px">
+        <div>FX Majors (CME 6X)</div>
+        <div class="sectionHint">Auto-invert where needed (6C/6J/6S)</div>
+      </div>
+      <div class="grid">
+        <div class="asset" onclick="go('6E')">
+          <div class="aCode">6E</div><div class="aName">Euro</div>
+          <div class="tags"><span class="tag">EUR/USD</span><span class="tag">Spot aligned</span></div>
+        </div>
+        <div class="asset" onclick="go('6B')">
+          <div class="aCode">6B</div><div class="aName">British Pound</div>
+          <div class="tags"><span class="tag">GBP/USD</span><span class="tag">Spot aligned</span></div>
+        </div>
+        <div class="asset" onclick="go('6A')">
+          <div class="aCode">6A</div><div class="aName">Australian Dollar</div>
+          <div class="tags"><span class="tag">AUD/USD</span><span class="tag">Spot aligned</span></div>
+        </div>
+        <div class="asset" onclick="go('6N')">
+          <div class="aCode">6N</div><div class="aName">New Zealand Dollar</div>
+          <div class="tags"><span class="tag">NZD/USD</span><span class="tag">Spot aligned</span></div>
+        </div>
+
+        <div class="asset" onclick="go('6C')">
+          <div class="aCode">6C</div><div class="aName">Canadian Dollar</div>
+          <div class="tags"><span class="tag">CAD/USD</span><span class="tag">Invert → USD/CAD</span></div>
+        </div>
+        <div class="asset" onclick="go('6J')">
+          <div class="aCode">6J</div><div class="aName">Japanese Yen</div>
+          <div class="tags"><span class="tag">JPY/USD</span><span class="tag">Invert → USD/JPY</span></div>
+        </div>
+        <div class="asset" onclick="go('6S')">
+          <div class="aCode">6S</div><div class="aName">Swiss Franc</div>
+          <div class="tags"><span class="tag">CHF/USD</span><span class="tag">Invert → USD/CHF</span></div>
+        </div>
+      </div>
+
+      <div id="how" class="card">
+        <b>How it works</b>
+        <div class="sub" style="margin-top:8px">
+          Du klickst ein Instrument → CONTRACTX öffnet den Converter mit dem richtigen Chart/Mapping.
+          Dann gibst du Future-Preis + Prop-Mid ein → Offset wird gesetzt → Entry/SL/TP werden automatisch umgerechnet.
+        </div>
+      </div>
+
+      <div id="about" class="card">
+        <b>About</b>
+        <div class="sub" style="margin-top:8px">
+          CONTRACTX ist für schnelles Level-Mapping gedacht (Entry/SL/TP), nicht für Tick→Pip Blind-Scaling.
+        </div>
+      </div>
+
+      <footer>
+        <span>© 2026 CONTRACTX</span>
+        <span>•</span>
+        <span>Imprint</span>
+        <span>•</span>
+        <span>Privacy</span>
+      </footer>
+
+    </section>
   </div>
 
-<script>
-  const indices = [
-    { sym:"ES", name:"S&P 500 E-mini", chips:["CME","Index"] },
-    { sym:"NQ", name:"Nasdaq 100 E-mini", chips:["CME","Index"] },
-    { sym:"YM", name:"Dow Jones Mini", chips:["CBOT","Index"] },
-    { sym:"RTY", name:"Russell 2000 E-mini", chips:["CME","Index"] },
-  ];
-
-  const commod = [
-    { sym:"GC", name:"Gold", chips:["COMEX","Metal"] },
-    { sym:"SI", name:"Silver", chips:["COMEX","Metal"] },
-    { sym:"CL", name:"Crude Oil", chips:["NYMEX","Energy"] },
-    { sym:"NG", name:"Natural Gas", chips:["NYMEX","Energy"] },
-  ];
-
-  const fx = [
-    { sym:"6E", name:"Euro", chips:["EUR/USD","Spot aligned"] },
-    { sym:"6B", name:"British Pound", chips:["GBP/USD","Spot aligned"] },
-    { sym:"6A", name:"Australian Dollar", chips:["AUD/USD","Spot aligned"] },
-    { sym:"6N", name:"New Zealand Dollar", chips:["NZD/USD","Spot aligned"] },
-    { sym:"6C", name:"Canadian Dollar", chips:["CAD/USD","Invert → USD/CAD"] },
-    { sym:"6J", name:"Japanese Yen", chips:["JPY/USD","Invert → USD/JPY"] },
-    { sym:"6S", name:"Swiss Franc", chips:["CHF/USD","Invert → USD/CHF"] },
-  ];
-
-  function mount(list, elId){
-    const el = document.getElementById(elId);
-    el.innerHTML = list.map(x => `
-      <div class="card" role="button" tabindex="0" data-sym="${x.sym}">
-        <div class="sym">${x.sym}</div>
-        <div class="name">${x.name}</div>
-        <div class="meta">
-          ${x.chips.map(c => `<span class="chip">${c}</span>`).join("")}
-        </div>
-      </div>
-    `).join("");
-
-    el.querySelectorAll(".card").forEach(card => {
-      const go = () => {
-        const sym = card.getAttribute("data-sym");
-        // Später: converter.html bauen. Für jetzt: Demo-Route.
-        window.location.href = `converter.html?symbol=${encodeURIComponent(sym)}`;
-      };
-      card.addEventListener("click", go);
-      card.addEventListener("keydown", (e) => { if(e.key === "Enter") go(); });
-    });
-  }
-
-  mount(indices, "grid-indices");
-  mount(commod, "grid-commod");
-  mount(fx, "grid-fx");
-  document.getElementById("y").textContent = new Date().getFullYear();
-</script>
+  <script>
+    function go(sym){
+      // IMPORTANT: this assumes your converter file is named "converter.html"
+      // If you renamed it, change the filename here.
+      window.location.href = "converter.html?symbol=" + encodeURIComponent(sym);
+    }
+  </script>
 </body>
 </html>
