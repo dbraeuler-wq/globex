@@ -13,8 +13,6 @@
       --text:#EAF0FF;
       --muted:rgba(234,240,255,.65);
       --shadow:0 18px 50px rgba(0,0,0,.55);
-      --warn:#FFD66E;
-      --bad:#FF7C7C;
     }
     *{box-sizing:border-box}
     body{
@@ -44,7 +42,6 @@
       width:36px;height:36px;border-radius:12px;
       background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.06));
       border:1px solid var(--stroke2);
-      box-shadow:0 12px 30px rgba(0,0,0,.35);
     }
     .brandTxt{display:flex;flex-direction:column;line-height:1.1}
     .brandTxt b{letter-spacing:.6px}
@@ -53,10 +50,9 @@
     .nav a{font-size:13px;color:var(--muted);font-weight:900}
     .nav a:hover{color:var(--text)}
 
-    h1{margin:0;font-size:28px;letter-spacing:.2px}
+    h1{margin:0;font-size:28px}
     .sub{margin-top:6px;font-size:13px;color:var(--muted);line-height:1.45}
 
-    /* LANDING */
     .hero{
       margin-top:14px;
       border:1px solid var(--stroke);
@@ -67,30 +63,17 @@
                  rgba(0,0,0,.20);
     }
     .heroRow{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
-    .heroBtns{display:flex;gap:10px;flex-wrap:wrap}
     .btn{
       padding:11px 14px;border-radius:14px;border:1px solid var(--stroke2);
       background:rgba(255,255,255,.06);color:var(--text);font-weight:950;cursor:pointer;
-      transition:.15s ease; font-size:13px;
-    }
-    .btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.09)}
-    .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-    .chip{
-      font-size:12px;color:rgba(234,240,255,.70);
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.05);
-      padding:7px 10px;border-radius:999px;font-weight:950;
     }
 
     .sectionTitle{
-      margin-top:18px;
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      color:rgba(234,240,255,.85);
-      font-weight:950;
-      font-size:14px;
-      letter-spacing:.2px;
+      margin-top:22px;
+      display:flex;align-items:center;justify-content:space-between;
+      font-weight:950;font-size:14px;
     }
-    .sectionHint{font-size:12px;color:var(--muted);font-weight:900}
+    .sectionHint{font-size:12px;color:var(--muted)}
 
     .grid{
       margin-top:10px;
@@ -107,18 +90,6 @@
       background:rgba(0,0,0,.22);
       padding:14px;
       cursor:pointer;
-      transition:.15s ease;
-      min-height:88px;
-      position:relative;
-      overflow:hidden;
-    }
-    .asset:hover{transform:translateY(-1px);background:rgba(0,0,0,.28);border-color:rgba(255,255,255,.18)}
-    .asset:before{
-      content:"";
-      position:absolute;inset:-60px -60px auto auto;
-      width:200px;height:200px;border-radius:50%;
-      background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.10), transparent 60%);
-      pointer-events:none;
     }
     .aCode{font-weight:950;font-size:15px}
     .aName{margin-top:4px;color:var(--muted);font-size:12px;font-weight:900}
@@ -135,172 +106,109 @@
       border-radius:16px;
       background:rgba(0,0,0,.25);
       padding:16px;
-      margin-top:12px;
+      margin-top:16px;
     }
 
     footer{
-      margin-top:16px;
+      margin-top:18px;
       color:rgba(234,240,255,.45);
       font-size:12px;
-      display:flex;gap:10px;flex-wrap:wrap;
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <section class="panel">
+<div class="wrap">
+<section class="panel">
 
-      <div class="topbar">
-        <div class="brand" style="cursor:pointer" onclick="location.href='index.html'">
-          <div class="logo"></div>
-          <div class="brandTxt">
-            <b>CONTRACTX</b>
-            <span>Futures Converter</span>
-          </div>
-        </div>
-        <div class="nav">
-          <a href="#how">How it works</a>
-          <a href="#about">About</a>
-        </div>
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo"></div>
+      <div class="brandTxt">
+        <b>CONTRACTX</b>
+        <span>Futures Converter</span>
       </div>
-
-      <div class="hero">
-        <div class="heroRow">
-          <div>
-            <h1>Convert futures to prop pricing. Fast. Clean. Correct.</h1>
-            <div class="sub">
-              Wähle dein Instrument — Indizes, Metals/Energy oder FX Majors (CME 6X).
-              CONTRACTX zeigt dir die richtige Notation (inkl. Inversion bei 6C/6J/6S).
-            </div>
-          </div>
-          <div class="heroBtns">
-            <button class="btn" type="button" onclick="go('ES')">Open Converter →</button>
-            <button class="btn" type="button" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">How it works</button>
-          </div>
-        </div>
-        <div class="chips">
-          <span class="chip">NY Session ready</span>
-          <span class="chip">Indices • Metals • Energy • FX</span>
-          <span class="chip">No fluff</span>
-        </div>
-      </div>
-
-      <div class="sectionTitle">
-        <div>Indices</div>
-        <div class="sectionHint">Click to convert</div>
-      </div>
-      <div class="grid">
-        <div class="asset" onclick="go('ES')">
-          <div class="aCode">ES</div><div class="aName">S&P 500 E-mini</div>
-          <div class="tags"><span class="tag">CME</span><span class="tag">Index</span></div>
-        </div>
-        <div class="asset" onclick="go('NQ')">
-          <div class="aCode">NQ</div><div class="aName">Nasdaq 100 E-mini</div>
-          <div class="tags"><span class="tag">CME</span><span class="tag">Index</span></div>
-        </div>
-        <div class="asset" onclick="go('YM')">
-          <div class="aCode">YM</div><div class="aName">Dow Jones Mini</div>
-          <div class="tags"><span class="tag">CBOT</span><span class="tag">Index</span></div>
-        </div>
-        <div class="asset" onclick="go('RTY')">
-          <div class="aCode">RTY</div><div class="aName">Russell 2000 E-mini</div>
-          <div class="tags"><span class="tag">CME</span><span class="tag">Index</span></div>
-        </div>
-      </div>
-
-      <div class="sectionTitle" style="margin-top:18px">
-        <div>Metals & Energy</div>
-        <div class="sectionHint">Gold / Silver / Crude / Copper</div>
-      </div>
-      <div class="grid">
-        <div class="asset" onclick="go('GC')">
-          <div class="aCode">GC</div><div class="aName">Gold</div>
-          <div class="tags"><span class="tag">COMEX</span><span class="tag">Metal</span></div>
-        </div>
-        <div class="asset" onclick="go('SI')">
-          <div class="aCode">SI</div><div class="aName">Silver</div>
-          <div class="tags"><span class="tag">COMEX</span><span class="tag">Metal</span></div>
-        </div>
-        <div class="asset" onclick="go('CL')">
-          <div class="aCode">CL</div><div class="aName">Crude Oil</div>
-          <div class="tags"><span class="tag">NYMEX</span><span class="tag">Energy</span></div>
-        </div>
-        <!-- ✅ NG IS GONE. COPPER IS HERE -->
-        <div class="asset" onclick="go('HG')">
-          <div class="aCode">HG</div><div class="aName">Copper</div>
-          <div class="tags"><span class="tag">COMEX</span><span class="tag">Metal</span></div>
-        </div>
-      </div>
-
-      <div class="sectionTitle" style="margin-top:18px">
-        <div>FX Majors (CME 6X)</div>
-        <div class="sectionHint">Auto-invert where needed (6C/6J/6S)</div>
-      </div>
-      <div class="grid">
-        <div class="asset" onclick="go('6E')">
-          <div class="aCode">6E</div><div class="aName">Euro</div>
-          <div class="tags"><span class="tag">EUR/USD</span><span class="tag">Spot aligned</span></div>
-        </div>
-        <div class="asset" onclick="go('6B')">
-          <div class="aCode">6B</div><div class="aName">British Pound</div>
-          <div class="tags"><span class="tag">GBP/USD</span><span class="tag">Spot aligned</span></div>
-        </div>
-        <div class="asset" onclick="go('6A')">
-          <div class="aCode">6A</div><div class="aName">Australian Dollar</div>
-          <div class="tags"><span class="tag">AUD/USD</span><span class="tag">Spot aligned</span></div>
-        </div>
-        <div class="asset" onclick="go('6N')">
-          <div class="aCode">6N</div><div class="aName">New Zealand Dollar</div>
-          <div class="tags"><span class="tag">NZD/USD</span><span class="tag">Spot aligned</span></div>
-        </div>
-
-        <div class="asset" onclick="go('6C')">
-          <div class="aCode">6C</div><div class="aName">Canadian Dollar</div>
-          <div class="tags"><span class="tag">CAD/USD</span><span class="tag">Invert → USD/CAD</span></div>
-        </div>
-        <div class="asset" onclick="go('6J')">
-          <div class="aCode">6J</div><div class="aName">Japanese Yen</div>
-          <div class="tags"><span class="tag">JPY/USD</span><span class="tag">Invert → USD/JPY</span></div>
-        </div>
-        <div class="asset" onclick="go('6S')">
-          <div class="aCode">6S</div><div class="aName">Swiss Franc</div>
-          <div class="tags"><span class="tag">CHF/USD</span><span class="tag">Invert → USD/CHF</span></div>
-        </div>
-      </div>
-
-      <div id="how" class="card">
-        <b>How it works</b>
-        <div class="sub" style="margin-top:8px">
-          Du klickst ein Instrument → CONTRACTX öffnet den Converter mit dem richtigen Chart/Mapping.
-          Dann gibst du Future-Preis + Prop-Mid ein → Offset wird gesetzt → Entry/SL/TP werden automatisch umgerechnet.
-        </div>
-      </div>
-
-      <div id="about" class="card">
-        <b>About</b>
-        <div class="sub" style="margin-top:8px">
-          CONTRACTX ist für schnelles Level-Mapping gedacht (Entry/SL/TP), nicht für Tick→Pip Blind-Scaling.
-        </div>
-      </div>
-
-      <footer>
-        <span>© 2026 CONTRACTX</span>
-        <span>•</span>
-        <span>Imprint</span>
-        <span>•</span>
-        <span>Privacy</span>
-      </footer>
-
-    </section>
+    </div>
+    <div class="nav">
+      <a href="#how">How it works</a>
+      <a href="#about">About</a>
+    </div>
   </div>
 
-  <script>
-    function go(sym){
-      // IMPORTANT: this assumes your converter file is named "converter.html"
-      // If you renamed it, change the filename here.
-      window.location.href = "converter.html?symbol=" + encodeURIComponent(sym);
-    }
-  </script>
+  <div class="hero">
+    <div class="heroRow">
+      <div>
+        <h1>Convert futures to prop pricing. Fast. Clean. Correct.</h1>
+        <div class="sub">
+          Wähle dein Instrument — Indizes, Metals/Energy oder FX Majors (CME 6X).
+          CONTRACTX zeigt dir die richtige Notation (inkl. Inversion bei 6C/6J/6S).
+        </div>
+      </div>
+      <button class="btn" onclick="go('ES')">Open Converter →</button>
+    </div>
+  </div>
+
+  <div class="sectionTitle"><div>Indices</div><div class="sectionHint">Click to convert</div></div>
+  <div class="grid">
+    <div class="asset" onclick="go('ES')"><div class="aCode">ES</div><div class="aName">S&P 500 E-mini</div></div>
+    <div class="asset" onclick="go('NQ')"><div class="aCode">NQ</div><div class="aName">Nasdaq 100 E-mini</div></div>
+    <div class="asset" onclick="go('YM')"><div class="aCode">YM</div><div class="aName">Dow Jones Mini</div></div>
+    <div class="asset" onclick="go('RTY')"><div class="aCode">RTY</div><div class="aName">Russell 2000 E-mini</div></div>
+  </div>
+
+  <div class="sectionTitle"><div>Metals & Energy</div><div class="sectionHint">Gold / Silver / Crude / Copper</div></div>
+  <div class="grid">
+    <div class="asset" onclick="go('GC')"><div class="aCode">GC</div><div class="aName">Gold</div></div>
+    <div class="asset" onclick="go('SI')"><div class="aCode">SI</div><div class="aName">Silver</div></div>
+    <div class="asset" onclick="go('CL')"><div class="aCode">CL</div><div class="aName">Crude Oil</div></div>
+    <div class="asset" onclick="go('HG')"><div class="aCode">HG</div><div class="aName">Copper</div></div>
+  </div>
+
+  <div class="sectionTitle"><div>FX Majors (CME 6X)</div><div class="sectionHint">Auto-invert where needed</div></div>
+  <div class="grid">
+    <div class="asset" onclick="go('6E')"><div class="aCode">6E</div><div class="aName">Euro</div></div>
+    <div class="asset" onclick="go('6B')"><div class="aCode">6B</div><div class="aName">British Pound</div></div>
+    <div class="asset" onclick="go('6A')"><div class="aCode">6A</div><div class="aName">Australian Dollar</div></div>
+    <div class="asset" onclick="go('6N')"><div class="aCode">6N</div><div class="aName">New Zealand Dollar</div></div>
+    <div class="asset" onclick="go('6C')"><div class="aCode">6C</div><div class="aName">Canadian Dollar</div></div>
+    <div class="asset" onclick="go('6J')"><div class="aCode">6J</div><div class="aName">Japanese Yen</div></div>
+    <div class="asset" onclick="go('6S')"><div class="aCode">6S</div><div class="aName">Swiss Franc</div></div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div id="how" class="card">
+    <b>How it works</b>
+    <div class="sub" style="margin-top:8px">
+      Du klickst ein Instrument → CONTRACTX öffnet den Converter mit dem richtigen Chart/Mapping.
+      Dann gibst du Future-Preis + Prop-Mid ein → Offset wird gesetzt → Entry/SL/TP werden automatisch umgerechnet.
+    </div>
+
+    <ol style="margin:12px 0 0 18px;font-size:13px;line-height:1.55;font-weight:800;">
+      <li>Future-Chart in TradingView öffnen und aktuellen Preis ablesen.</li>
+      <li>Prop-Firm-Chart öffnen und aktuellen Preis ablesen.</li>
+      <li>Beide Charts nebeneinander legen (Future links, Prop rechts).</li>
+      <li>Preise in CONTRACTX eintragen → Offset wird automatisch berechnet.</li>
+      <li>Entry / SL / TP auf dem Future planen → fertige Prop-Levels kopieren.</li>
+    </ol>
+  </div>
+
+  <div id="about" class="card">
+    <b>About</b>
+    <div class="sub" style="margin-top:8px">
+      CONTRACTX ist für präzises Level-Mapping zwischen Futures und Prop-Brokern gedacht.
+      Kein Raten, kein Umrechnen im Kopf – saubere Levels, immer gleich.
+    </div>
+  </div>
+
+  <footer>© 2026 CONTRACTX</footer>
+
+</section>
+</div>
+
+<script>
+function go(sym){
+  window.location.href = "converter.html?symbol=" + encodeURIComponent(sym);
+}
+</script>
 </body>
 </html>
