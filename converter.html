@@ -7,8 +7,6 @@
   <style>
     :root{
       --bg:#070A0F;
-      --panel: rgba(255,255,255,.06);
-      --panel2: rgba(255,255,255,.04);
       --stroke: rgba(255,255,255,.10);
       --stroke2: rgba(255,255,255,.18);
       --text:#EAF0FF;
@@ -89,13 +87,13 @@
       margin:8px 0 0;
       color:var(--muted);
       font-size:13px;
-      max-width:80ch;
+      max-width:88ch;
     }
 
     .row{
       margin-top:16px;
       display:grid;
-      grid-template-columns: 1.1fr .9fr;
+      grid-template-columns: 1.05fr .95fr;
       gap:14px;
     }
     @media (max-width: 920px){ .row{ grid-template-columns: 1fr; } }
@@ -127,6 +125,13 @@
     input{ font-size:16px; }
     input::placeholder{ color: rgba(234,240,255,.30); }
 
+    .twoCol{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 520px){ .twoCol{ grid-template-columns:1fr; } }
+
     .btns{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
     .btn{
       border:1px solid var(--stroke2);
@@ -135,7 +140,7 @@
       padding:10px 12px;
       border-radius:14px;
       text-decoration:none;
-      font-weight:700;
+      font-weight:800;
       font-size:13px;
       display:inline-flex;
       align-items:center;
@@ -145,23 +150,6 @@
     }
     .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); }
     .btn.primary{ background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.06)); }
-
-    .kv{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-      margin-top:10px;
-    }
-    @media (max-width: 520px){ .kv{ grid-template-columns: 1fr; } }
-
-    .k{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      border-radius: 14px;
-      padding:12px;
-    }
-    .k .t{ font-size:11px; color:var(--muted2); }
-    .k .v{ margin-top:6px; font-weight:800; letter-spacing:.2px; }
 
     .badge{
       display:inline-flex;
@@ -183,20 +171,38 @@
       line-height:1.45;
     }
 
+    .kv{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:6px;
+    }
+    @media (max-width: 520px){ .kv{ grid-template-columns: 1fr; } }
+
+    .k{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      border-radius: 14px;
+      padding:12px;
+    }
+    .k .t{ font-size:11px; color:var(--muted2); }
+    .k .v{ margin-top:6px; font-weight:900; letter-spacing:.2px; font-size:18px; }
+
+    .big{
+      padding:16px;
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.18));
+    }
+    .big .title{ font-size:12px; color:var(--muted2); }
+    .big .value{ margin-top:8px; font-size:28px; font-weight:1000; letter-spacing:.2px; }
+
     .status{
       margin-top:10px;
       font-size:12px;
       color:var(--muted2);
     }
     .status strong{ color:var(--text); }
-
-    .twoCol{
-      margin-top:14px;
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-    }
-    @media (max-width: 520px){ .twoCol{ grid-template-columns:1fr; } }
 
     footer{
       margin:18px 0 10px;
@@ -216,7 +222,7 @@
         <div class="mark" aria-hidden="true"></div>
         <div>
           <b>CONTRACTX</b><br/>
-          <span>Futures Converter</span>
+          <span>Prop Price Mapper</span>
         </div>
       </div>
       <nav>
@@ -230,8 +236,9 @@
       <div class="head">
         <div>
           <h1 id="title">Converter</h1>
-          <p class="sub" id="subtitle">
-            FX wird mathematisch konvertiert (inkl. Inversion bei 6C/6J/6S). Indizes/Metals/Energy werden für Prop-Broker per Offset kalibriert.
+          <p class="sub">
+            Links: Future aktuell + Prop aktuell (Mid). Darunter planst du Entry/SL/TP in Future-Preisen.
+            Rechts bekommst du die fertigen Werte für die Propfirm (Entry/SL/TP) zum Kopieren.
           </p>
         </div>
         <div class="badge" id="badge">Ready</div>
@@ -240,9 +247,6 @@
       <div class="row">
         <!-- LEFT -->
         <div class="card">
-          <label for="price">Futures-Preis (z. B. 0.7425 / 49308.45)</label>
-          <input id="price" inputmode="decimal" placeholder="Enter price…" />
-
           <div class="twoCol">
             <div>
               <label for="broker">Broker</label>
@@ -264,59 +268,84 @@
             </div>
           </div>
 
-          <div id="offsetBox" style="display:none; margin-top:12px;">
-            <label for="brokerMid">Broker Mid (Bid/Ask-Mitte)</label>
-            <input id="brokerMid" inputmode="decimal" placeholder="z. B. 49310.65" />
-
-            <div class="btns" style="margin-top:10px;">
-              <button class="btn" id="setOffset" type="button">Set Offset</button>
-              <button class="btn" id="clearOffset" type="button">Clear Offset</button>
+          <div style="margin-top:12px;" class="twoCol">
+            <div>
+              <label for="futureNow">Future (TradingView) — aktueller Preis</label>
+              <input id="futureNow" inputmode="decimal" placeholder="z. B. 49308.45" />
             </div>
-
-            <div class="status" id="offsetStatus">
-              Offset: <strong id="offsetVal">—</strong><span id="offsetTime"></span>
+            <div>
+              <label for="propNow">Propfirm — aktueller Mid (Bid/Ask-Mitte)</label>
+              <input id="propNow" inputmode="decimal" placeholder="z. B. 49310.65" />
             </div>
+          </div>
 
-            <div class="note" style="margin-top:8px;">
-              Tipp: Broker Mid = (Bid + Ask) / 2. Kalibrierung am besten bei stabiler Liquidität (z. B. NY Open).
+          <div class="btns" style="margin-top:10px;">
+            <button class="btn" id="setOffset" type="button">Set Offset</button>
+            <button class="btn" id="clearOffset" type="button">Clear Offset</button>
+          </div>
+
+          <div class="status" id="offsetStatus">
+            Offset (Prop − Future): <strong id="offsetVal">—</strong><span id="offsetTime"></span>
+          </div>
+
+          <div style="margin-top:14px;">
+            <label style="margin-bottom:10px;">Trade Plan (Future-basiert)</label>
+            <div class="twoCol">
+              <div>
+                <label for="entryF">Entry (Future)</label>
+                <input id="entryF" inputmode="decimal" placeholder="z. B. 49240.00" />
+              </div>
+              <div>
+                <label for="slF">SL (Future)</label>
+                <input id="slF" inputmode="decimal" placeholder="z. B. 49190.00" />
+              </div>
+            </div>
+            <div style="margin-top:10px;">
+              <label for="tpF">TP (Future)</label>
+              <input id="tpF" inputmode="decimal" placeholder="z. B. 49360.00" />
             </div>
           </div>
 
           <div class="btns">
-            <button class="btn primary" id="calc" type="button">Convert →</button>
-            <button class="btn" id="copy" type="button">Copy result</button>
-            <a class="btn" href="index.html#converter">Change instrument</a>
+            <button class="btn primary" id="calc" type="button">Update →</button>
+            <button class="btn" id="copyAllLeft" type="button">Copy all (Prop)</button>
           </div>
 
           <div class="status" id="status">Instrument: <strong id="inst">—</strong></div>
 
-          <div class="note" id="warn">
-            Hinweis: Futures-Ticks sind nicht 1:1 FX-Pips. Offset ist session-/brokerabhängig. CONTRACTX ist für Quote/Level-Mapping gedacht – nicht für blindes Tick-to-Pip-Scalen.
+          <div class="note">
+            Hinweis: Für Indizes/Metals/Energy arbeiten wir per Offset (Prop − Future). Für FX wird mathematisch konvertiert (6C/6J/6S invert).
           </div>
         </div>
 
         <!-- RIGHT -->
         <div class="card">
-          <div class="kv">
-            <div class="k">
-              <div class="t">Future quote</div>
-              <div class="v" id="fQuote">—</div>
-            </div>
-            <div class="k">
-              <div class="t">Target quote</div>
-              <div class="v" id="xQuote">—</div>
-            </div>
-            <div class="k">
-              <div class="t">Conversion</div>
-              <div class="v" id="conv">—</div>
-            </div>
-            <div class="k">
-              <div class="t">Result</div>
-              <div class="v" id="result">—</div>
+          <div class="big">
+            <div class="title">Propfirm Entry</div>
+            <div class="value" id="entryP">—</div>
+            <div class="btns" style="margin-top:10px;">
+              <button class="btn" id="copyEntry" type="button">Copy Entry</button>
             </div>
           </div>
 
-          <div class="note" id="detail"></div>
+          <div class="kv" style="margin-top:12px;">
+            <div class="k">
+              <div class="t">Prop SL</div>
+              <div class="v" id="slP">—</div>
+              <div class="btns" style="margin-top:8px;">
+                <button class="btn" id="copySL" type="button">Copy SL</button>
+              </div>
+            </div>
+            <div class="k">
+              <div class="t">Prop TP</div>
+              <div class="v" id="tpP">—</div>
+              <div class="btns" style="margin-top:8px;">
+                <button class="btn" id="copyTP" type="button">Copy TP</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="note" id="rightNote" style="margin-top:12px;"></div>
         </div>
       </div>
     </section>
@@ -327,69 +356,72 @@
   </div>
 
 <script>
-  // Instrument metadata
+  // --- Instruments
   const MAP = {
-    // Indices
-    ES:  { name:"S&P 500 E-mini",       type:"index",  fQuote:"ES (points)",         xQuote:"Prop pricing (points)", invert:false },
-    NQ:  { name:"Nasdaq 100 E-mini",    type:"index",  fQuote:"NQ (points)",         xQuote:"Prop pricing (points)", invert:false },
-    YM:  { name:"Dow Jones Mini",       type:"index",  fQuote:"YM (points)",         xQuote:"Prop pricing (points)", invert:false },
-    RTY: { name:"Russell 2000 E-mini",  type:"index",  fQuote:"RTY (points)",        xQuote:"Prop pricing (points)", invert:false },
+    ES:  { name:"S&P 500 E-mini",       type:"index"  },
+    NQ:  { name:"Nasdaq 100 E-mini",    type:"index"  },
+    YM:  { name:"Dow Jones Mini",       type:"index"  },
+    RTY: { name:"Russell 2000 E-mini",  type:"index"  },
+    GC:  { name:"Gold",                 type:"commod" },
+    SI:  { name:"Silver",               type:"commod" },
+    CL:  { name:"Crude Oil",            type:"commod" },
+    NG:  { name:"Natural Gas",          type:"commod" },
 
-    // Metals & Energy
-    GC:  { name:"Gold",                 type:"commod", fQuote:"GC (USD/oz)",         xQuote:"Prop pricing (USD/oz)", invert:false },
-    SI:  { name:"Silver",               type:"commod", fQuote:"SI (USD/oz)",         xQuote:"Prop pricing (USD/oz)", invert:false },
-    CL:  { name:"Crude Oil",            type:"commod", fQuote:"CL (USD/bbl)",        xQuote:"Prop pricing (USD/bbl)", invert:false },
-    NG:  { name:"Natural Gas",          type:"commod", fQuote:"NG (USD/MMBtu)",      xQuote:"Prop pricing (USD/MMBtu)", invert:false },
-
-    // FX Majors (CME 6X)
-    "6E": { name:"Euro",           type:"fx", fQuote:"EUR/USD", xQuote:"EUR/USD", invert:false },
-    "6B": { name:"British Pound",  type:"fx", fQuote:"GBP/USD", xQuote:"GBP/USD", invert:false },
-    "6A": { name:"Australian Dollar", type:"fx", fQuote:"AUD/USD", xQuote:"AUD/USD", invert:false },
-    "6N": { name:"New Zealand Dollar", type:"fx", fQuote:"NZD/USD", xQuote:"NZD/USD", invert:false },
-
-    // Inverted vs common FX display
-    "6C": { name:"Canadian Dollar", type:"fx", fQuote:"CAD/USD", xQuote:"USD/CAD", invert:true },
-    "6J": { name:"Japanese Yen",    type:"fx", fQuote:"JPY/USD", xQuote:"USD/JPY", invert:true },
-    "6S": { name:"Swiss Franc",     type:"fx", fQuote:"CHF/USD", xQuote:"USD/CHF", invert:true },
+    "6E": { name:"Euro",             type:"fx", invert:false },
+    "6B": { name:"British Pound",    type:"fx", invert:false },
+    "6A": { name:"Australian Dollar",type:"fx", invert:false },
+    "6N": { name:"New Zealand Dollar",type:"fx", invert:false },
+    "6C": { name:"Canadian Dollar",  type:"fx", invert:true  },
+    "6J": { name:"Japanese Yen",     type:"fx", invert:true  },
+    "6S": { name:"Swiss Franc",      type:"fx", invert:true  },
   };
 
-  // URL symbol parsing
   const qs = new URLSearchParams(location.search);
   const raw = (qs.get("symbol") || "ES").toUpperCase().trim();
 
   function normalize(sym){
-    // normalize like 6C1! -> 6C
     if (sym.startsWith("6") && sym.length >= 2) return sym.slice(0,2);
-    // strip common suffixes
     return sym.replace(/[^A-Z0-9]/g, "");
   }
 
   const sym = normalize(raw);
-  const meta = MAP[sym] || { name:"Custom", type:"custom", fQuote:sym, xQuote:sym, invert:false };
+  const meta = MAP[sym] || { name:"Custom", type:"custom" };
 
-  // DOM refs
+  // --- DOM
   const elTitle = document.getElementById("title");
   const elInst  = document.getElementById("inst");
-  const elFQ    = document.getElementById("fQuote");
-  const elXQ    = document.getElementById("xQuote");
-  const elConv  = document.getElementById("conv");
-  const elRes   = document.getElementById("result");
-  const elDet   = document.getElementById("detail");
   const elBadge = document.getElementById("badge");
-  const elPrice = document.getElementById("price");
-  const elStatus = document.getElementById("status");
 
   const elBroker = document.getElementById("broker");
   const elMode   = document.getElementById("mode");
-  const elOffsetBox = document.getElementById("offsetBox");
-  const elBrokerMid = document.getElementById("brokerMid");
+
+  const elFutureNow = document.getElementById("futureNow");
+  const elPropNow   = document.getElementById("propNow");
   const elSetOffset = document.getElementById("setOffset");
   const elClearOffset = document.getElementById("clearOffset");
   const elOffsetVal = document.getElementById("offsetVal");
   const elOffsetTime = document.getElementById("offsetTime");
+  const elStatus = document.getElementById("status");
 
-  // Helpers
+  const elEntryF = document.getElementById("entryF");
+  const elSlF = document.getElementById("slF");
+  const elTpF = document.getElementById("tpF");
+
+  const elEntryP = document.getElementById("entryP");
+  const elSlP = document.getElementById("slP");
+  const elTpP = document.getElementById("tpP");
+
+  const elRightNote = document.getElementById("rightNote");
+
+  // Copy buttons
+  const elCopyEntry = document.getElementById("copyEntry");
+  const elCopySL = document.getElementById("copySL");
+  const elCopyTP = document.getElementById("copyTP");
+  const elCopyAllLeft = document.getElementById("copyAllLeft");
+
+  // --- Helpers
   function fmt(n){
+    if(!isFinite(n)) return "—";
     const s = Number(n).toFixed(6);
     return s.replace(/\.?0+$/,"");
   }
@@ -411,8 +443,7 @@
   }
 
   function loadOffset(){
-    const key = offsetKey(elBroker.value, sym);
-    const raw = localStorage.getItem(key);
+    const raw = localStorage.getItem(offsetKey(elBroker.value, sym));
     if(!raw) return null;
     try { return JSON.parse(raw); } catch { return null; }
   }
@@ -428,126 +459,104 @@
     elOffsetTime.textContent = ` • last: ${data.time}`;
   }
 
-  function isOffsetInstrument(){
-    return (meta.type === "index" || meta.type === "commod");
-  }
-
   function effectiveMode(){
     const m = elMode.value;
     if(m === "fx" || m === "offset") return m;
     // auto:
     if(meta.type === "fx") return "fx";
-    if(isOffsetInstrument()) return "offset";
-    return "fx";
-  }
-
-  function setHeaderForFX(){
-    // only for FX conversion display
-    if(meta.type !== "fx") return;
-
-    if(meta.invert){
-      elBadge.textContent = "FX (Inverted)";
-      elConv.textContent = "1 / price";
-      elDet.textContent =
-        `Dieser Future wird häufig als ${meta.fQuote} notiert. Im FX-Spot wird meist ${meta.xQuote} genutzt. CONTRACTX invertiert deshalb automatisch.`;
-    } else {
-      elBadge.textContent = "FX (Aligned)";
-      elConv.textContent = "price";
-      elDet.textContent = `Future-Quote und FX-Spot-Quote sind hier gleichlaufend (${meta.xQuote}).`;
-    }
+    if(meta.type === "index" || meta.type === "commod") return "offset";
+    return "offset";
   }
 
   function setHeader(){
     elTitle.textContent = `${sym} — ${meta.name}`;
     elInst.textContent = sym + (raw !== sym ? ` (from: ${raw})` : "");
-    elFQ.textContent = meta.fQuote;
-    elXQ.textContent = meta.xQuote;
 
-    if(meta.type === "fx"){
-      setHeaderForFX();
-    } else if(meta.type === "index"){
-      elBadge.textContent = "Index";
-      elConv.textContent = "price + offset";
-      elDet.textContent = `Für Indizes wird per Offset auf den Prop-Broker kalibriert (TV Future → Broker).`;
-    } else if(meta.type === "commod"){
-      elBadge.textContent = "Commodity";
-      elConv.textContent = "price + offset";
-      elDet.textContent = `Für Metals/Energy wird per Offset auf den Prop-Broker kalibriert (TV Future → Broker).`;
-    } else {
-      elBadge.textContent = "Converter";
-      elConv.textContent = "price";
-      elDet.textContent = `Unbekanntes Symbol: ${sym}.`;
-    }
-  }
-
-  function updateModeUI(){
     const m = effectiveMode();
-    elOffsetBox.style.display = (m === "offset") ? "block" : "none";
-
-    if(m === "offset"){
+    if(m === "fx"){
+      elBadge.textContent = meta.invert ? "FX (Inverted)" : "FX (Aligned)";
+    } else {
       elBadge.textContent = "Offset Mode";
-      elConv.textContent = "price + offset";
-      renderOffset();
-      elDet.textContent =
-        `Offset wird pro Broker & Instrument gespeichert. Kalibriere mit Future-Preis + Broker-Mid.`;
-    } else {
-      // FX mode (or forced FX)
-      setHeader();
     }
   }
 
-  function calc(){
-    const p = parseNumber(elPrice.value);
-    if(!isFinite(p) || p <= 0){
-      elRes.textContent = "—";
-      elStatus.innerHTML = `Instrument: <strong>${sym}</strong> • Bitte gültigen Preis eingeben.`;
-      return;
+  function convertFX(x){
+    if(meta.type !== "fx") return x;
+    if(meta.invert) return 1 / x;
+    return x;
+  }
+
+  function applyOffset(x){
+    const data = loadOffset();
+    const off = data ? Number(data.offset) : NaN;
+    if(!isFinite(off)) return NaN;
+    return x + off;
+  }
+
+  function compute(){
+    const m = effectiveMode();
+
+    // calculate/set offset from current prices when available
+    const fn = parseNumber(elFutureNow.value);
+    const pn = parseNumber(elPropNow.value);
+    if(isFinite(fn) && fn > 0 && isFinite(pn)){
+      // offset = Prop - Future
+      const off = pn - fn;
+      elOffsetVal.textContent = fmt(off);
+      // don't overwrite storage automatically; only via "Set Offset"
+    } else {
+      renderOffset();
     }
 
-    const m = effectiveMode();
-    let out = p;
-    let rule = "price";
+    // plan values
+    const eF = parseNumber(elEntryF.value);
+    const sF = parseNumber(elSlF.value);
+    const tF = parseNumber(elTpF.value);
+
+    let eP = NaN, sP = NaN, tP = NaN;
 
     if(m === "fx"){
-      if(meta.type === "fx" && meta.invert){
-        out = 1 / p;
-        rule = "1 / price";
-      } else {
-        out = p;
-        rule = "price";
-      }
-    }
+      if(isFinite(eF) && eF > 0) eP = convertFX(eF);
+      if(isFinite(sF) && sF > 0) sP = convertFX(sF);
+      if(isFinite(tF) && tF > 0) tP = convertFX(tF);
 
-    if(m === "offset"){
+      elRightNote.textContent =
+        meta.invert
+          ? `FX-Konvertierung: 1 / price. (Future-Quote invertiert in Spot-Quote.)`
+          : `FX-Konvertierung: price. (Quote aligned.)`;
+    } else {
+      // offset mode: requires stored offset
       const data = loadOffset();
       const off = data ? Number(data.offset) : NaN;
 
       if(!isFinite(off)){
-        elRes.textContent = "—";
-        elConv.textContent = "price + offset";
-        elStatus.innerHTML =
-          `Instrument: <strong>${sym}</strong> • Mode: <strong>offset</strong> • Kein Offset gesetzt. → Broker Mid eintragen und “Set Offset”.`;
-        return;
+        elRightNote.textContent = `Kein Offset gespeichert. Gib Future & Prop "aktuell" ein und klick "Set Offset".`;
+      } else {
+        elRightNote.textContent = `Prop = Future + Offset. Offset (Prop − Future) = ${fmt(off)} (${data.time}).`;
       }
-      out = p + off;
-      rule = "price + offset";
+
+      if(isFinite(eF)) eP = applyOffset(eF);
+      if(isFinite(sF)) sP = applyOffset(sF);
+      if(isFinite(tF)) tP = applyOffset(tF);
     }
 
-    elRes.textContent = fmt(out);
-    elConv.textContent = rule;
+    elEntryP.textContent = fmt(eP);
+    elSlP.textContent = fmt(sP);
+    elTpP.textContent = fmt(tP);
 
+    const offData = loadOffset();
+    const offTxt = offData ? fmt(offData.offset) : "—";
     elStatus.innerHTML =
-      `Instrument: <strong>${sym}</strong> • Mode: <strong>${m}</strong> • Input: <strong>${fmt(p)}</strong> • Output: <strong>${fmt(out)}</strong>`;
+      `Instrument: <strong>${sym}</strong> • Mode: <strong>${m}</strong> • Offset: <strong>${offTxt}</strong>`;
   }
 
-  async function copy(){
-    const text = elRes.textContent;
+  async function copyText(text){
     if(!text || text === "—") return;
     try{
       await navigator.clipboard.writeText(text);
       elBadge.textContent = "Copied ✓";
-      setTimeout(() => updateModeUI(), 900);
-    }catch(e){
+      setTimeout(setHeader, 900);
+    } catch {
       const tmp = document.createElement("textarea");
       tmp.value = text;
       document.body.appendChild(tmp);
@@ -555,42 +564,54 @@
       document.execCommand("copy");
       tmp.remove();
       elBadge.textContent = "Copied ✓";
-      setTimeout(() => updateModeUI(), 900);
+      setTimeout(setHeader, 900);
     }
   }
 
-  // Events
-  document.getElementById("calc").addEventListener("click", calc);
-  document.getElementById("copy").addEventListener("click", copy);
-
-  elPrice.addEventListener("keydown", (e) => { if(e.key === "Enter") calc(); });
-  elMode.addEventListener("change", () => { updateModeUI(); calc(); });
-  elBroker.addEventListener("change", () => { renderOffset(); calc(); });
-
+  // --- Actions
   elSetOffset.addEventListener("click", () => {
-    const p = parseNumber(elPrice.value);
-    const b = parseNumber(elBrokerMid.value);
-    if(!isFinite(p) || p <= 0 || !isFinite(b)){
-      elStatus.innerHTML =
-        `Instrument: <strong>${sym}</strong> • Bitte Future-Preis UND Broker-Mid eingeben.`;
+    const fn = parseNumber(elFutureNow.value);
+    const pn = parseNumber(elPropNow.value);
+    if(!isFinite(fn) || fn <= 0 || !isFinite(pn)){
+      elStatus.innerHTML = `Instrument: <strong>${sym}</strong> • Bitte Future aktuell UND Prop aktuell (Mid) eingeben.`;
       return;
     }
-    const off = b - p;
-    const data = { offset: off, time: nowTime() };
-    localStorage.setItem(offsetKey(elBroker.value, sym), JSON.stringify(data));
+    const off = pn - fn;
+    localStorage.setItem(offsetKey(elBroker.value, sym), JSON.stringify({ offset: off, time: nowTime() }));
     renderOffset();
-    calc();
+    compute();
   });
 
   elClearOffset.addEventListener("click", () => {
     localStorage.removeItem(offsetKey(elBroker.value, sym));
     renderOffset();
-    calc();
+    compute();
+  });
+
+  document.getElementById("calc").addEventListener("click", compute);
+
+  elBroker.addEventListener("change", () => { renderOffset(); compute(); });
+  elMode.addEventListener("change", () => { setHeader(); renderOffset(); compute(); });
+
+  // Auto-update while typing (feels premium)
+  ["futureNow","propNow","entryF","slF","tpF"].forEach(id=>{
+    document.getElementById(id).addEventListener("input", compute);
+  });
+
+  elCopyEntry.addEventListener("click", ()=>copyText(elEntryP.textContent));
+  elCopySL.addEventListener("click", ()=>copyText(elSlP.textContent));
+  elCopyTP.addEventListener("click", ()=>copyText(elTpP.textContent));
+
+  elCopyAllLeft.addEventListener("click", ()=>{
+    const e = elEntryP.textContent, s = elSlP.textContent, t = elTpP.textContent;
+    const txt = `ENTRY: ${e}\nSL: ${s}\nTP: ${t}`;
+    copyText(txt);
   });
 
   // Init
   setHeader();
-  updateModeUI();
+  renderOffset();
+  compute();
   document.getElementById("y").textContent = new Date().getFullYear();
 </script>
 </body>
