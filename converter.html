@@ -14,6 +14,8 @@
       --muted:rgba(234,240,255,.65);
       --shadow:0 18px 50px rgba(0,0,0,.55);
       --warn:#FFD66E;
+      --pill:rgba(255,255,255,.07);
+      --pill2:rgba(255,255,255,.10);
     }
     *{box-sizing:border-box}
     body{
@@ -104,11 +106,100 @@
       color:var(--warn);
     }
 
-    .tvbox{
-      height:560px;
-      border-radius:16px;
-      overflow:hidden;
+    /* Tabs */
+    .tabs{
+      display:flex; gap:8px;
+      padding:6px;
+      border:1px solid var(--stroke);
+      border-radius:14px;
+      background:rgba(0,0,0,.30);
+      width:max-content;
     }
+    .tab{
+      padding:8px 12px;
+      border-radius:12px;
+      border:1px solid transparent;
+      background:transparent;
+      color:var(--muted);
+      font-weight:800;
+      cursor:pointer;
+    }
+    .tab.active{
+      background:rgba(255,255,255,.10);
+      border-color:var(--stroke2);
+      color:var(--text);
+    }
+
+    .tvbox{height:560px;border-radius:16px;overflow:hidden}
+
+    /* Notes UI (TradeZella-ish) */
+    .notesTop{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-top:10px;
+    }
+    .pillRow{
+      display:flex; flex-wrap:wrap; gap:8px;
+      margin-top:10px;
+    }
+    .pill{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      background:var(--pill);
+      color:var(--text);
+      font-size:12px;
+      font-weight:800;
+      cursor:pointer;
+      user-select:none;
+    }
+    .pill:hover{background:var(--pill2)}
+    .pill.secondary{color:var(--muted);font-weight:700}
+
+    .toolbar{
+      display:flex; flex-wrap:wrap; gap:8px;
+      padding:10px;
+      border:1px solid var(--stroke);
+      border-radius:14px;
+      background:rgba(0,0,0,.28);
+      margin-top:12px;
+    }
+    .tool{
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px solid var(--stroke2);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      font-weight:900;
+      cursor:pointer;
+      font-size:12px;
+    }
+    .tool:hover{background:rgba(255,255,255,.10)}
+
+    .editor{
+      margin-top:10px;
+      border:1px solid var(--stroke2);
+      border-radius:16px;
+      background:rgba(0,0,0,.35);
+      padding:14px;
+      min-height:220px;
+      outline:none;
+      line-height:1.45;
+      color:var(--text);
+      overflow:auto;
+    }
+    .editor:empty:before{
+      content:attr(data-placeholder);
+      color:rgba(234,240,255,.35);
+    }
+
+    .divider{
+      height:1px;
+      background:rgba(255,255,255,.10);
+      margin:14px 0;
+      border-radius:999px;
+    }
+
+    .hidden{display:none !important}
   </style>
 
   <!-- jsPDF (PDF Download) -->
@@ -120,8 +211,7 @@
     <section class="panel">
       <h1 id="title">CONTRACTX Converter</h1>
       <div class="sub">
-        Links: Future + Prop-Mid zur Kalibrierung (Offset). Darunter Entry/SL/TP in Future-Preisen.
-        Rechts: fertige Prop-Preise zum Kopieren. Unten: Live-Chart (TradingView Proxy) + Journal + PDF.
+        Links: Future + Prop-Mid zur Kalibrierung (Offset). Rechts: fertige Prop-Preise. Unten: Chart + Notes (TradeZella-Style) + PDF.
       </div>
 
       <div class="row">
@@ -217,58 +307,87 @@
         </div>
       </div>
 
-      <!-- CHART -->
+      <!-- Tabs + Content -->
       <div class="card" style="margin-top:16px">
-        <div class="note" style="margin-top:0">Live Chart (TradingView)</div>
-        <div class="tvbox">
-          <div class="tradingview-widget-container" style="height:100%;width:100%">
-            <div id="tv_chart" style="height:100%;width:100%"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div class="tabs" role="tablist" aria-label="Chart Notes Tabs">
+            <button class="tab active" id="tabChart" type="button">Chart</button>
+            <button class="tab" id="tabNotes" type="button">Notes</button>
           </div>
+          <div class="note" id="metaTop" style="margin:0"></div>
         </div>
-      </div>
 
-      <!-- JOURNAL -->
-      <div class="card" style="margin-top:16px">
-        <div class="note" style="margin-top:0">Journal (lokal gespeichert)</div>
-
-        <div class="two" style="margin-top:10px">
-          <div>
-            <label>Datum / Session</label>
-            <input id="jDate" placeholder="z. B. 2026-01-24 / NY Open">
-          </div>
-          <div>
-            <label>Setup / Tags</label>
-            <input id="jTags" placeholder="z. B. Globex Trap, A+, Sweep, S/D">
+        <!-- CHART PANEL -->
+        <div id="panelChart" style="margin-top:12px">
+          <div class="note" style="margin-top:0">Live Chart (TradingView)</div>
+          <div class="tvbox" style="margin-top:10px">
+            <div class="tradingview-widget-container" style="height:100%;width:100%">
+              <div id="tv_chart" style="height:100%;width:100%"></div>
+            </div>
           </div>
         </div>
 
-        <div class="two" style="margin-top:10px">
-          <div>
-            <label>Bias / Plan</label>
-            <input id="jBias" placeholder="z. B. Short unter Vortages-High, Ziel EQ">
+        <!-- NOTES PANEL -->
+        <div id="panelNotes" class="hidden" style="margin-top:12px">
+          <div class="notesTop">
+            <div>
+              <div style="font-weight:900">Notes</div>
+              <div class="note" style="margin-top:4px">Templates + Editor. Alles wird lokal gespeichert.</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="tool" id="btnSave">Save</button>
+              <button class="tool" id="btnClear">Clear</button>
+              <button class="tool" id="btnPdf">PDF</button>
+              <button class="tool" id="btnPrint">Print</button>
+            </div>
           </div>
-          <div>
-            <label>Instrument / Broker</label>
-            <input id="jMeta" readonly>
+
+          <div class="pillRow" id="templateRow">
+            <!-- chips injected -->
           </div>
-        </div>
 
-        <div style="margin-top:10px">
-          <label>Notizen</label>
-          <textarea id="jNotes" rows="8" placeholder="Dein kurzer Trade-Journal-Text..."></textarea>
-        </div>
+          <div class="divider"></div>
 
-        <div class="two" style="margin-top:10px">
-          <button class="btn" id="jSave" type="button">Save Notes</button>
-          <button class="btn" id="jClear" type="button">Clear Notes</button>
-        </div>
+          <div class="two">
+            <div>
+              <label>Datum / Session</label>
+              <input id="jDate" placeholder="z. B. 2026-01-24 / NY Open">
+            </div>
+            <div>
+              <label>Setup / Tags</label>
+              <input id="jTags" placeholder="z. B. Globex Trap, A+, Sweep, S/D">
+            </div>
+          </div>
 
-        <div class="two" style="margin-top:10px">
-          <button class="btn" id="jPdf" type="button">Download PDF</button>
-          <button class="btn" id="jPrint" type="button">Print / Save as PDF</button>
-        </div>
+          <div class="two" style="margin-top:10px">
+            <div>
+              <label>Bias / Plan</label>
+              <input id="jBias" placeholder="z. B. Short unter Vortages-High, Ziel EQ">
+            </div>
+            <div>
+              <label>Instrument / Broker</label>
+              <input id="jMeta" readonly>
+            </div>
+          </div>
 
-        <div class="note" id="jStatus"></div>
+          <div class="toolbar" aria-label="Editor Toolbar">
+            <button class="tool" type="button" data-cmd="bold"><b>B</b></button>
+            <button class="tool" type="button" data-cmd="italic"><i>I</i></button>
+            <button class="tool" type="button" data-cmd="underline"><u>U</u></button>
+            <button class="tool" type="button" data-cmd="insertUnorderedList">• List</button>
+            <button class="tool" type="button" data-cmd="insertOrderedList">1. List</button>
+            <button class="tool" type="button" data-cmd="removeFormat">Clear fmt</button>
+            <span class="pill secondary" id="autoInfo">Auto-saved ✓</span>
+          </div>
+
+          <div id="editor"
+               class="editor"
+               contenteditable="true"
+               spellcheck="false"
+               data-placeholder="Write your trade note..."></div>
+
+          <div class="note" id="jStatus"></div>
+        </div>
       </div>
     </section>
   </div>
@@ -277,40 +396,31 @@
   // ========= SYMBOL NORMALIZE =========
   const RAW = (new URLSearchParams(location.search).get("symbol") || "ES").toUpperCase().trim();
   const cleaned = RAW.replace(/[^A-Z0-9!]/g, "");
-
   function normalizeSymbol(s){
     if(!s) return "ES";
-    if(s.startsWith("6")) return s.slice(0,2);        // 6E/6C/...
+    if(s.startsWith("6")) return s.slice(0,2);
     const known3 = ["RTY"];
     const s3 = s.slice(0,3);
     if(known3.includes(s3)) return s3;
-    return s.slice(0,2);                               // ES/NQ/YM/GC/CL/NG/SI
+    return s.slice(0,2);
   }
-
   const sym = normalizeSymbol(cleaned);
   document.getElementById("title").textContent = sym + " — CONTRACTX Converter";
 
   // ========= INVERT WARNING =========
   const FX_INVERTED = ["6C","6J","6S"];
-  if (FX_INVERTED.includes(sym)) {
-    document.getElementById("invertHint").style.display = "block";
-  }
+  if (FX_INVERTED.includes(sym)) document.getElementById("invertHint").style.display = "block";
 
   // ========= CHART MAP (WIDGET-FRIENDLY) =========
   const TV_MAP = {
-    // Indizes: OANDA CFDs (widgets funktionieren)
     ES:  "OANDA:SPX500USD",
     NQ:  "OANDA:NAS100USD",
     YM:  "OANDA:US30USD",
     RTY: "OANDA:US2000USD",
-
-    // Commodities
     GC:  "TVC:GOLD",
     SI:  "TVC:SILVER",
     CL:  "TVC:USOIL",
     NG:  "TVC:NATGAS",
-
-    // FX Spot
     "6E":"FX:EURUSD",
     "6B":"FX:GBPUSD",
     "6A":"FX:AUDUSD",
@@ -319,10 +429,8 @@
     "6J":"FX:USDJPY",
     "6S":"FX:USDCHF"
   };
-
   const tvSymbol = TV_MAP[sym] || "OANDA:SPX500USD";
-  document.getElementById("chartNote").textContent =
-    `Chart: ${tvSymbol} (Proxy). Dein Offset-Mapping bleibt auf Futures-Preisen.`;
+  document.getElementById("chartNote").textContent = `Chart: ${tvSymbol} (Proxy). Offset bleibt auf Futures-Preisen.`;
 
   // ========= OFFSET + PLAN =========
   function n(v){
@@ -333,18 +441,7 @@
     if(!isFinite(x)) return "—";
     return Number(x).toFixed(2);
   }
-
   let offset = NaN;
-
-  document.getElementById("setOffset").addEventListener("click", () => {
-    const f = n(document.getElementById("futureNow").value);
-    const p = n(document.getElementById("propNow").value);
-    if (isFinite(f) && isFinite(p)) {
-      offset = p - f;
-      document.getElementById("offsetVal").textContent = fmt2(offset);
-      calc();
-    }
-  });
 
   function calc(){
     const e = n(document.getElementById("entryF").value);
@@ -357,14 +454,24 @@
       document.getElementById("tpP").textContent = "—";
       return;
     }
-
     document.getElementById("entryP").textContent = isFinite(e) ? fmt2(e + offset) : "—";
     document.getElementById("slP").textContent    = isFinite(s) ? fmt2(s + offset) : "—";
     document.getElementById("tpP").textContent    = isFinite(t) ? fmt2(t + offset) : "—";
   }
 
+  document.getElementById("setOffset").addEventListener("click", () => {
+    const f = n(document.getElementById("futureNow").value);
+    const p = n(document.getElementById("propNow").value);
+    if (isFinite(f) && isFinite(p)) {
+      offset = p - f;
+      document.getElementById("offsetVal").textContent = fmt2(offset);
+      calc();
+      autoSaveNotes(true);
+    }
+  });
+
   ["futureNow","propNow","entryF","slF","tpF"].forEach(id=>{
-    document.getElementById(id).addEventListener("input", calc);
+    document.getElementById(id).addEventListener("input", () => { calc(); autoSaveNotes(true); });
   });
 
   async function copyVal(v){
@@ -375,7 +482,7 @@
   document.getElementById("copySL").addEventListener("click", ()=>copyVal(document.getElementById("slP").textContent));
   document.getElementById("copyTP").addEventListener("click", ()=>copyVal(document.getElementById("tpP").textContent));
 
-  // ========= TRADINGVIEW EMBED (ADVANCED CHART) =========
+  // ========= TRADINGVIEW EMBED =========
   (function renderTV(){
     const script = document.createElement("script");
     script.type = "text/javascript";
@@ -395,38 +502,134 @@
       hide_legend: false,
       support_host: "https://www.tradingview.com"
     });
-
     const container = document.getElementById("tv_chart");
     container.innerHTML = "";
     container.appendChild(script);
   })();
 
-  // ========= JOURNAL (localStorage + PDF) =========
-  function journalKey(){
-    const b = document.getElementById("broker")?.value || "Broker";
-    return `contractx.journal.${b}.${sym}`;
+  // ========= TABS =========
+  const tabChart = document.getElementById("tabChart");
+  const tabNotes = document.getElementById("tabNotes");
+  const panelChart = document.getElementById("panelChart");
+  const panelNotes = document.getElementById("panelNotes");
+
+  function setTab(which){
+    const chart = which === "chart";
+    tabChart.classList.toggle("active", chart);
+    tabNotes.classList.toggle("active", !chart);
+    panelChart.classList.toggle("hidden", !chart);
+    panelNotes.classList.toggle("hidden", chart);
+  }
+  tabChart.addEventListener("click", ()=>setTab("chart"));
+  tabNotes.addEventListener("click", ()=>setTab("notes"));
+
+  // ========= NOTES (TradeZella-ish) =========
+  const editor = document.getElementById("editor");
+
+  function brokerVal(){ return document.getElementById("broker")?.value || "Broker"; }
+
+  function notesKey(){
+    // pro instrument + broker
+    return `contractx.notes.${brokerVal()}.${sym}`;
   }
 
-  function setJournalMeta(){
-    const b = document.getElementById("broker")?.value || "Broker";
-    const meta = `${sym} • ${b} • Chart: ${tvSymbol}`;
-    const el = document.getElementById("jMeta");
-    if(el) el.value = meta;
+  function setMeta(){
+    const meta = `${sym} • ${brokerVal()} • Chart: ${tvSymbol}`;
+    document.getElementById("jMeta").value = meta;
+    document.getElementById("metaTop").textContent = meta;
   }
 
-  function loadJournal(){
-    setJournalMeta();
-    const raw = localStorage.getItem(journalKey());
+  // Templates (du kannst die Texte später 1:1 ersetzen)
+  const TEMPLATES = [
+    {
+      id:"otc_setup",
+      label:"otc setup",
+      body:
+`Why did you take this trade?
+- ...
+
+Did you follow your rules?
+- ...
+
+Market context (HTF/LTF / S&D / levels):
+- ...
+
+Execution (entry / SL / TP / management):
+- ...
+
+Lessons learned:
+- ...
+`
+    },
+    {
+      id:"playbook_checklist",
+      label:"playbook checklist",
+      body:
+`Playbook Checklist
+[ ] Original zone (fresh / retest?)
+[ ] Sweep / Liquidity taken
+[ ] Confirmation (if required)
+[ ] R:R ok
+[ ] News / time window ok (NY open / power hour)
+[ ] Risk respected
+
+Notes:
+- ...
+`
+    },
+    {
+      id:"daily_journal",
+      label:"daily journal",
+      body:
+`Daily Journal
+- Sleep / focus:
+- Emotions:
+- What I did well:
+- What I will improve tomorrow:
+`
+    },
+  ];
+
+  function renderTemplateChips(){
+    const row = document.getElementById("templateRow");
+    row.innerHTML = "";
+    const prefix = document.createElement("div");
+    prefix.className = "pill secondary";
+    prefix.textContent = "Recently used templates:";
+    row.appendChild(prefix);
+
+    TEMPLATES.forEach(t=>{
+      const b = document.createElement("div");
+      b.className = "pill";
+      b.textContent = t.label;
+      b.addEventListener("click", ()=>{
+        // Replace editor content with template (plain text -> html with <br>)
+        editor.innerText = t.body;
+        saveNotes(false);
+      });
+      row.appendChild(b);
+    });
+
+    const add = document.createElement("div");
+    add.className = "pill secondary";
+    add.textContent = "+ Add template (later)";
+    row.appendChild(add);
+  }
+
+  function loadNotes(){
+    setMeta();
+    const raw = localStorage.getItem(notesKey());
     if(!raw){
       document.getElementById("jStatus").textContent = "No saved notes yet.";
+      editor.innerHTML = "";
       return;
     }
     try{
       const data = JSON.parse(raw);
-      document.getElementById("jDate").value  = data.date || "";
-      document.getElementById("jTags").value  = data.tags || "";
-      document.getElementById("jBias").value  = data.bias || "";
-      document.getElementById("jNotes").value = data.notes || "";
+      document.getElementById("jDate").value = data.date || "";
+      document.getElementById("jTags").value = data.tags || "";
+      document.getElementById("jBias").value = data.bias || "";
+      editor.innerHTML = data.html || "";
       document.getElementById("jStatus").textContent =
         `Loaded ✓ (${new Date(data.ts || Date.now()).toLocaleString()})`;
     } catch {
@@ -434,103 +637,132 @@
     }
   }
 
-  function saveJournal(silent=false){
+  function saveNotes(silent=false){
     const data = {
-      date:  document.getElementById("jDate").value.trim(),
-      tags:  document.getElementById("jTags").value.trim(),
-      bias:  document.getElementById("jBias").value.trim(),
-      notes: document.getElementById("jNotes").value.trim(),
-      ts: Date.now()
+      date: document.getElementById("jDate").value.trim(),
+      tags: document.getElementById("jTags").value.trim(),
+      bias: document.getElementById("jBias").value.trim(),
+      html: editor.innerHTML, // keep formatting
+      ts: Date.now(),
+      // store computed trade info too (useful for PDF)
+      trade: {
+        offset: document.getElementById("offsetVal").textContent || "—",
+        propEntry: document.getElementById("entryP").textContent || "—",
+        propSL: document.getElementById("slP").textContent || "—",
+        propTP: document.getElementById("tpP").textContent || "—",
+      }
     };
-    localStorage.setItem(journalKey(), JSON.stringify(data));
+    localStorage.setItem(notesKey(), JSON.stringify(data));
     document.getElementById("jStatus").textContent = silent ? "Autosaved ✓" : "Saved ✓";
   }
 
-  function clearJournal(){
-    localStorage.removeItem(journalKey());
+  // throttle autosave
+  let saveTimer = null;
+  function autoSaveNotes(silent=true){
+    if(saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(()=>saveNotes(silent), 350);
+  }
+
+  function clearNotes(){
+    localStorage.removeItem(notesKey());
     document.getElementById("jDate").value = "";
     document.getElementById("jTags").value = "";
     document.getElementById("jBias").value = "";
-    document.getElementById("jNotes").value = "";
+    editor.innerHTML = "";
     document.getElementById("jStatus").textContent = "Cleared.";
   }
 
-  function exportJournalPDF(){
-    // jsPDF UMD
+  // Toolbar (execCommand works in browsers; for our use OK)
+  document.querySelectorAll(".tool[data-cmd]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const cmd = btn.getAttribute("data-cmd");
+      editor.focus();
+      try { document.execCommand(cmd, false, null); } catch {}
+      autoSaveNotes(true);
+    });
+  });
+
+  // Inputs autosave
+  ["jDate","jTags","jBias"].forEach(id=>{
+    document.getElementById(id).addEventListener("input", ()=>autoSaveNotes(true));
+  });
+  editor.addEventListener("input", ()=>autoSaveNotes(true));
+
+  // Buttons
+  document.getElementById("btnSave").addEventListener("click", ()=>saveNotes(false));
+  document.getElementById("btnClear").addEventListener("click", clearNotes);
+
+  function exportPDF(){
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit:"pt", format:"a4" });
 
-    const b = document.getElementById("broker")?.value || "Broker";
+    const b = brokerVal();
     const date = document.getElementById("jDate").value.trim();
     const tags = document.getElementById("jTags").value.trim();
     const bias = document.getElementById("jBias").value.trim();
-    const notes = document.getElementById("jNotes").value.trim();
 
-    const pEntry = document.getElementById("entryP")?.textContent || "—";
-    const pSL = document.getElementById("slP")?.textContent || "—";
-    const pTP = document.getElementById("tpP")?.textContent || "—";
-    const off = document.getElementById("offsetVal")?.textContent || "—";
+    const off = document.getElementById("offsetVal").textContent || "—";
+    const pEntry = document.getElementById("entryP").textContent || "—";
+    const pSL = document.getElementById("slP").textContent || "—";
+    const pTP = document.getElementById("tpP").textContent || "—";
+
+    // convert editor to plain text (PDF should be clean)
+    const notesText = (editor.innerText || "").trim() || "-";
 
     const margin = 46;
     let y = 56;
 
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-    doc.text("CONTRACTX — Journal", margin, y);
+    doc.setFont("helvetica","bold"); doc.setFontSize(18);
+    doc.text("CONTRACTX — Trade Note", margin, y);
 
     y += 22;
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
+    doc.setFont("helvetica","normal"); doc.setFontSize(11);
     doc.text(`Instrument: ${sym}`, margin, y); y += 16;
     doc.text(`Broker: ${b}`, margin, y); y += 16;
     doc.text(`Chart Proxy: ${tvSymbol}`, margin, y); y += 16;
 
     y += 8;
-    doc.setFont("helvetica","bold");
-    doc.text("Trade Data", margin, y); y += 16;
+    doc.setFont("helvetica","bold"); doc.text("Trade Data", margin, y); y += 16;
     doc.setFont("helvetica","normal");
     doc.text(`Offset (Prop − Future): ${off}`, margin, y); y += 16;
     doc.text(`Prop Entry: ${pEntry}    Prop SL: ${pSL}    Prop TP: ${pTP}`, margin, y); y += 18;
 
     y += 6;
-    doc.setFont("helvetica","bold");
-    doc.text("Session", margin, y); y += 16;
+    doc.setFont("helvetica","bold"); doc.text("Context", margin, y); y += 16;
     doc.setFont("helvetica","normal");
     doc.text(`Datum/Session: ${date || "-"}`, margin, y); y += 16;
     doc.text(`Setup/Tags: ${tags || "-"}`, margin, y); y += 16;
     doc.text(`Bias/Plan: ${bias || "-"}`, margin, y); y += 18;
 
     y += 6;
-    doc.setFont("helvetica","bold");
-    doc.text("Notes", margin, y); y += 16;
+    doc.setFont("helvetica","bold"); doc.text("Notes", margin, y); y += 16;
     doc.setFont("helvetica","normal");
 
     const maxWidth = 595 - margin*2;
-    const lines = doc.splitTextToSize(notes || "-", maxWidth);
+    const lines = doc.splitTextToSize(notesText, maxWidth);
     doc.text(lines, margin, y);
 
     const safeDate = (date || new Date().toISOString().slice(0,10)).replace(/[^0-9A-Za-z_-]/g,"-");
-    doc.save(`contractx-${sym}-${b}-${safeDate}.pdf`);
+    doc.save(`contractx-note-${sym}-${b}-${safeDate}.pdf`);
   }
 
-  function printJournal(){
-    const b = document.getElementById("broker")?.value || "Broker";
+  function printNote(){
+    const b = brokerVal();
     const date = document.getElementById("jDate").value.trim();
     const tags = document.getElementById("jTags").value.trim();
     const bias = document.getElementById("jBias").value.trim();
-    const notes = document.getElementById("jNotes").value.trim();
 
-    const pEntry = document.getElementById("entryP")?.textContent || "—";
-    const pSL = document.getElementById("slP")?.textContent || "—";
-    const pTP = document.getElementById("tpP")?.textContent || "—";
-    const off = document.getElementById("offsetVal")?.textContent || "—";
+    const off = document.getElementById("offsetVal").textContent || "—";
+    const pEntry = document.getElementById("entryP").textContent || "—";
+    const pSL = document.getElementById("slP").textContent || "—";
+    const pTP = document.getElementById("tpP").textContent || "—";
 
-    const escapeHtml = (s) => String(s).replace(/[<>]/g, c => ({'<':'&lt;','>':'&gt;'}[c]));
+    const notesText = (editor.innerText || "").trim() || "-";
+    const esc = (s)=>String(s).replace(/[<>]/g, c => ({'<':'&lt;','>':'&gt;'}[c]));
 
-    // WICHTIG: <\/script> damit NICHT unser Script-Block im Hauptdokument beendet wird
     const html = `
       <html><head><meta charset="utf-8">
-        <title>CONTRACTX Journal</title>
+        <title>CONTRACTX Trade Note</title>
         <style>
           body{font-family:Arial,Helvetica,sans-serif;padding:24px;}
           h1{margin:0 0 10px;}
@@ -539,31 +771,30 @@
           pre{white-space:pre-wrap;word-wrap:break-word;font-family:inherit;}
         </style>
       </head><body>
-        <h1>CONTRACTX — Journal</h1>
-        <div class="muted">Instrument: ${escapeHtml(sym)} • Broker: ${escapeHtml(b)} • Chart: ${escapeHtml(tvSymbol)}</div>
+        <h1>CONTRACTX — Trade Note</h1>
+        <div class="muted">Instrument: ${esc(sym)} • Broker: ${esc(b)} • Chart: ${esc(tvSymbol)}</div>
 
         <div class="box">
           <b>Trade Data</b><br>
-          Offset (Prop − Future): ${escapeHtml(off)}<br>
-          Prop Entry: ${escapeHtml(pEntry)} • Prop SL: ${escapeHtml(pSL)} • Prop TP: ${escapeHtml(pTP)}
+          Offset (Prop − Future): ${esc(off)}<br>
+          Prop Entry: ${esc(pEntry)} • Prop SL: ${esc(pSL)} • Prop TP: ${esc(pTP)}
         </div>
 
         <div class="box">
-          <b>Session</b><br>
-          Datum/Session: ${escapeHtml(date || "-")}<br>
-          Setup/Tags: ${escapeHtml(tags || "-")}<br>
-          Bias/Plan: ${escapeHtml(bias || "-")}
+          <b>Context</b><br>
+          Datum/Session: ${esc(date || "-")}<br>
+          Setup/Tags: ${esc(tags || "-")}<br>
+          Bias/Plan: ${esc(bias || "-")}
         </div>
 
         <div class="box">
           <b>Notes</b>
-          <pre>${escapeHtml(notes || "-")}</pre>
+          <pre>${esc(notesText)}</pre>
         </div>
 
         <script>window.onload=()=>window.print();<\/script>
       </body></html>
     `;
-
     const w = window.open("", "_blank");
     if(!w) return;
     w.document.open();
@@ -571,26 +802,20 @@
     w.document.close();
   }
 
-  // Buttons
-  document.getElementById("jSave").addEventListener("click", () => saveJournal(false));
-  document.getElementById("jClear").addEventListener("click", clearJournal);
-  document.getElementById("jPdf").addEventListener("click", exportJournalPDF);
-  document.getElementById("jPrint").addEventListener("click", printJournal);
+  document.getElementById("btnPdf").addEventListener("click", exportPDF);
+  document.getElementById("btnPrint").addEventListener("click", printNote);
 
-  // Auto-save on typing
-  ["jDate","jTags","jBias","jNotes"].forEach(id=>{
-    document.getElementById(id).addEventListener("input", () => saveJournal(true));
+  // broker change -> separate storage per broker
+  document.getElementById("broker").addEventListener("change", ()=>{
+    setMeta();
+    loadNotes();
+    autoSaveNotes(true);
   });
 
-  // Separate journal per broker
-  document.getElementById("broker").addEventListener("change", () => {
-    setJournalMeta();
-    loadJournal();
-  });
-
-  // Init journal
-  setJournalMeta();
-  loadJournal();
+  // Init
+  setMeta();
+  renderTemplateChips();
+  loadNotes();
 </script>
 
 </body>
