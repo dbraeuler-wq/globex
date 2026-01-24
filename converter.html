@@ -820,7 +820,19 @@ function normalizeSymbol(s){
 }
 function n(v){ if(v===undefined||v===null) return NaN; const s=String(v).replace(",", ".").trim(); if(!s) return NaN; return Number(s); }
 function isNum(x){ return Number.isFinite(x); }
-function fmt2(x){ return isNum(x) ? Number(x).toFixed(2) : "—"; }
+
+// ✅ precision: FX 5 decimals, others 2
+function fmtP(x){
+  if(!isNum(x)) return "—";
+  const fx = (typeof tvSymbol === "string" && tvSymbol.startsWith("FX:"));
+  return Number(x).toFixed(fx ? 5 : 2);
+}
+
+// ✅ invert helper for 6C/6J/6S (CAD/USD -> USD/CAD etc.)
+function inv(x){
+  return isNum(x) && x !== 0 ? (1 / x) : NaN;
+}
+
 function money(x){
   if(!isNum(x)) return "—";
   const v = Number(x);
@@ -957,9 +969,18 @@ function calcProp(){
     updateKPIs();
     return;
   }
-  document.getElementById("entryP").textContent = isNum(e) ? fmt2(e + offset) : "—";
-  document.getElementById("slP").textContent    = isNum(s) ? fmt2(s + offset) : "—";
-  document.getElementById("tpP").textContent    = isNum(tp)? fmt2(tp+ offset) : "—";
+
+  // ✅ map levels: inverted FX -> invert first (1/x), then add offset
+  const mapLevel = (x)=>{
+    if(!isNum(x) || !isNum(offset)) return NaN;
+    const base = isInverted ? inv(x) : x;
+    return base + offset;
+  };
+
+  document.getElementById("entryP").textContent = isNum(e)  ? fmtP(mapLevel(e))  : "—";
+  document.getElementById("slP").textContent    = isNum(s)  ? fmtP(mapLevel(s))  : "—";
+  document.getElementById("tpP").textContent    = isNum(tp) ? fmtP(mapLevel(tp)) : "—";
+
   updateKPIs();
 }
 
@@ -1004,7 +1025,7 @@ function updateKPIs(){
   document.getElementById("kRiskCash").textContent = isNum(riskCash) ? money(riskCash) : "—";
   document.getElementById("kRewardCash").textContent = isNum(rewardCash) ? money(rewardCash) : "—";
   document.getElementById("kRmult").textContent = isNum(rmult) ? (rmult.toFixed(2) + "R") : "—";
-  document.getElementById("kOffset").textContent = fmt2(isNum(offset) ? offset : NaN);
+  document.getElementById("kOffset").textContent = fmtP(isNum(offset) ? offset : NaN);
 
   document.getElementById("rewardWarn").style.display = (isNum(rmult) && rmult < 0) ? "block" : "none";
   document.getElementById("dirWarn").style.display = isInverted ? "block" : "none";
@@ -1274,7 +1295,7 @@ function loadJournal(){
     // offset
     if(typeof d.offset==="number" && isNum(d.offset)){
       offset=d.offset;
-      document.getElementById("offsetVal").textContent=fmt2(offset);
+      document.getElementById("offsetVal").textContent=fmtP(offset);
     }
 
     document.getElementById("jStatus").textContent =
@@ -1315,10 +1336,10 @@ function insertSummary(){
   const bias=document.getElementById("jBias").value.trim() || "-";
   const dir=sum.direction || "auto";
   const rtxt=sum.rmult!=null?sum.rmult.toFixed(2)+"R":"—";
-  const off=sum.offset!=null?fmt2(sum.offset):"—";
+  const off=sum.offset!=null?fmtP(sum.offset):"—";
   const cashRisk=sum.riskCash!=null?money(sum.riskCash):"—";
   const cashReward=sum.rewardCash!=null?money(sum.rewardCash):"—";
-  const inv=isInverted ? " (INVERTED FX: Future short = FX long)" : "";
+  const invTxt=isInverted ? " (INVERTED FX: Future short = FX long)" : "";
 
   const pbLines=PLAYBOOK.map(it=>{
     const v=pbState[it.id] || "—";
@@ -1327,7 +1348,7 @@ function insertSummary(){
 
   const block =
 `=== CONTRACTX SUMMARY ===
-Instrument: ${sym} • Broker: ${brokerVal()}${inv}
+Instrument: ${sym} • Broker: ${brokerVal()}${invTxt}
 Date: ${date}
 Planned duration: ${duration}
 Bias/Plan: ${bias}
@@ -1370,7 +1391,7 @@ function exportPDF(){
   doc.setFont("helvetica","bold"); doc.text("Trade Data", margin, y); y+=16;
   doc.setFont("helvetica","normal");
 
-  const off=sum.offset!=null?fmt2(sum.offset):"—";
+  const off=sum.offset!=null?fmtP(sum.offset):"—";
   const rmult=sum.rmult!=null?(sum.rmult.toFixed(2)+"R"):"—";
   const cashRisk=sum.riskCash!=null?money(sum.riskCash):"—";
   const cashReward=sum.rewardCash!=null?money(sum.rewardCash):"—";
@@ -1473,7 +1494,7 @@ function printNote(){
         Risk$: ${esc(sum.riskCash!=null?money(sum.riskCash):"—")}<br>
         Reward$: ${esc(sum.rewardCash!=null?money(sum.rewardCash):"—")}<br>
         R: ${esc(sum.rmult!=null?(sum.rmult.toFixed(2)+"R"):"—")}<br>
-        Offset (Prop−Future): ${esc(sum.offset!=null?sum.offset.toFixed(2):"—")}<br>
+        Offset (Prop−Future): ${esc(sum.offset!=null?fmtP(sum.offset):"—")}<br>
         Prop Entry/SL/TP: ${esc(sum.prop.entry)} / ${esc(sum.prop.sl)} / ${esc(sum.prop.tp)}<br>
         ${isInverted ? "<br><b>INVERTED FX:</b> Future short = FX long (und umgekehrt)." : ""}
       </div>
@@ -1563,13 +1584,13 @@ function renderStars(){
   // TV
   renderTV();
 
-  // converter listeners
+  // ✅ IMPORTANT FIX: setOffset for inverted FX uses Prop - (1/Future)
   document.getElementById("setOffset").addEventListener("click", ()=>{
     const f = n(document.getElementById("futureNow").value);
     const p = n(document.getElementById("propNow").value);
     if(isNum(f) && isNum(p)){
-      offset = p - f;
-      document.getElementById("offsetVal").textContent = fmt2(offset);
+      offset = isInverted ? (p - inv(f)) : (p - f);
+      document.getElementById("offsetVal").textContent = fmtP(offset);
       calcProp();
       autoSave(true);
     }
@@ -1631,3 +1652,4 @@ function renderStars(){
 
 </body>
 </html>
+
