@@ -1,348 +1,367 @@
 <!doctype html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CONTRACTX — Converter</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CONTRACTX — Converter</title>
 
-<style>
-:root{
-  --bg:#070A0F;
-  --stroke:rgba(255,255,255,.12);
-  --stroke2:rgba(255,255,255,.22);
-  --text:#EAF0FF;
-  --muted:rgba(234,240,255,.65);
-  --shadow:0 18px 50px rgba(0,0,0,.55);
-  --warn:#FFD66E;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-  color:var(--text);
-  background:
-    radial-gradient(1200px 800px at 15% 10%, rgba(40,110,255,.22), transparent 60%),
-    radial-gradient(900px 700px at 85% 20%, rgba(255,215,80,.12), transparent 60%),
-    var(--bg);
-}
-.wrap{max-width:1200px;margin:0 auto;padding:24px}
-.panel{
-  background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));
-  border:1px solid var(--stroke);
-  border-radius:18px;
-  box-shadow:var(--shadow);
-  padding:22px;
-}
-h1{margin:0;font-size:26px}
-.sub{margin-top:6px;font-size:13px;color:var(--muted)}
+  <style>
+    :root{
+      --bg:#070A0F;
+      --stroke:rgba(255,255,255,.12);
+      --stroke2:rgba(255,255,255,.22);
+      --text:#EAF0FF;
+      --muted:rgba(234,240,255,.65);
+      --shadow:0 18px 50px rgba(0,0,0,.55);
+      --warn:#FFD66E;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 15% 10%, rgba(40,110,255,.22), transparent 60%),
+        radial-gradient(900px 700px at 85% 20%, rgba(255,215,80,.12), transparent 60%),
+        var(--bg);
+    }
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
+    .panel{
+      background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));
+      border:1px solid var(--stroke);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:22px;
+    }
+    h1{margin:0;font-size:26px}
+    .sub{margin-top:6px;font-size:13px;color:var(--muted)}
 
-.row{
-  margin-top:18px;
-  display:grid;
-  grid-template-columns:1.05fr .95fr;
-  gap:14px;
-}
-@media(max-width:900px){.row{grid-template-columns:1fr}}
+    .row{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:14px;
+    }
+    @media(max-width:900px){.row{grid-template-columns:1fr}}
 
-.card{
-  border:1px solid var(--stroke);
-  border-radius:16px;
-  background:rgba(0,0,0,.25);
-  padding:16px;
-}
+    .card{
+      border:1px solid var(--stroke);
+      border-radius:16px;
+      background:rgba(0,0,0,.25);
+      padding:16px;
+    }
 
-label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
-input,select{
-  width:100%;
-  padding:13px 14px;
-  border-radius:14px;
-  border:1px solid var(--stroke2);
-  background:rgba(0,0,0,.35);
-  color:var(--text);
-  font-size:15px;
-}
+    label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+    input,select{
+      width:100%;
+      padding:13px 14px;
+      border-radius:14px;
+      border:1px solid var(--stroke2);
+      background:rgba(0,0,0,.35);
+      color:var(--text);
+      font-size:15px;
+      outline:none;
+    }
+    input::placeholder{color:rgba(234,240,255,.35)}
 
-.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:520px){.two{grid-template-columns:1fr}}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(max-width:520px){.two{grid-template-columns:1fr}}
 
-.btn{
-  margin-top:10px;
-  padding:11px 14px;
-  border-radius:14px;
-  border:1px solid var(--stroke2);
-  background:rgba(255,255,255,.06);
-  color:var(--text);
-  font-weight:800;
-  cursor:pointer;
-}
+    .btn{
+      margin-top:10px;
+      padding:11px 14px;
+      border-radius:14px;
+      border:1px solid var(--stroke2);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      font-weight:800;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+    .btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.09)}
 
-.big{
-  border:1px solid var(--stroke);
-  border-radius:16px;
-  padding:16px;
-  background:rgba(0,0,0,.35);
-}
-.big .t{font-size:12px;color:var(--muted)}
-.big .v{font-size:28px;font-weight:900;margin-top:6px}
+    .big{
+      border:1px solid var(--stroke);
+      border-radius:16px;
+      padding:16px;
+      background:rgba(0,0,0,.35);
+    }
+    .big .t{font-size:12px;color:var(--muted)}
+    .big .v{font-size:28px;font-weight:900;margin-top:6px}
 
-.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-@media(max-width:520px){.kv{grid-template-columns:1fr}}
+    .kv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    @media(max-width:520px){.kv{grid-template-columns:1fr}}
 
-.note{margin-top:12px;font-size:12px;color:var(--muted);line-height:1.45}
-.warn{
-  margin-top:12px;
-  border:1px solid rgba(255,214,110,.35);
-  background:rgba(255,214,110,.08);
-  border-radius:12px;
-  padding:10px;
-  font-size:12px;
-  color:var(--warn);
-}
+    .note{margin-top:12px;font-size:12px;color:var(--muted);line-height:1.45}
+    .warn{
+      margin-top:12px;
+      border:1px solid rgba(255,214,110,.35);
+      background:rgba(255,214,110,.08);
+      border-radius:12px;
+      padding:10px;
+      font-size:12px;
+      color:var(--warn);
+    }
 
-/* TradingView container */
-.tvbox{
-  height:560px;
-  border-radius:16px;
-  overflow:hidden;
-}
-</style>
+    .tvbox{
+      height:560px;
+      border-radius:16px;
+      overflow:hidden;
+    }
+  </style>
 </head>
 
 <body>
-<div class="wrap">
-<section class="panel">
-  <h1 id="title">Converter</h1>
-  <div class="sub">
-    Links: Kalibrierung + Trade-Plan (Future). Rechts: **fertige Prop-Preise**. Unten: **Live-Chart (TradingView)**.
+  <div class="wrap">
+    <section class="panel">
+      <h1 id="title">CONTRACTX Converter</h1>
+      <div class="sub">
+        Links: Future + Prop-Mid zur Kalibrierung (Offset). Darunter Entry/SL/TP in Future-Preisen.
+        Rechts: fertige Prop-Preise zum Kopieren. Unten: Live-Chart (TradingView) als **Cash-Proxy** (ohne Login).
+      </div>
+
+      <div class="row">
+        <!-- LEFT -->
+        <div class="card">
+          <div class="two">
+            <div>
+              <label>Broker</label>
+              <select id="broker">
+                <option>CampusFund</option>
+                <option>FTMO</option>
+                <option>FundingPips</option>
+              </select>
+            </div>
+            <div>
+              <label>Mode</label>
+              <select id="mode">
+                <option value="auto">Auto</option>
+                <option value="fx">FX</option>
+                <option value="offset">Offset</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="two" style="margin-top:10px">
+            <div>
+              <label>Future aktuell (TradingView)</label>
+              <input id="futureNow" inputmode="decimal" placeholder="z. B. 49308.45">
+            </div>
+            <div>
+              <label>Prop aktuell (Mid)</label>
+              <input id="propNow" inputmode="decimal" placeholder="z. B. 49310.65">
+            </div>
+          </div>
+
+          <button class="btn" id="setOffset" type="button">Set Offset</button>
+
+          <div class="note">
+            Offset (Prop − Future): <strong id="offsetVal">—</strong>
+          </div>
+
+          <div style="margin-top:14px">
+            <label>Trade-Plan (Future)</label>
+            <div class="two">
+              <div>
+                <label style="margin-top:0">Entry</label>
+                <input id="entryF" inputmode="decimal" placeholder="Entry (Future)">
+              </div>
+              <div>
+                <label style="margin-top:0">SL</label>
+                <input id="slF" inputmode="decimal" placeholder="SL (Future)">
+              </div>
+            </div>
+            <div style="margin-top:10px">
+              <label>TP</label>
+              <input id="tpF" inputmode="decimal" placeholder="TP (Future)">
+            </div>
+          </div>
+
+          <div class="note">
+            Tipp: Prop Mid = (Bid + Ask) / 2. Offset ist session-/brokerabhängig.
+          </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="card">
+          <div class="big">
+            <div class="t">Prop Entry</div>
+            <div class="v" id="entryP">—</div>
+            <button class="btn" type="button" id="copyEntry">Copy Entry</button>
+          </div>
+
+          <div class="kv">
+            <div class="big">
+              <div class="t">Prop SL</div>
+              <div class="v" id="slP">—</div>
+              <button class="btn" type="button" id="copySL">Copy SL</button>
+            </div>
+            <div class="big">
+              <div class="t">Prop TP</div>
+              <div class="v" id="tpP">—</div>
+              <button class="btn" type="button" id="copyTP">Copy TP</button>
+            </div>
+          </div>
+
+          <div class="warn" id="invertHint" style="display:none">
+            ⚠️ Dieses FX-Pair ist <strong>invertiert</strong><br>
+            <strong>Future SHORT = FX LONG</strong><br>
+            <strong>Future LONG = FX SHORT</strong>
+          </div>
+
+          <div class="note" id="chartNote"></div>
+        </div>
+      </div>
+
+      <!-- CHART -->
+      <div class="card" style="margin-top:16px">
+        <div class="note" style="margin-top:0">Live Chart (TradingView)</div>
+        <div class="tvbox">
+          <div class="tradingview-widget-container" style="height:100%;width:100%">
+            <div id="tv_chart" style="height:100%;width:100%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
-
-  <div class="row">
-    <!-- LEFT -->
-    <div class="card">
-      <div class="two">
-        <div>
-          <label>Broker</label>
-          <select id="broker">
-            <option>CampusFund</option>
-            <option>FTMO</option>
-            <option>FundingPips</option>
-          </select>
-        </div>
-        <div>
-          <label>Mode</label>
-          <select id="mode">
-            <option value="auto">Auto</option>
-            <option value="fx">FX</option>
-            <option value="offset">Offset</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="two" style="margin-top:10px">
-        <div>
-          <label>Future aktuell (TradingView)</label>
-          <input id="futureNow" inputmode="decimal" placeholder="z. B. 49308.45">
-        </div>
-        <div>
-          <label>Prop aktuell (Mid)</label>
-          <input id="propNow" inputmode="decimal" placeholder="z. B. 49310.65">
-        </div>
-      </div>
-
-      <button class="btn" id="setOffset" type="button">Set Offset</button>
-
-      <div class="note">
-        Offset (Prop − Future): <strong id="offsetVal">—</strong>
-      </div>
-
-      <div style="margin-top:14px">
-        <label>Trade-Plan (Future)</label>
-        <div class="two">
-          <input id="entryF" inputmode="decimal" placeholder="Entry (Future)">
-          <input id="slF" inputmode="decimal" placeholder="SL (Future)">
-        </div>
-        <input id="tpF" inputmode="decimal" placeholder="TP (Future)" style="margin-top:10px">
-      </div>
-    </div>
-
-    <!-- RIGHT -->
-    <div class="card">
-      <div class="big">
-        <div class="t">Prop Entry</div>
-        <div class="v" id="entryP">—</div>
-        <button class="btn" type="button" id="copyEntry">Copy Entry</button>
-      </div>
-
-      <div class="kv">
-        <div class="big">
-          <div class="t">Prop SL</div>
-          <div class="v" id="slP">—</div>
-          <button class="btn" type="button" id="copySL">Copy SL</button>
-        </div>
-        <div class="big">
-          <div class="t">Prop TP</div>
-          <div class="v" id="tpP">—</div>
-          <button class="btn" type="button" id="copyTP">Copy TP</button>
-        </div>
-      </div>
-
-      <div class="warn" id="invertHint" style="display:none">
-        ⚠️ Dieses FX-Pair ist <strong>invertiert</strong><br>
-        <strong>Future SHORT = FX LONG</strong><br>
-        <strong>Future LONG = FX SHORT</strong>
-      </div>
-    </div>
-  </div>
-
-  <!-- CHART -->
-  <div class="card" style="margin-top:16px">
-    <div class="note" style="margin-top:0">Live Chart (TradingView)</div>
-    <div class="tvbox">
-      <div class="tradingview-widget-container" style="height:100%;width:100%">
-        <div id="tv_chart" style="height:100%;width:100%"></div>
-      </div>
-    </div>
-  </div>
-
-</section>
-</div>
 
 <script>
-/** ========= 1) SYMBOL NORMALIZE (fix) ========= **/
-const RAW = (new URLSearchParams(location.search).get("symbol") || "ES").toUpperCase().trim();
+  /** ========= SYMBOL NORMALIZE ========= **/
+  const RAW = (new URLSearchParams(location.search).get("symbol") || "ES").toUpperCase().trim();
+  const cleaned = RAW.replace(/[^A-Z0-9!]/g, "");
 
-// keep only A-Z0-9 and ! (we don't need !, but harmless)
-const cleaned = RAW.replace(/[^A-Z0-9!]/g, "");
+  function normalizeSymbol(s){
+    if(!s) return "ES";
+    if(s.startsWith("6")) return s.slice(0,2);           // 6E/6C/...
+    const known3 = ["RTY"];                               // 3-letter futures we support
+    const s3 = s.slice(0,3);
+    if(known3.includes(s3)) return s3;
+    return s.slice(0,2);                                  // ES/NQ/YM/GC/CL/NG/SI
+  }
 
-// We want: 6C / 6E etc = 2 chars; others often 2-3 chars (ES, NQ, YM, RTY, GC, CL, NG, SI)
-function normalizeSymbol(s){
-  if(!s) return "ES";
-  // FX futures start with 6
-  if(s.startsWith("6")) return s.slice(0,2);
-  // try 3-letter first (RTY)
-  const s3 = s.slice(0,3);
-  const known3 = ["RTY"];
-  if(known3.includes(s3)) return s3;
-  // fallback 2 letters
-  return s.slice(0,2);
-}
+  const sym = normalizeSymbol(cleaned);
+  document.getElementById("title").textContent = sym + " — CONTRACTX Converter";
 
-const sym = normalizeSymbol(cleaned);
+  /** ========= INVERT WARNING ========= **/
+  const FX_INVERTED = ["6C","6J","6S"];
+  if (FX_INVERTED.includes(sym)) {
+    document.getElementById("invertHint").style.display = "block";
+  }
 
-/** ========= 2) BASIC BEHAVIOR ========= **/
-document.getElementById("title").textContent = sym + " Converter";
-
-// Inverted FX warning
-const FX_INVERTED = ["6C","6J","6S"];
-if (FX_INVERTED.includes(sym)) {
-  document.getElementById("invertHint").style.display = "block";
-}
-
-// Chart symbol map
-const TV_MAP = {
+  /** ========= CASH/PROXY CHART MAP (NO LOGIN) ========= **/
   const TV_MAP = {
-  ES:  "SP:SPX",
-  NQ:  "NASDAQ:NDX",
-  YM:  "DJ:DJI",
-  RTY: "RUSSELL:RUT",
+    // Indices (Cash)
+    ES:  "SP:SPX",
+    NQ:  "NASDAQ:NDX",
+    YM:  "DJ:DJI",
+    RTY: "RUSSELL:RUT",
 
-  GC:  "TVC:GOLD",
-  SI:  "TVC:SILVER",
-  CL:  "TVC:USOIL",
-  NG:  "TVC:NATGAS",
+    // Commodities (Cash/Proxy)
+    GC:  "TVC:GOLD",
+    SI:  "TVC:SILVER",
+    CL:  "TVC:USOIL",
+    NG:  "TVC:NATGAS",
 
-  "6E":"FX:EURUSD",
-  "6B":"FX:GBPUSD",
-  "6A":"FX:AUDUSD",
-  "6N":"FX:NZDUSD",
-  "6C":"FX:USDCAD",
-  "6J":"FX:USDJPY",
-  "6S":"FX:USDCHF"
-};
+    // FX Spot (aligned to what users trade)
+    "6E":"FX:EURUSD",
+    "6B":"FX:GBPUSD",
+    "6A":"FX:AUDUSD",
+    "6N":"FX:NZDUSD",
+    "6C":"FX:USDCAD",
+    "6J":"FX:USDJPY",
+    "6S":"FX:USDCHF"
+  };
 
-// number parser
-function n(v){
-  if(!v) return NaN;
-  return Number(String(v).replace(",",".").trim());
-}
+  const tvSymbol = TV_MAP[sym] || "SP:SPX";
 
-let offset = NaN;
+  // explain the proxy to avoid confusion
+  const note = document.getElementById("chartNote");
+  note.textContent = `Chart: ${tvSymbol} (Cash/Proxy, ohne TradingView-Login). Mapping/Offset bleibt auf deinen Futures-Preisen.`;
 
-// Set Offset
-document.getElementById("setOffset").addEventListener("click", () => {
-  const f = n(document.getElementById("futureNow").value);
-  const p = n(document.getElementById("propNow").value);
-  if (isFinite(f) && isFinite(p)) {
-    offset = p - f;
-    document.getElementById("offsetVal").textContent = offset.toFixed(2);
-    calc();
-  }
-});
-
-// Calc mapping (Entry/SL/TP)
-function calc(){
-  const e = n(document.getElementById("entryF").value);
-  const s = n(document.getElementById("slF").value);
-  const t = n(document.getElementById("tpF").value);
-
-  // if no offset set, keep outputs blank
-  if(!isFinite(offset)){
-    if(isFinite(e)) document.getElementById("entryP").textContent = "—";
-    if(isFinite(s)) document.getElementById("slP").textContent = "—";
-    if(isFinite(t)) document.getElementById("tpP").textContent = "—";
-    return;
+  /** ========= OFFSET + PLAN ========= **/
+  function n(v){
+    if(!v) return NaN;
+    return Number(String(v).replace(",", ".").trim());
   }
 
-  if (isFinite(e)) document.getElementById("entryP").textContent = (e + offset).toFixed(2);
-  if (isFinite(s)) document.getElementById("slP").textContent = (s + offset).toFixed(2);
-  if (isFinite(t)) document.getElementById("tpP").textContent = (t + offset).toFixed(2);
-}
+  function fmt2(x){
+    if(!isFinite(x)) return "—";
+    return Number(x).toFixed(2);
+  }
 
-// Auto update on input
-["futureNow","propNow","entryF","slF","tpF"].forEach(id=>{
-  document.getElementById(id).addEventListener("input", calc);
-});
+  let offset = NaN;
 
-// Copy helpers
-async function copyVal(v){
-  if(!v || v === "—") return;
-  try { await navigator.clipboard.writeText(v); } catch {}
-}
-document.getElementById("copyEntry").addEventListener("click", ()=>copyVal(document.getElementById("entryP").textContent));
-document.getElementById("copySL").addEventListener("click", ()=>copyVal(document.getElementById("slP").textContent));
-document.getElementById("copyTP").addEventListener("click", ()=>copyVal(document.getElementById("tpP").textContent));
-
-/** ========= 3) TRADINGVIEW EMBED (stable) ========= **/
-(function renderTV(){
-  const tvSymbol = TV_MAP[sym] || "CME_MINI:ES1!";
-
-  // Create script tag for advanced chart widget
-  const script = document.createElement("script");
-  script.type = "text/javascript";
-  script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
-  script.async = true;
-
-  // Config as pure JSON text content (required by TradingView embed)
-  script.textContent = JSON.stringify({
-    autosize: true,
-    symbol: tvSymbol,
-    interval: "5",
-    timezone: "Europe/Berlin",
-    theme: "dark",
-    style: "1",
-    locale: "en",
-    allow_symbol_change: false,
-    calendar: false,
-    hide_top_toolbar: false,
-    hide_legend: false,
-    support_host: "https://www.tradingview.com"
+  document.getElementById("setOffset").addEventListener("click", () => {
+    const f = n(document.getElementById("futureNow").value);
+    const p = n(document.getElementById("propNow").value);
+    if (isFinite(f) && isFinite(p)) {
+      offset = p - f;
+      document.getElementById("offsetVal").textContent = fmt2(offset);
+      calc();
+    }
   });
 
-  // Mount into container
-  const container = document.getElementById("tv_chart");
-  container.innerHTML = "";
-  container.appendChild(script);
-})();
+  function calc(){
+    const e = n(document.getElementById("entryF").value);
+    const s = n(document.getElementById("slF").value);
+    const t = n(document.getElementById("tpF").value);
+
+    // If no offset yet, show — (but don't annoy)
+    if(!isFinite(offset)){
+      document.getElementById("entryP").textContent = "—";
+      document.getElementById("slP").textContent = "—";
+      document.getElementById("tpP").textContent = "—";
+      return;
+    }
+
+    if (isFinite(e)) document.getElementById("entryP").textContent = fmt2(e + offset);
+    else document.getElementById("entryP").textContent = "—";
+
+    if (isFinite(s)) document.getElementById("slP").textContent = fmt2(s + offset);
+    else document.getElementById("slP").textContent = "—";
+
+    if (isFinite(t)) document.getElementById("tpP").textContent = fmt2(t + offset);
+    else document.getElementById("tpP").textContent = "—";
+  }
+
+  ["futureNow","propNow","entryF","slF","tpF"].forEach(id=>{
+    document.getElementById(id).addEventListener("input", calc);
+  });
+
+  async function copyVal(v){
+    if(!v || v === "—") return;
+    try { await navigator.clipboard.writeText(v); } catch {}
+  }
+  document.getElementById("copyEntry").addEventListener("click", ()=>copyVal(document.getElementById("entryP").textContent));
+  document.getElementById("copySL").addEventListener("click", ()=>copyVal(document.getElementById("slP").textContent));
+  document.getElementById("copyTP").addEventListener("click", ()=>copyVal(document.getElementById("tpP").textContent));
+
+  /** ========= TRADINGVIEW EMBED (ADVANCED CHART) ========= **/
+  (function renderTV(){
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+    script.async = true;
+    script.textContent = JSON.stringify({
+      autosize: true,
+      symbol: tvSymbol,
+      interval: "5",
+      timezone: "Europe/Berlin",
+      theme: "dark",
+      style: "1",
+      locale: "en",
+      allow_symbol_change: false,
+      calendar: false,
+      hide_top_toolbar: false,
+      hide_legend: false,
+      support_host: "https://www.tradingview.com"
+    });
+
+    const container = document.getElementById("tv_chart");
+    container.innerHTML = "";
+    container.appendChild(script);
+  })();
 </script>
+
 </body>
 </html>
